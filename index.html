@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/main.css">
+  <script type="text/javascript" src="VisualParser.js"></script>
+  <script type="text/javascript" src="ItemClasses.js"></script>
+  <script type="text/javascript" src="hwparser.js"></script>
+  <script type="text/javascript" src="routeparser.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+  <style>
+	.displayer
+	{
+		position:relative;
+		z-index: 3;
+		width:100%;
+		height:1024px;
+		overflow:scroll;
+	}
+	#aaa, #ccc
+	{
+		box-sizing: border-box;
+		width: 49%;
+		display: inline-block;
+		height: 50rem;
+	}
+	#bbb
+	{
+		width: 20rem;
+		height: 5rem;
+		font-size: 3rem;
+	}
+	#object_info
+	{
+		display: inline-block;
+
+		border-radius: 3px;
+		border-style: solid;
+		border-width: 1px;
+		border-color: black;
+		width: 40rem;
+	}
+  </style>
+</head>
+<body>
+<h3>stuff</h3>
+<div class="displayer">
+<canvas id="graphdisplay" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 1;">
+</canvas>
+<canvas id="selection_display" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 2;">
+</canvas>
+</div>
+<div id="controls">
+<h2 id="current_obj"></h2>
+</div>
+<button id="bbb">parse</button>
+<div id="object_info"></div><br />
+<textarea id="aaa"></textarea><textarea id="ccc"></textarea><script>
+	//drawMap(document.getElementById('graphdisplay'));
+	document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
+		canvasHover(e);
+		document.getElementById("current_obj").innerText = window.fiber.current;
+	});
+	document.getElementById('selection_display').addEventListener("click", (e)=>{
+		canvasClick(e);
+	});
+
+	VisualEditor.selectionChange = ()=>{
+		console.log(VisualEditor.currentSelection);
+		if(VisualEditor.currentSelection.selection.length > 0)
+		{
+			console.log(VisualEditor.currentSelection.selection);
+			console.log(VisualEditor.currentSelection.selection[0].type);
+			let stuff ="";
+			VisualEditor.currentSelection.selection.forEach((item)=>{
+				stuff+="<h3>" + item.getFullLabel() + "</h3>";
+				stuff+="<div class=\"infoblock\">";
+				stuff+=item.type;
+				stuff+="</div>";
+			});
+			document.getElementById("object_info").innerHTML=stuff;
+		}
+	};
+
+	document.getElementById('bbb').addEventListener("click",(e)=>{
+		let txt = document.getElementById('aaa').value;
+		let p = new VisualParser(txt, hwparser, new VisualMap("test"));
+		let warns = {...p.warncodes, ...hw_warns};
+		p.warncodes = warns;
+		//console.log(p.warncodes);
+		p.init();
+		p.go();
+		//console.log(p);
+		p.rootObject.updateSize();
+		p.rootObject.updatePosition();
+		p.rootObject.updateHitboxMapping();
+		p.rootObject.draw(document.getElementById("graphdisplay").getContext("2d"));
+		window.patchmap.terrain = p.rootObject;
+		
+		let txt2 = document.getElementById('ccc').value;
+		p = new VisualParser(txt2, routeparser, new VisualLineMap("test"));
+		warns = {...p.warncodes, ...hw_warns};
+		p.warncodes = warns;
+		p.terrain = window.patchmap.terrain;
+		//console.log(p.warncodes);
+		p.init();
+		p.go();
+		p.rootObject.updateSize();
+		p.rootObject.updatePosition();
+		p.rootObject.updateHitboxMapping();
+		p.rootObject.draw(document.getElementById("graphdisplay").getContext("2d"));
+		window.patchmap.routes = p.rootObject;
+
+		
+
+		console.log(p.terrain);
+		console.log(p.rootObject);
+		console.log(VisualItem.hitboxMapping);
+		//p.rootObject.updateSize();
+		//p.rootObject.updatePosition();
+		//p.rootObject.draw(document.getElementById("selection_display").getContext("2d"));
+		
+		
+	});
+</script>
+</body>
+</html>
