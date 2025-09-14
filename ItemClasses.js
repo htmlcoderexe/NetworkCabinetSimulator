@@ -138,9 +138,9 @@ class VisualItem {
 	{
 		if(!this.parent)
 		{
-			return this.label;
+			return this.label==""?this.name:this.label;
 		}
-		return this.parent.getFullLabel() + " / " + this.label;
+		return this.parent.getFullLabel() + " / " + (this.label==""?this.name:this.label);
 	}
 
 	updateHitboxMapping()
