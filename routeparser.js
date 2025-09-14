@@ -113,6 +113,17 @@ routeparser = {
 			current.to = point;
 		}
 		return true;
+	},
+	"CABLE": function(current)
+	{
+		if(current.type != "patch")
+		{
+			this.warn(this.WARN_UNEXPECTED_TOKEN);
+			return true;
+		}
+		let cablename = this.getWord();
+		current.cable = cablename;
+		return true;
 	}
 
 };

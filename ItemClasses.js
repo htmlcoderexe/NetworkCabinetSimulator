@@ -587,7 +587,8 @@ class VisualPatch extends VisualItem {
 		super("patch", name, line);
 		this.from = null;
 		this.to = null;
-		this.selectionOrder = 4
+		this.selectionOrder = 4;
+		this.cable ="";
 	}
 	commit(parser)
 	{
