@@ -31,6 +31,9 @@
 		width: 20rem;
 		height: 5rem;
 		font-size: 3rem;
+		position: fixed;
+		top: 20px;
+		left: 10 rem;
 	}
 	#object_info
 	{
@@ -66,6 +69,12 @@
 	document.getElementById('selection_display').addEventListener("click", (e)=>{
 		canvasClick(e);
 	});
+	document.getElementById('selection_display').addEventListener("mousedown", (e)=>{
+		canvasMDown(e);
+	});
+	document.getElementById('selection_display').addEventListener("mouseup", (e)=>{
+		canvasMUp(e);
+	});
 
 	VisualEditor.selectionChange = ()=>{
 		console.log(VisualEditor.currentSelection);
@@ -98,7 +107,7 @@
 		p.rootObject.updateHitboxMapping();
 		p.rootObject.draw(document.getElementById("graphdisplay").getContext("2d"));
 		window.patchmap.terrain = p.rootObject;
-		
+		VisualEditor.fixedMap = p.rootObject;
 		let txt2 = document.getElementById('ccc').value;
 		p = new VisualParser(txt2, routeparser, new VisualLineMap("test"));
 		warns = {...p.warncodes, ...hw_warns};
@@ -112,7 +121,7 @@
 		p.rootObject.updateHitboxMapping();
 		p.rootObject.draw(document.getElementById("graphdisplay").getContext("2d"));
 		window.patchmap.routes = p.rootObject;
-
+		VisualEditor.lineMap = p.rootObject;
 		
 
 		console.log(p.terrain);

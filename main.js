@@ -45,6 +45,14 @@ class VisualEditor
 	static currentHightlight = [];
 	static currentDepth = 0;
 	static ctrl = false;
+	static shift = false;
+	static mouseDownNow = false;
+	static mouseDownPrev = false;
+	static fixedMap = null;
+	static lineMap = null;
+	static currentMoving = null;
+	static currentMovingX = 0;
+	static currentMovingY = 0;
 	static getMouseHits(x, y, onlyTopLevel = false)
 	{
 		let results = VisualItem.hitboxMapping.filter(box=>{return box.hitbox.contains(x, y)});
@@ -80,8 +88,14 @@ class VisualEditor
 		}
 		if(VisualEditor.currentSelection)
 		{
-			VisualEditor.currentSelection.forEach(box=>box.drawHighlight(ctx,style));
+			VisualEditor.currentSelection.selection.forEach(box=>box.drawHighlight(ctx,style));
 		}
+	}
+	static redrawItems(ctx)
+	{
+		ctx.clearRect(0,0,5000,5000);
+		VisualEditor.fixedMap.draw(ctx);
+		VisualEditor.lineMap.draw(ctx);
 	}
 	static selectionChange = function()
 	{
@@ -96,15 +110,48 @@ window.fiber = {};
 
 function canvasHover(e)
 {
+	ctx = document.getElementById("selection_display").getContext("2d");
+	ctx2 = document.getElementById("graphdisplay").getContext("2d");
 	VisualEditor.ctrl = e.ctrlKey;
+	VisualEditor.shift = e.shiftKey;
+	if(VisualEditor.currentMoving)
+	{
+		VisualEditor.currentMoving.x = e.offsetX + VisualEditor.currentMovingX;
+		VisualEditor.currentMoving.y = e.offsetY + VisualEditor.currentMovingY;
+		VisualEditor.redrawItems(ctx2);
+		VisualItem.hitboxMapping = [];
+		VisualEditor.lineMap.updateSize();
+		VisualEditor.lineMap.updatePosition();
+		VisualEditor.lineMap.updateHitboxMapping();
+		VisualEditor.fixedMap.updateSize();
+		VisualEditor.fixedMap.updatePosition();
+		VisualEditor.fixedMap.updateHitboxMapping();
+		
+		VisualEditor.redrawSelection(ctx)
+		return;
+	}
 	let results = VisualEditor.getMouseHits(e.offsetX, e.offsetY, true);
 	VisualEditor.currentHightlight = results;
+	if(VisualEditor.currentHightlight.length > 0)
+	{
+		if(VisualEditor.currentHightlight[0].type == "location")
+		{
+			document.body.style.cursor = "move";
+		}
+		else
+		{
+			document.body.style.cursor = "auto";
+		}
+	}
+	else
+	{
+		document.body.style.cursor = "auto";
+	}
 	let currentlabel = "";
 	let currentrect = [];
 	
 		
 	
-	ctx = document.getElementById("selection_display").getContext("2d");
 	VisualEditor.redrawSelection(ctx)
 	
 	
@@ -113,15 +160,50 @@ function canvasHover(e)
 	window.fiber.current = currentlabel;
 	window.fiber.selection = currentrect;
 }
+
+function canvasMDown(e)
+{
+	VisualEditor.mouseDownNow = true;
+	if(VisualEditor.currentHightlight.length > 0)
+	{
+		if(VisualEditor.currentHightlight[0].type == "location")
+		{
+			console.log("picked up", VisualEditor.currentHightlight[0]);
+			VisualEditor.currentMoving = VisualEditor.currentHightlight[0];
+			VisualEditor.currentMovingX = VisualEditor.currentMoving.x - e.offsetX;
+			VisualEditor.currentMovingY = VisualEditor.currentMoving.y - e.offsetY;
+		}
+		else
+		{
+			document.body.style.cursor = "auto";
+		}
+	}
+	else
+	{
+		document.body.style.cursor = "auto";
+	}
+}
+
+function canvasMUp(e)
+{
+	VisualEditor.mouseDownNow = false;
+	VisualEditor.currentMoving = null;
+}
+
 function canvasClick(e)
 {
 	let results = VisualEditor.getMouseHits(e.offsetX, e.offsetY, true);
 	
 	ctx = document.getElementById("selection_display").getContext("2d");
-	if(!results)
+	if(results.length < 1)
 	{
 		if(!VisualEditor.ctrl)
+		{
+			console.log("before clear", VisualEditor.currentSelection);
 			VisualEditor.currentSelection.clear();
+			console.log("after clear", VisualEditor.currentSelection);
+		}
+			
 		
 		VisualEditor.redrawSelection(ctx)
 		
