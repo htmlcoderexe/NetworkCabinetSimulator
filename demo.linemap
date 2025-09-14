@@ -1,0 +1,30 @@
+LINE L0101
+    COLOUR1 BLUE
+    COLOUR2 GREEN
+    LINK
+        FROM office_1 R1 interchange 1
+        TO office_1 R1 floors 1
+        CABLE PATCH
+    LINK
+        FROM office_1 R1 floors 1
+        TO office_2 R1 to_main 1
+        CABLE Off_F1_F2
+    LINK
+        FROM office_2 R1 to_main 1
+        TO office_2 R1 to_infra 1
+        CABLE PATCH
+LINE L0102
+    COLOUR1 BLUE
+    COLOUR2 ORANGE
+    LINK
+        FROM office_1 R1 interchange 3
+        TO office_1 R1 floors 3
+        CABLE PATCH
+    LINK
+        FROM office_1 R1 floors 3
+        TO office_2 R1 to_main 3
+        CABLE Off_F1_F2
+    LINK
+        FROM office_2 R1 to_main 3
+        TO office_2 R1 to_infra 3
+        CABLE PATCH

@@ -1,0 +1,30 @@
+LOCATION office_1
+    POSITION 50 50
+    LABEL Office F1
+    RACK R1
+        SLOT 1
+        LABEL Main office uplink
+            FRAME interchange
+                LABEL Optical to interchange
+                TYPE SM
+            FRAME floors
+                LABEL Optical to floors
+                TYPE SM
+            FRAME office_isp_backup
+                LABEL Backup uplink
+                TYPE SM
+LOCATION office_2
+    POSITION 550 50
+    LABEL Office F2
+    RACK R1
+        SLOT 1
+        LABEL 
+            FRAME to_main
+                LABEL To F1
+                TYPE SM
+            FRAME to_infra
+                LABEL To floor 2 infra
+                TYPE SM
+            FRAME to_users
+                LABEL to_users
+                TYPE SM
