@@ -489,16 +489,43 @@ class VisualFrame extends VisualItem
 		}
 		
 		
+		let ftpl = parser.inventory.find(this.frametype);
+		if(!ftpl || ftpl.type!="frame_tpl")
+		{
+			parser.statevars['frame_tpl_name'] = this.frametype;
+			parser.warn(WARN_BAD_FRAME_TPL);
+			return false;
+		}
 		
-		
-		
+		ftpl.elements.forEach((el)=>{
+			if(el.type!="connector")
+			{
+				return;
+			}
+			let connref = parser.inventory.find(el.name);
+			if(!connref)
+			{
+
+				return;
+			}
+			let slot = this.getNextSlot();
+			let conn = new VisualSocket(this, slot.toString());
+			conn.slot = slot;
+			conn.renderer = connref.find("main");
+			conn.width = connref.width;
+			conn.height = connref.height;
+			conn.x = el.x;
+			conn.y = el.y;
+			this.addItem(conn);
+		});
+		/*
 		for(let i = 0; i<24;i++)
 		{
 			let conn = new VisualSocket(this, (i+1).toString());
 			conn.slot = this.getNextSlot();
 			this.addItem(conn);
 		}
-		
+		//*/
 		
 		
 		
@@ -538,6 +565,8 @@ class VisualFrame extends VisualItem
 class VisualSocket extends VisualItem
 {
 	connections = [];
+	renderer = null;
+	typename = "generic";
 	constructor(frame, name)
 	{
 		super("socket", name, frame);
@@ -546,17 +575,21 @@ class VisualSocket extends VisualItem
 	updateSize()
 	{
 		super.updateSize();
-		this.height = DIM_FRAME_HEIGHT;
-		this.width = 13;
+		//this.height = DIM_FRAME_HEIGHT;
+		//this.width = 13;
 	}
 	updatePosition()
 	{
-		this.cX = this.x + this.parent.cX + DIM_FRAME_SIDES + this.width*this.slot + 5;
+		this.cX = this.x + this.parent.cX + DIM_FRAME_SIDES + 5;
 		this.cY = this.y + this.parent.cY + 2;
 		super.updatePosition();
 	}
 	draw(ctx) 
 	{
+		const rr = new ItemRenderer(ctx, this.renderer.instructions);
+		//console.log(rr);
+		rr.render(this);
+		return;
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = "black";
 		const rect = this.getRect();

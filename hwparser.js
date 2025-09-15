@@ -9,6 +9,7 @@ const WARN_LOOSE_FRAME = 106;
 const WARN_RACK_COLLISION = 107;
 const WARN_FRAME_COLLISION = 108;
 const WARN_LOCATION_OVERLAP = 109;
+const WARN_BAD_FRAME_TPL = 110;
 
 hw_warns = {
 	100: "No object to attach LABEL to",
@@ -20,7 +21,8 @@ hw_warns = {
 	106: "Frame missing parent",
 	107: "Rack slot already occupied",
 	108: "Frame slot already occupied",
-	109: "Locations %location1% and %location2% overlap" 
+	109: "Locations %location1% and %location2% overlap",
+	110: "Unknown frame template %frame_tpl_name%"
 };
 hwparser = {
 	"LABEL": function(current)

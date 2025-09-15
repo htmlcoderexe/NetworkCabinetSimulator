@@ -97,7 +97,7 @@ invparser = {
 			return true;
 		}
 		let A = this.getInt();
-		let B = this.getWord();
+		let B = this.getInt();
 		current.width = A;
         current.height = B; // #TODO: keywords
 		return true;
