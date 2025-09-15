@@ -689,6 +689,30 @@ class VisualPatch extends VisualItem {
 }
 
 
+class VisualRenderer extends VisualItem {
+	instructions = [];
+	constructor(parent, name)
+	{
+		super("renderer",name, parent);
+	}
+
+}
+
+class VisualConnectorTemplate extends VisualItem {
+	constructor(parent, name)
+	{
+		super("socket_tpl",name, parent);
+	}
+}
+
+class VisualInventory extends VisualItem {
+	constructor(name)
+	{
+		super("inventory",name, null);
+	}
+
+}
+
 
 
 /// helpful rectangle for collisions
