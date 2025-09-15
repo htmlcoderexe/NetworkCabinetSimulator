@@ -580,6 +580,15 @@ class VisualLine extends VisualItem {
 		this.colour1 = "#808080";
 		this.colour2 = "#808080";
 	}
+
+	getDrawingGroup()
+	{
+		const grp = [];
+		this.subItems.forEach((item)=>{
+			grp.push(...item.getDrawingGroup());
+		});
+		return grp;
+	}
 }
 
 class VisualPatch extends VisualItem {

@@ -53,6 +53,8 @@ class VisualEditor
 	static currentMoving = null;
 	static currentMovingX = 0;
 	static currentMovingY = 0;
+	static mapLayer = null;
+	static highlightLayer = null;
 	static getMouseHits(x, y, onlyTopLevel = false)
 	{
 		let results = VisualItem.hitboxMapping.filter(box=>{return box.hitbox.contains(x, y)});
@@ -66,8 +68,9 @@ class VisualEditor
 		results.forEach(box=>hits.push(box.item));
 		return hits;
 	}
-	static redrawSelection(ctx)
+	static redrawSelection()
 	{
+		const ctx = VisualEditor.highlightLayer;
 		ctx.clearRect(0,0,5000,5000);
 		let style = {
 			strokeStyle : "rgb(255 0 0 / 80%)",
@@ -91,12 +94,24 @@ class VisualEditor
 			VisualEditor.currentSelection.selection.forEach(box=>box.drawHighlight(ctx,style));
 		}
 	}
-	static redrawItems(ctx)
+	static redrawItems()
 	{
+		const ctx = VisualEditor.mapLayer;
 		ctx.clearRect(0,0,5000,5000);
 		VisualEditor.fixedMap.draw(ctx);
 		VisualEditor.lineMap.draw(ctx);
 	}
+
+	static selectLine(name)
+	{
+		const line = VisualEditor.lineMap.find(name);
+		if(line)
+		{
+			VisualEditor.currentSelection.set([line]);
+			VisualEditor.redrawSelection();
+		}
+	}
+
 	static selectionChange = function()
 	{
 
@@ -110,15 +125,13 @@ window.fiber = {};
 
 function canvasHover(e)
 {
-	ctx = document.getElementById("selection_display").getContext("2d");
-	ctx2 = document.getElementById("graphdisplay").getContext("2d");
 	VisualEditor.ctrl = e.ctrlKey;
 	VisualEditor.shift = e.shiftKey;
 	if(VisualEditor.currentMoving)
 	{
 		VisualEditor.currentMoving.x = e.offsetX + VisualEditor.currentMovingX;
 		VisualEditor.currentMoving.y = e.offsetY + VisualEditor.currentMovingY;
-		VisualEditor.redrawItems(ctx2);
+		VisualEditor.redrawItems();
 		VisualItem.hitboxMapping = [];
 		VisualEditor.lineMap.updateSize();
 		VisualEditor.lineMap.updatePosition();
@@ -127,7 +140,7 @@ function canvasHover(e)
 		VisualEditor.fixedMap.updatePosition();
 		VisualEditor.fixedMap.updateHitboxMapping();
 		
-		VisualEditor.redrawSelection(ctx)
+		VisualEditor.redrawSelection()
 		return;
 	}
 	let results = VisualEditor.getMouseHits(e.offsetX, e.offsetY, true);
@@ -152,7 +165,7 @@ function canvasHover(e)
 	
 		
 	
-	VisualEditor.redrawSelection(ctx)
+	VisualEditor.redrawSelection()
 	
 	
 
@@ -194,7 +207,6 @@ function canvasClick(e)
 {
 	let results = VisualEditor.getMouseHits(e.offsetX, e.offsetY, true);
 	
-	ctx = document.getElementById("selection_display").getContext("2d");
 	if(results.length < 1)
 	{
 		if(!VisualEditor.ctrl)
@@ -205,7 +217,7 @@ function canvasClick(e)
 		}
 			
 		
-		VisualEditor.redrawSelection(ctx)
+		VisualEditor.redrawSelection()
 		
 		return;
 	}
@@ -213,7 +225,7 @@ function canvasClick(e)
 	{
 		VisualEditor.currentSelection.set(results[VisualEditor.currentDepth].parent.subItems);
 		
-		VisualEditor.redrawSelection(ctx);
+		VisualEditor.redrawSelection();
 		return;
 	}
 	VisualEditor.currentDepth++;
@@ -231,8 +243,9 @@ function canvasClick(e)
 	}
 	
 	
-	VisualEditor.redrawSelection(ctx);
+	VisualEditor.redrawSelection();
 }
+
 
 window.patchmap = {}
 window.patchmap.hitboxes = [];
