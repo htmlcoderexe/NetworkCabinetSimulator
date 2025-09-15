@@ -1,0 +1,17 @@
+CONNECTOR SC_pair
+    LABEL Pair of SC receptacles
+    DIM 13 36
+    RENDER
+        LDVAR 0 SLOT
+        LDNUM 1 2
+        INC 0
+        PEN 1 black
+        FONT 8px monospace
+        RECT 0 8 9 23
+        FILL rgb(237 28 36)
+        DVAR 0 6 7
+        FILL rgb(0 100 200)
+        MUL 0 1 0
+        DVAR 0 6 29
+        DEC 0
+        DVAR 0 6 16
