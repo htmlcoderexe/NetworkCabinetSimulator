@@ -50,6 +50,7 @@ class VisualEditor
 	static mouseDownPrev = false;
 	static fixedMap = null;
 	static lineMap = null;
+	static inventory = null;
 	static currentMoving = null;
 	static currentMovingX = 0;
 	static currentMovingY = 0;

@@ -147,10 +147,24 @@
 	};
 
 	document.getElementById('bbb').addEventListener("click",(e)=>{
+
+		let p = null;
 		
+
+		let txt3 = document.getElementById('ddd').value;
+		p = new VisualParser(txt3, invparser, new VisualInventory("test"));
+		let warns = {...p.warncodes, ...inv_warns};
+		p.warncodes = warns;
+		p.init();
+		p.go();
+		console.log(p.rootObject);
+		VisualEditor.inventory = p.rootObject;
+
 		let txt = document.getElementById('aaa').value;
-		let p = new VisualParser(txt, hwparser, new VisualMap("test"));
-		let warns = {...p.warncodes, ...hw_warns};
+		
+		p = new VisualParser(txt, hwparser, new VisualMap("test"));
+		p.inventory = VisualEditor.inventory;
+		warns = {...p.warncodes, ...hw_warns};
 		p.warncodes = warns;
 		//console.log(p.warncodes);
 		p.init();
@@ -183,12 +197,6 @@
 		console.log(p.terrain);
 		console.log(p.rootObject);
 		console.log(VisualItem.hitboxMapping);
-
-		let txt3 = document.getElementById('ddd').value;
-		p = new VisualParser(txt3, invparser, new VisualInventory("test"));
-		p.init();
-		p.go();
-		console.log(p.rootObject);
 
 		
 	});

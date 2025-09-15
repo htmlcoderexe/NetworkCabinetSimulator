@@ -1,8 +1,68 @@
 
+const WARN_CONNECTOR_MISSING = 103;
+/*
+const WARN_LOCATION_NO_LABEL = 104;
+const WARN_LOOSE_RACK = 105;
+const WARN_LOOSE_FRAME = 106;
+const WARN_RACK_COLLISION = 107;
+const WARN_FRAME_COLLISION = 108;
+const WARN_LOCATION_OVERLAP = 109;
+//*/
+inv_warns = {
+	100: "No object to attach LABEL to",
+	101: "Duplicate LABEL",
+	102: "Empty LABEL",
+	103: "Missing connector of type %conn_type%",
+	104: "Location missing label",
+	105: "Rack missing parent",
+	106: "Frame missing parent",
+	107: "Rack slot already occupied",
+	108: "Frame slot already occupied",
+	109: "Locations %location1% and %location2% overlap" 
+};
+
 invparser = {
+	"FRAME": function(current)
+	{
+		this.commit("");
+		let name = this.getRest();
+		if(this.rootObject.checkName(name))
+		{
+			this.err(this.ERR_NAME_COLLISION);
+			return false;
+		}
+		let newframe = new VisualFrameTemplate(this.rootObject, name);
+		this.objectStack.unshift(newframe);
+		return true;
+		
+	},
+	// needed to resolve ambiguity between CONNECTOR starting a new connector def or adding a connector to a frame
+	"NEXT": function(current)
+	{
+		this.commit("");
+		return true;
+		
+	},
 	"CONNECTOR": function(current)
 	{
-		//console.log(this.objectStack);
+		// under a frame template this keyword adds connectors
+		if(current.type=="frame_tpl")
+		{
+			let name = this.getWord();
+			let x = this.getInt();
+			let y = this.getInt();
+			let conn = this.rootObject.find(name);
+			if(!conn)
+			{
+				// missing connector def
+				// put a warn or something idk lol
+				this.statevars['conn_type'] = name;
+				this.warn(WARN_CONNECTOR_MISSING);
+				return true;
+			}
+			current.elements.push({name: name, type: "connector", x: x, y: y});
+			return true;
+		}
 		this.commit("");
 		let name = this.getRest();
 		if(this.rootObject.checkName(name))

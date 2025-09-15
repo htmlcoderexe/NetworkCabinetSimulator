@@ -705,6 +705,14 @@ class VisualConnectorTemplate extends VisualItem {
 	}
 }
 
+class VisualFrameTemplate extends VisualItem {
+	elements = [];
+	constructor(parent, name)
+	{
+		super("frame_tpl", name, parent);
+	}
+}
+
 class VisualInventory extends VisualItem {
 	constructor(name)
 	{

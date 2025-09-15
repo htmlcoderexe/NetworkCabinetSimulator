@@ -6,13 +6,13 @@ LOCATION office_1
         LABEL Main office uplink
             FRAME interchange
                 LABEL Optical to interchange
-                TYPE SM
+                TYPE SM_LC_PAIR_24
             FRAME floors
                 LABEL Optical to floors
-                TYPE SM
+                TYPE SM_LC_PAIR_24
             FRAME office_isp_backup
                 LABEL Backup uplink
-                TYPE SM
+                TYPE SM_LC_PAIR_24
 LOCATION office_2
     POSITION 550 50
     LABEL Office F2
@@ -21,10 +21,10 @@ LOCATION office_2
         LABEL 
             FRAME to_main
                 LABEL To F1
-                TYPE SM
+                TYPE SM_LC_PAIR_24
             FRAME to_infra
                 LABEL To floor 2 infra
-                TYPE SM
+                TYPE SM_LC_PAIR_24
             FRAME to_users
                 LABEL to_users
-                TYPE SM
+                TYPE SM_LC_PAIR_24
