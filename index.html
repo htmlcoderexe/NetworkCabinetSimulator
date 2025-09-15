@@ -9,6 +9,7 @@
   <script type="text/javascript" src="ItemClasses.js"></script>
   <script type="text/javascript" src="hwparser.js"></script>
   <script type="text/javascript" src="routeparser.js"></script>
+  <script type="text/javascript" src="invparser.js"></script>
   <script type="text/javascript" src="main.js"></script>
   <style>
 	body
@@ -23,7 +24,7 @@
 		height:80vh;
 		overflow:scroll;
 	}
-	#aaa, #ccc
+	#aaa, #ccc, #ddd
 	{
 		box-sizing: border-box;
 		width: 49%;
@@ -90,7 +91,7 @@
 </div>
 <button id="bbb">parse</button>
 <div id="object_info"></div><br />
-<textarea id="aaa"></textarea><textarea id="ccc"></textarea><script>
+<textarea id="aaa"></textarea><textarea id="ccc"></textarea><textarea id="ddd"></textarea><script>
 	
 	VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
 	VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
@@ -146,6 +147,7 @@
 	};
 
 	document.getElementById('bbb').addEventListener("click",(e)=>{
+		
 		let txt = document.getElementById('aaa').value;
 		let p = new VisualParser(txt, hwparser, new VisualMap("test"));
 		let warns = {...p.warncodes, ...hw_warns};
@@ -160,6 +162,8 @@
 		p.rootObject.draw(VisualEditor.mapLayer);
 		window.patchmap.terrain = p.rootObject;
 		VisualEditor.fixedMap = p.rootObject;
+
+
 		let txt2 = document.getElementById('ccc').value;
 		p = new VisualParser(txt2, routeparser, new VisualLineMap("test"));
 		warns = {...p.warncodes, ...hw_warns};
@@ -179,10 +183,13 @@
 		console.log(p.terrain);
 		console.log(p.rootObject);
 		console.log(VisualItem.hitboxMapping);
-		//p.rootObject.updateSize();
-		//p.rootObject.updatePosition();
-		//p.rootObject.draw(document.getElementById("selection_display").getContext("2d"));
-		
+
+		let txt3 = document.getElementById('ddd').value;
+		p = new VisualParser(txt3, invparser, new VisualInventory("test"));
+		p.init();
+		p.go();
+		console.log(p.rootObject);
+
 		
 	});
 </script>
