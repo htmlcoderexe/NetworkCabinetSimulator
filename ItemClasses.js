@@ -25,6 +25,8 @@ class VisualItem {
 	type = "";
 	nextSlot = 0;
 	flip = false;
+	collapseState = false;
+	collapseView = false;
 	/**
 	 * Creates a generic base object.
 	 * @param {string} type - type of the specific object.
@@ -282,6 +284,26 @@ class VisualItem {
 	{
 		//console.log(x,y);
 		return this.getRect().contains(x,y);
+	}
+	
+	setCollapseView()
+	{
+		this.collapseView = true;
+	}
+
+	collapse(cascade = false)
+	{
+		
+		this.collapseState = true;
+		this.collapseView = true;
+		if(this.subItems.length > 0)
+		{
+			this.subItems.forEach((item)=>
+			{
+				item.setCollapseView();
+
+			});
+		}
 	}
 }
 
