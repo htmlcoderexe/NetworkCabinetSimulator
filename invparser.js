@@ -46,7 +46,7 @@ invparser = {
 	"CONNECTOR": function(current)
 	{
 		// under a frame template this keyword adds connectors
-		if(current.type=="frame_tpl")
+		if(current.type=="frame_tpl" || current.type == "socket_bank")
 		{
 			let name = this.getWord();
 			let x = this.getInt();
@@ -74,6 +74,36 @@ invparser = {
 		this.objectStack.unshift(newconn);
 		return true;
 	},
+    "BANK": function(current)
+    {
+        if(current.type == "frame_tpl")
+        {
+			let name = this.getWord();
+			let x = this.getInt();
+			let y = this.getInt();
+			let bank = this.rootObject.find(name);
+			if(!bank)
+			{
+				// missing connector bank def
+				// put a warn or something idk lol
+				this.statevars['bank_type'] = name;
+				this.warn(WARN_CONNECTOR_MISSING);
+				return true;
+			}
+			current.elements.push({name: name, type: "bank", x: x, y: y});
+			return true;
+        }
+		this.commit("");
+		let name = this.getRest();
+		if(this.rootObject.checkName(name))
+		{
+			this.err(this.ERR_NAME_COLLISION);
+			return false;
+		}
+		let newbank = new VisualConnectorBank(this.rootObject, name);
+		this.objectStack.unshift(newbank);
+		return true;
+    },
 	"LABEL": function(current)
 	{
 		if(!current)

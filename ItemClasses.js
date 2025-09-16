@@ -498,25 +498,60 @@ class VisualFrame extends VisualItem
 		}
 		
 		ftpl.elements.forEach((el)=>{
-			if(el.type!="connector")
+			switch(el.type)
 			{
-				return;
-			}
-			let connref = parser.inventory.find(el.name);
-			if(!connref)
-			{
+				case "connector":
+				{
+					let connref = parser.inventory.find(el.name);
+					if(!connref)
+					{
 
-				return;
+						return false;
+					}
+					let slot = this.getNextSlot();
+					let conn = new VisualSocket(this, (slot+1).toString());
+					conn.slot = slot;
+					conn.renderer = connref.find("main");
+					conn.width = connref.width;
+					conn.height = connref.height;
+					conn.x = el.x;
+					conn.y = el.y;
+					this.addItem(conn);
+
+					break;
+				}
+				case "bank":
+				{
+					let bankref = parser.inventory.find(el.name);
+					if(!bankref)
+					{
+
+						return false;
+					}
+					bankref.elements.forEach((el2)=>{
+						let connref = parser.inventory.find(el2.name);
+						if(!connref)
+						{
+
+							return false;
+						}
+						let slot = this.getNextSlot();
+						let conn = new VisualSocket(this, (slot+1).toString());
+						conn.slot = slot;
+						conn.renderer = connref.find("main");
+						conn.width = connref.width;
+						conn.height = connref.height;
+						conn.x = el2.x + el.x;
+						conn.y = el2.y + el.y;
+						
+						this.addItem(conn);
+					});
+				}
+				default:
+				{
+					return;
+				}
 			}
-			let slot = this.getNextSlot();
-			let conn = new VisualSocket(this, (slot+1).toString());
-			conn.slot = slot;
-			conn.renderer = connref.find("main");
-			conn.width = connref.width;
-			conn.height = connref.height;
-			conn.x = el.x;
-			conn.y = el.y;
-			this.addItem(conn);
 		});
 		/*
 		for(let i = 0; i<24;i++)
@@ -735,6 +770,14 @@ class VisualConnectorTemplate extends VisualItem {
 	constructor(parent, name)
 	{
 		super("socket_tpl",name, parent);
+	}
+}
+
+class VisualConnectorBank extends VisualItem {
+	elements = [];
+	constructor(parent, name)
+	{
+		super("socket_bank",name, parent);
 	}
 }
 
