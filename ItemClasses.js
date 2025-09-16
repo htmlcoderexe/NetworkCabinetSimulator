@@ -509,7 +509,7 @@ class VisualFrame extends VisualItem
 				return;
 			}
 			let slot = this.getNextSlot();
-			let conn = new VisualSocket(this, slot.toString());
+			let conn = new VisualSocket(this, (slot+1).toString());
 			conn.slot = slot;
 			conn.renderer = connref.find("main");
 			conn.width = connref.width;
