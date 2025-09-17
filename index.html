@@ -140,6 +140,24 @@
 					});
 					idata.appendChild(badge);
 				}
+				if(item.type == "location")
+				{
+					let toggle = document.createElement("input");
+					toggle.type = "checkbox";
+					toggle.checked = item.collapseState;
+					toggle.addEventListener("change",(e)=>{
+						if(e.target.checked)
+						{
+							item.collapse();
+						}
+						else
+						{
+							item.uncollapse();
+						}
+						VisualEditor.refreshView();
+					});
+					idata.appendChild(toggle);
+				}
 				idata.append(item.type);
 				infoblock.appendChild(idata);
 				document.getElementById("object_info").appendChild(infoblock);
