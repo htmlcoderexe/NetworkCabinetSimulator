@@ -102,6 +102,22 @@ class VisualEditor
 		VisualEditor.fixedMap.draw(ctx);
 		VisualEditor.lineMap.draw(ctx);
 		VisualEditor.fixedMap.drawCollapsed(ctx);
+	}
+
+	static refreshView()
+	{
+		
+		VisualEditor.redrawItems();
+		VisualItem.hitboxMapping = [];
+		VisualEditor.lineMap.updateSize();
+		VisualEditor.lineMap.updatePosition();
+		VisualEditor.lineMap.updateHitboxMapping();
+		VisualEditor.fixedMap.updateSize();
+		VisualEditor.fixedMap.updatePosition();
+		VisualEditor.fixedMap.updateHitboxMapping();
+		
+		VisualEditor.redrawSelection()
+	}
 	static selectLine(name)
 	{
 		const line = VisualEditor.lineMap.find(name);
@@ -131,16 +147,7 @@ function canvasHover(e)
 	{
 		VisualEditor.currentMoving.x = e.offsetX + VisualEditor.currentMovingX;
 		VisualEditor.currentMoving.y = e.offsetY + VisualEditor.currentMovingY;
-		VisualEditor.redrawItems();
-		VisualItem.hitboxMapping = [];
-		VisualEditor.lineMap.updateSize();
-		VisualEditor.lineMap.updatePosition();
-		VisualEditor.lineMap.updateHitboxMapping();
-		VisualEditor.fixedMap.updateSize();
-		VisualEditor.fixedMap.updatePosition();
-		VisualEditor.fixedMap.updateHitboxMapping();
-		
-		VisualEditor.redrawSelection()
+								VisualEditor.refreshView();
 		return;
 	}
 	let results = VisualEditor.getMouseHits(e.offsetX, e.offsetY, true);
