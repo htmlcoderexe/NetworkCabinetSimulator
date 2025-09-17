@@ -101,8 +101,7 @@ class VisualEditor
 		ctx.clearRect(0,0,5000,5000);
 		VisualEditor.fixedMap.draw(ctx);
 		VisualEditor.lineMap.draw(ctx);
-	}
-
+		VisualEditor.fixedMap.drawCollapsed(ctx);
 	static selectLine(name)
 	{
 		const line = VisualEditor.lineMap.find(name);

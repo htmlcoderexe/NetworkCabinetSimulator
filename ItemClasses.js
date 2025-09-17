@@ -6,6 +6,7 @@ const DIM_FRAME_SIDES = 30;
 const DIM_FRAME_SPACING = 0;
 const DIM_RACK_SPACING = 24;
 const DIM_RACK_LABEL_SIZE = 30;
+const DIM_COLLAPSED_WIDTH = 100;
 
 class VisualItem {
 
@@ -18,6 +19,7 @@ class VisualItem {
 	height = 1;
 	width = 1;
 	selectionOrder = 0;
+	overrideSO = 0;
 	label = "";
 	subItems = [];
 	name = "";
@@ -154,7 +156,7 @@ class VisualItem {
 			VisualItem.hitboxMapping.push(hitboxRef);
 		}
 		hitboxRef.item = this;
-		hitboxRef.level = this.selectionOrder;
+		hitboxRef.level = Math.max(this.selectionOrder, this.overrideSO);
 		hitboxRef.hitbox = this.getRect();
 		hitboxRef.label = this.getFullLabel();
 		this.subItems.forEach((item) => {
@@ -213,6 +215,10 @@ class VisualItem {
 	 * @param {CanvasRenderingContext2D} ctx - The candvas to render to.
 	 */
 	draw (ctx) {
+		if(this.collapseView)
+		{
+			return;
+		}
 		//ctx.clearRect(0,0,1024,1024);
 		/*
 		ctx.strokeStyle = "green";
@@ -222,6 +228,15 @@ class VisualItem {
 		*/
 		this.subItems.forEach((item) => {
 			item.draw(ctx);
+		});
+	}
+	drawCollapsed(ctx) {
+		if(this.collapseState)
+		{
+			this.draw(ctx);
+		}
+		this.subItems.forEach((item) => {
+			item.drawCollapsed(ctx);
 		});
 	}
 	/**
@@ -282,6 +297,10 @@ class VisualItem {
 	 */
 	testHit(x,y)
 	{
+		if(this.collapseView)
+		{
+			return false;
+		}
 		//console.log(x,y);
 		return this.getRect().contains(x,y);
 	}
@@ -289,13 +308,49 @@ class VisualItem {
 	setCollapseView()
 	{
 		this.collapseView = true;
+		
+			this.subItems.forEach((item)=>
+			{
+				item.setCollapseView();
+
+			});
+	}
+	clearCollapseView()
+	{
+		this.collapseView = false;
+		
+			this.subItems.forEach((item)=>
+			{
+				item.clearCollapseView();
+
+			});
 	}
 
+	uncollapse(cascade = false)
+	{
+
+		this.collapseState = false;
+		this.overrideSO = 0;
+		//this.collapseView = true;
+		if(this.subItems.length > 0)
+		{
+			this.subItems.forEach((item)=>
+			{
+				item.clearCollapseView();
+
+			});
+		}
+		this.updateSize();
+		this.updatePosition();
+
+	}
+	
 	collapse(cascade = false)
 	{
 		
 		this.collapseState = true;
-		this.collapseView = true;
+		this.overrideSO = 100;
+		//this.collapseView = true;
 		if(this.subItems.length > 0)
 		{
 			this.subItems.forEach((item)=>
@@ -304,6 +359,9 @@ class VisualItem {
 
 			});
 		}
+		this.updateSize();
+		this.updatePosition();
+		
 	}
 }
 
@@ -385,6 +443,13 @@ class VisualLocation extends VisualItem {
 
 	updateSize() 
 	{
+		if(this.collapseState)
+		{
+			this.height = DIM_RACK_LABEL_SIZE + DIM_RACK_SPACING;
+			this.width = DIM_COLLAPSED_WIDTH;
+			super.updateSize();
+			return;
+		}
 		let maxh=0;
 		this.subItems.forEach((item)=>{
 			item.updateSize();
@@ -397,14 +462,22 @@ class VisualLocation extends VisualItem {
 	{
 		ctx.strokeStyle = "black";
 		
-		ctx.fillStyle = "black";
 		ctx.lineWidth = 1;
+		
+		ctx.fillStyle = "white";
 		const rect = this.getRect();
+		ctx.fillRect(rect.x+0.5, rect.y+0.5, rect.width, rect.height);
 		ctx.strokeRect(rect.x+0.5, rect.y+0.5, rect.width, rect.height);
 		
+		ctx.fillStyle = "black";
 		ctx.textAlign = "center";
 		ctx.font ="20px monospace";
 		ctx.fillText(this.label, rect.x+rect.width/2, rect.y+DIM_RACK_SPACING-3);
+		
+		if(this.collapseState == true)
+		{
+			return;
+		}
 		super.draw(ctx);
 	};
 	
@@ -438,11 +511,23 @@ class VisualRack extends VisualItem {
 	{
 		super.updateSize();
 		this.height = this.subItems.length * (DIM_FRAME_BOTTOM+DIM_FRAME_HEIGHT) + DIM_RACK_LABEL_SIZE;
+		
+		if(this.collapseView)
+		{
+			this.height = 1;
+			this.width = 1;
+		}
 	}
 	updatePosition()
 	{
 		this.cX = this.x + this.parent.cX + this.slot * (this.width + DIM_RACK_SPACING) + DIM_RACK_SPACING;
 		this.cY = this.y + this.parent.cY + DIM_RACK_LABEL_SIZE;
+		
+		if(this.collapseView)
+		{
+			this.cX = this.parent.cX + DIM_COLLAPSED_WIDTH/2;
+			this.cY = this.parent.cY + 1;
+		}
 		super.updatePosition();
 	};
 	draw(ctx) 
@@ -572,12 +657,23 @@ class VisualFrame extends VisualItem
 		super.updateSize();
 		this.height = DIM_FRAME_HEIGHT + DIM_FRAME_BOTTOM;
 		this.width = DIM_RACK_WIDTH;
+		if(this.collapseView)
+		{
+			this.height = 1;
+			this.width = 1;
+		}
 	}
 	updatePosition()
 	{
 		this.cX = this.x + this.parent.cX;
 		//console.log("aaaaa",this.slot);
 		this.cY = this.y + this.parent.cY + this.slot * (this.height + DIM_FRAME_SPACING) + DIM_RACK_LABEL_SIZE;
+		
+		if(this.collapseView)
+		{
+			this.cX =this.parent.cX;
+			this.cY = this.parent.cY;
+		}
 		super.updatePosition();
 	}
 	draw(ctx) 
@@ -617,6 +713,11 @@ class VisualSocket extends VisualItem
 	{
 		this.cX = this.x + this.parent.cX + DIM_FRAME_SIDES + 5;
 		this.cY = this.y + this.parent.cY + 2;
+		if(this.collapseView)
+		{
+			this.cX =this.parent.cX;
+			this.cY = this.parent.cY;
+		}
 		super.updatePosition();
 	}
 	draw(ctx) 
