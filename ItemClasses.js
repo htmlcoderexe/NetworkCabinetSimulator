@@ -512,6 +512,7 @@ class VisualRack extends VisualItem {
 		super.updateSize();
 		this.height = this.subItems.length * (DIM_FRAME_BOTTOM+DIM_FRAME_HEIGHT) + DIM_RACK_LABEL_SIZE;
 		
+		this.width = DIM_RACK_WIDTH;
 		if(this.collapseView)
 		{
 			this.height = 1;
