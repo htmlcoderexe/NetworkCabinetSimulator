@@ -32,14 +32,16 @@
 		display: inline-block;
 		height: 50rem;
 	}
-	#bbb
+	#toolbar_tools button
 	{
-		width: 20rem;
-		height: 5rem;
+		width: 4rem;
+		height: 4rem;
 		font-size: 3rem;
-		position: fixed;
-		top: 20px;
-		left: 10 rem;
+		padding: 0.5rem;
+		padding-top: 0px;
+		padding-bottom: 2px;
+		line-height: 5%;
+		
 	}
 	#object_info
 	{
@@ -80,7 +82,8 @@
   </style>
 </head>
 <body>
-<h3>stuff</h3>
+<div id="toolbar_tools">
+<button id="bbb">⋙</button><button id="mode_pointer" onclick="VisualEditor.setModePointer();">⇖</button><button id="mode_rewire" onclick="VisualEditor.setModeWire();">⫯</button></div>
 <div class="displayer">
 <canvas id="graphdisplay" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 1;">
 </canvas>
@@ -90,7 +93,6 @@
 <div id="controls">
 <h2 id="current_obj"></h2>
 </div>
-<button id="bbb">parse</button>
 <div id="object_info"></div><br />
 <textarea id="aaa"></textarea><textarea id="ccc"></textarea><textarea id="ddd"></textarea><script>
 	

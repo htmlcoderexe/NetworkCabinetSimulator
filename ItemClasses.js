@@ -742,16 +742,57 @@ class VisualSocket extends VisualItem
 
 	connect(line)
 	{
+		console.log("connected <", line.getFullLabel(),"> to <", this.getFullLabel(), ">");
 		this.connections.push(line);
 	}
 
 	disconnect(line)
 	{
+		console.log("disconnected <", line.getFullLabel(),"> from <", this.getFullLabel(), ">");
 		this.connections = this.connections.filter(item=>item!==line);
 	}
 	getDrawingGroup()
 	{
 		return [this, ...this.connections];
+	}
+
+	takeFrom(other, line)
+	{
+		let thisIsFrom = line.from == other;
+		let otherline = null;
+		console.log("called with params",other, line);
+			other.disconnect(line);
+		if(thisIsFrom)
+		{
+			// find the other link on same connection
+			otherline = line.from.connections.find((item)=>item.parent.name == line.parent.name);
+			if(otherline)
+				otherline.to = this;
+			line.from = this;
+			console.log("this line was STARTING at the target");
+			console.log(line, otherline);
+		}
+		else
+		{
+			// find the other link on same connection
+			otherline = line.to.connections.find((item)=>item.parent.name == line.parent.name);
+			if(otherline)
+				otherline.from = this;
+			line.to = this;
+			console.log("this line was ENDING at the target");
+			console.log(line, otherline);
+
+		}
+			console.log("before disconnect");
+			console.log(this, line, other, otherline);
+			console.log("after disconnect");
+			if(otherline)
+				other.disconnect(otherline);
+			this.connect(line);
+			if(otherline)
+				this.connect(otherline);
+			console.log(this, line, other, otherline);
+
 	}
 }
 
