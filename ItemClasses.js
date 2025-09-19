@@ -847,8 +847,8 @@ class VisualPatch extends VisualItem {
 	{
 		const startX = this.from.cX;
 		const startY = this.from.cY;
-		const endX = this.to.cX + 13;
-		const endY = this.to.cY + DIM_FRAME_HEIGHT;
+		const endX = this.to.cX + this.to.width;
+		const endY = this.to.cY + this.to.height;
 		const dX = endX-startX;
 		const dY = endY - startY;
 		this.flip = (dX*dY) < 0;
@@ -869,13 +869,13 @@ class VisualPatch extends VisualItem {
 		ctx.save();
 		ctx.lineWidth = 3;
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX+3, this.from.cY);
-		ctx.lineTo(this.to.cX+3,this.to.cY+DIM_FRAME_HEIGHT);
+		ctx.moveTo(this.from.cX+3, this.from.cY+3);
+		ctx.lineTo(this.to.cX+3,this.to.cY+this.to.height-3);
 		ctx.strokeStyle =this.parent.colour1;
 		ctx.stroke();
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX+9, this.from.cY);
-		ctx.lineTo(this.to.cX+9,this.to.cY+DIM_FRAME_HEIGHT);
+		ctx.moveTo(this.from.cX-3+this.to.width, this.from.cY+3);
+		ctx.lineTo(this.to.cX-3+this.to.width,this.to.cY+this.to.height-3);
 		ctx.strokeStyle =this.parent.colour2;
 		ctx.stroke();
 		ctx.restore();
@@ -884,12 +884,12 @@ class VisualPatch extends VisualItem {
 	drawOutlineFunc(ctx)
 	{
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX+3, this.from.cY);
-		ctx.lineTo(this.to.cX+3,this.to.cY+DIM_FRAME_HEIGHT);
+		ctx.moveTo(this.from.cX+3, this.from.cY+3);
+		ctx.lineTo(this.to.cX+3,this.to.cY+this.to.height-3);
 		ctx.stroke();
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX+9, this.from.cY);
-		ctx.lineTo(this.to.cX+9,this.to.cY+DIM_FRAME_HEIGHT);
+		ctx.moveTo(this.from.cX-3+this.to.width, this.from.cY+3);
+		ctx.lineTo(this.to.cX-3+this.to.width,this.to.cY+this.to.height-3);
 		ctx.stroke();
 
 	}
