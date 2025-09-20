@@ -13,6 +13,9 @@ LOCATION office_1
             FRAME office_isp_backup
                 LABEL Backup uplink
                 TYPE SM_LC_PAIR_24
+            FRAME office_dist_sw1
+                LABEL Main distribution switch
+                TYPE SWITCH_48_BANK_TEST
 LOCATION office_2
     POSITION 550 50
     LABEL Office F2
