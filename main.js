@@ -207,6 +207,7 @@ class VisualEditor
 		{
 			results[0].takeFrom(VisualEditor.currentMoving, VisualEditor.currentMoving.connections[0]);
 			VisualEditor.currentMoving = null;
+			VisualEditor.currentSelection.clear();
 			VisualEditor.refreshView();
 			return;
 		}
@@ -214,13 +215,15 @@ class VisualEditor
 		console.log( results[0]?.type);
 		
 			console.log(VisualEditor.currentSingleType, " +++ ", results[0]?.type);
-		if(results[VisualEditor.currentDepth]?.type == "patch")
-		{
+
+			
 			VisualEditor.currentDepth++;
 			if(VisualEditor.currentDepth >= results.length)
 			{
 				VisualEditor.currentDepth = 0;
 			}
+		if(results[VisualEditor.currentDepth]?.type == "patch")
+		{
 			VisualEditor.currentSelection.set([results[VisualEditor.currentDepth]])
 			console.log("wire selected!");		
 			VisualEditor.redrawSelection();
@@ -231,8 +234,9 @@ class VisualEditor
 		{
 			console.log("ready to wire!");
 			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
-			VisualEditor.currentMovingX=0;
-			VisualEditor.currentMovingY=0;
+			// temp patch to make the fake socket match the mouse exactly
+			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
+			VisualEditor.currentMovingY=-2;
 			mSocket.takeFrom(results[0], VisualEditor.currentSingleItem);
 			VisualEditor.currentMoving = mSocket;
 			
@@ -256,12 +260,13 @@ class VisualEditor
 	}
 	static handleMMoveWireMode(x, y)
 	{
+		VisualEditor.currentHightlight = [];
 		let results = VisualEditor.getMouseHits(x, y, true);
 		if(results && results.length>0)
 		{
 			let iswire = results[0].type == "patch";
 			let issocket = results[0].type == "socket";
-			if(issocket || (!VisualEditor.currentMoving && iswire))
+			if((issocket && (VisualEditor.currentMoving || VisualEditor.currentSingleType == "patch")) || (!VisualEditor.currentMoving && iswire))
 			{
 				VisualEditor.currentHightlight = results;
 			}
