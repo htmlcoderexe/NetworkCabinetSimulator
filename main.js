@@ -60,6 +60,13 @@ class VisualEditor
 	static highlightLayer = null;
 	static currentSingleItem = null;
 	static currentSingleType = "";
+	/**
+	 * Checks if any registered component hitboxes intersect a given coordinate.
+	 * @param {number} x - X coordinate
+	 * @param {number} y - Y coordinate
+	 * @param {boolean} onlyTopLevel - if true, only results with the highest selection priority will be returned
+	 * @returns a list of components intersecting the coordinate.
+	 */
 	static getMouseHits(x, y, onlyTopLevel = false)
 	{
 		let results = VisualItem.hitboxMapping.filter(box=>{return box.hitbox.contains(x, y)});
@@ -195,14 +202,14 @@ class VisualEditor
 
 	static handleWireMode(x, y, dbl)
 	{
-		let results = VisualEditor.getMouseHits(x, y, true);
-		
+		let results = VisualEditor.getMouseHits(x, y, false);
+		results = results.filter((item)=>item.selectionOrder == 4 || item.selectionOrder == 5);
 		if(results.length < 1)
 		{
 			console.log("no wires or sockets picked");
 			return;
 		}
-
+		// if currently moving a wire, and a socket is clicked, connect the wire to the socket and stop processing
 		if(VisualEditor.currentMoving && VisualEditor.currentMoving.type == "socket" &&  results[0]?.type == "socket")
 		{
 			results[0].takeFrom(VisualEditor.currentMoving, VisualEditor.currentMoving.connections[0]);
@@ -214,14 +221,42 @@ class VisualEditor
 
 		console.log( results[0]?.type);
 		
-			console.log(VisualEditor.currentSingleType, " +++ ", results[0]?.type);
+		console.log(VisualEditor.currentSingleType, " +++ ", results[0]?.type);
 
-			
-			VisualEditor.currentDepth++;
-			if(VisualEditor.currentDepth >= results.length)
+		// if a wire has been selected and a socket is clicked
+		// start moving the wire connected to that socket (and any matching)
+		if(VisualEditor.currentSingleType == "patch" && results[0]?.type == "socket")
+		{
+			let fromSocket = results[0];
+			let fromLine =VisualEditor.currentSingleItem;
+			if(fromLine.from != fromSocket && fromLine.to != fromSocket)
 			{
-				VisualEditor.currentDepth = 0;
+				console.log("selecte socked is not one of the ends");
+				return;
 			}
+			console.log("ready to wire!");
+			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
+			// temp patch to make the fake socket match the mouse exactly
+			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
+			VisualEditor.currentMovingY=-2;
+			mSocket.takeFrom(fromSocket, fromLine);
+			VisualEditor.currentMoving = mSocket;
+			
+			VisualEditor.redrawSelection();
+			return;
+		}
+
+		// else only wires are of interest and should pop out over sockets
+
+		results = results.filter((item)=>item.selectionOrder == 4); // #TODO: remove the hardcode
+
+		// advance depth to allow clickthrough selection if multiple items are under the mouse			
+		VisualEditor.currentDepth++;
+		if(VisualEditor.currentDepth >= results.length)
+		{
+			VisualEditor.currentDepth = 0;
+		}
+		// if a wire is clicked go for it
 		if(results[VisualEditor.currentDepth]?.type == "patch")
 		{
 			VisualEditor.currentSelection.set([results[VisualEditor.currentDepth]])
@@ -230,18 +265,7 @@ class VisualEditor
 
 			return;
 		}
-		else if(VisualEditor.currentSingleType == "patch" && results[0]?.type == "socket")
-		{
-			console.log("ready to wire!");
-			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
-			// temp patch to make the fake socket match the mouse exactly
-			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
-			VisualEditor.currentMovingY=-2;
-			mSocket.takeFrom(results[0], VisualEditor.currentSingleItem);
-			VisualEditor.currentMoving = mSocket;
-			
-			VisualEditor.redrawSelection();
-		}
+		
 		else
 		{
 		}
@@ -261,14 +285,27 @@ class VisualEditor
 	static handleMMoveWireMode(x, y)
 	{
 		VisualEditor.currentHightlight = [];
-		let results = VisualEditor.getMouseHits(x, y, true);
+		let results = VisualEditor.getMouseHits(x, y, false);
+		results = results.filter((item)=>item.selectionOrder == 4 || item.selectionOrder == 5);
 		if(results && results.length>0)
 		{
-			let iswire = results[0].type == "patch";
 			let issocket = results[0].type == "socket";
-			if((issocket && (VisualEditor.currentMoving || VisualEditor.currentSingleType == "patch")) || (!VisualEditor.currentMoving && iswire))
+			if((issocket && (VisualEditor.currentMoving || VisualEditor.currentSingleType == "patch")))
 			{
 				VisualEditor.currentHightlight = results;
+			}
+			else
+			{
+				results = results.filter((item)=>item.selectionOrder == 4 );
+				let iswire = false;
+				if(results.length>0)
+				{
+					iswire = results[0].type == "patch";
+				}
+				if(!VisualEditor.currentMoving && iswire)
+				{
+					VisualEditor.currentHightlight = results;
+				}
 			}
 
 		}
