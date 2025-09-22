@@ -42,7 +42,9 @@ class VisualEditorSelection
 class VisualEditor
 {
 	static EDIT_MODES = {POINTER: 0, WIRE: 1, ADD: 2};
+	static SUB_MODES = {NONE: 0, WIRE_MOVE: 1, WIRE_ADD: 2, WIRE_REMOVE: 3, WIRE_SELECTED: 4, WIRE_LINE_SELECT: 5};
 	static editMode = this.EDIT_MODES.POINTER;
+	static subMode = this.SUB_MODES.NONE;
 	static currentSelection = new VisualEditorSelection();
 	static currentHightlight = [];
 	static currentDepth = 0;
@@ -184,6 +186,74 @@ class VisualEditor
 		VisualEditor.editMode = this.EDIT_MODES.WIRE;
 	}
 
+	static getCursorPointerMode()
+	{
+		let cursor = "auto";
+		
+			if(VisualEditor.currentHightlight[0]?.type == "location")
+			{
+				cursor = "move";
+			}
+
+		return cursor;
+	}
+
+	static getCursorWireMode()
+	{
+		let cursor = "alias";
+		let currentHover = VisualEditor.currentHightlight.length > 0 ? VisualEditor.currentHightlight[0] : null;
+		let currentHoverSocket = currentHover && currentHover.type == "socket" ? currentHover : null;
+		let currentHoverWire = currentHover && currentHover.type == "patch" ? currentHover : null;
+		let currentSelected = VisualEditor.currentSelection.selection.length > 0 ? VisualEditor.currentSelection.selection[0] : null;
+		let currentWire = currentSelected && currentSelected.type == "patch" ? currentSelected : null;
+		if(VisualEditor.subMode == this.SUB_MODES.WIRE_ADD || VisualEditor.subMode == this.SUB_MODES.WIRE_MOVE)
+		{
+			if(currentHoverSocket && !currentHoverSocket.canAdd(currentWire))
+			{
+				cursor = "not-allowed";
+			}
+			else
+			{
+				cursor = "copy";
+			}
+			
+		}
+		if(VisualEditor.subMode == this.SUB_MODES.WIRE_SELECTED)
+		{
+			if(currentHoverWire)
+			{
+				cursor = "alias";
+			}
+			else if(currentHoverSocket)
+			{
+				if(VisualEditor.shift)
+				{
+					if(currentHoverSocket.canStart(currentWire))
+					{
+						cursor = "copy";
+					}
+					else
+					{
+						cursor = "not-allowed";
+					}
+				}
+				else
+				{
+					if(currentHoverSocket.canMove(currentWire))
+					{
+						cursor = "alias";
+					}
+					else
+					{
+						cursor = "not-allowed";
+					}
+
+				}
+			}
+		}
+		return cursor;
+	}
+
 	static getDefaultCursor()
 	{
 		// console.log(VisualEditor.editMode);
@@ -191,13 +261,20 @@ class VisualEditor
 		{
 			case VisualEditor.EDIT_MODES.POINTER:
 			{
-				return "auto";
+				return this.getCursorPointerMode();
 			}
 			case VisualEditor.EDIT_MODES.WIRE:
 			{
-				return "alias";
+				return this.getCursorWireMode();
 			}
 		}
+	}
+
+	static updateCursor()
+	{
+		let def_cursor = this.getDefaultCursor();
+		document.body.style.cursor = def_cursor;
+
 	}
 
 	static handleWireMode(x, y, dbl)
@@ -216,6 +293,7 @@ class VisualEditor
 			VisualEditor.currentMoving = null;
 			VisualEditor.currentSelection.clear();
 			VisualEditor.refreshView();
+			VisualEditor.subMode = VisualEditor.SUB_MODES.NONE;
 			return;
 		}
 
@@ -225,11 +303,11 @@ class VisualEditor
 
 		// if a wire has been selected and a socket is clicked
 		// start moving the wire connected to that socket (and any matching)
-		if(VisualEditor.currentSingleType == "patch" && results[0]?.type == "socket")
+		if(VisualEditor.subMode == VisualEditor.SUB_MODES.WIRE_SELECTED && results[0]?.type == "socket")
 		{
 			let fromSocket = results[0];
 			let fromLine =VisualEditor.currentSingleItem;
-			if(fromLine.from != fromSocket && fromLine.to != fromSocket)
+			if(!fromSocket.canMove(fromLine))
 			{
 				console.log("selected socket is not one of the ends");
 				return;
@@ -241,17 +319,23 @@ class VisualEditor
 			VisualEditor.currentMovingY=-2;
 			if(VisualEditor.shift)
 			{
+				if(!fromSocket.canStart(fromLine))
+				{
+					console.log("can't add a new wire from here");
+					return;
+				}
 				let newpatch = new VisualPatch(fromLine.parent, fromLine.getNextSlot());
 				newpatch.from = fromSocket;
 				fromSocket.connect(newpatch);
 				newpatch.to = mSocket;
 				mSocket.connect(newpatch);
 				fromLine.parent.addItem(newpatch);
-				document.body.style.cursor = "copy";
+				VisualEditor.subMode = this.SUB_MODES.WIRE_ADD;
 			}
 			else
 			{
 				mSocket.takeFrom(fromSocket, fromLine);
+				VisualEditor.subMode = this.SUB_MODES.WIRE_MOVE;
 			}
 			
 			VisualEditor.currentMoving = mSocket;
@@ -275,6 +359,7 @@ class VisualEditor
 		{
 			VisualEditor.currentSelection.set([results[VisualEditor.currentDepth]])
 			console.log("wire selected!");		
+			VisualEditor.subMode = VisualEditor.SUB_MODES.WIRE_SELECTED;
 			VisualEditor.redrawSelection();
 
 			return;
@@ -375,29 +460,18 @@ class VisualEditor
 	}
 	static handleMDownPointerMode(x, y)
 	{
-
-		if(VisualEditor.currentHightlight.length > 0)
+		if(VisualEditor.currentHightlight[0]?.type == "location")
 		{
-			if(VisualEditor.currentHightlight[0].type == "location")
-			{
-				console.log("picked up", VisualEditor.currentHightlight[0]);
-				VisualEditor.currentMoving = VisualEditor.currentHightlight[0];
-				VisualEditor.currentMovingX = VisualEditor.currentMoving.x - x;
-				VisualEditor.currentMovingY = VisualEditor.currentMoving.y - y;
-			}
-			else
-			{
-				document.body.style.cursor = VisualEditor.getDefaultCursor();
-			}
+			console.log("picked up", VisualEditor.currentHightlight[0]);
+			VisualEditor.currentMoving = VisualEditor.currentHightlight[0];
+			VisualEditor.currentMovingX = VisualEditor.currentMoving.x - x;
+			VisualEditor.currentMovingY = VisualEditor.currentMoving.y - y;
 		}
-		else
-		{
-			document.body.style.cursor = VisualEditor.getDefaultCursor();
-		}
+		document.body.style.cursor = VisualEditor.getDefaultCursor();
+		
 	}
 	static handleMUpPointerMode(x, y)
 	{
-		
 		VisualEditor.currentMoving = null;
 	}
 	static handleMMovePointerMode(x, y)
@@ -406,21 +480,9 @@ class VisualEditor
 		VisualEditor.currentHightlight = results;
 		
 		VisualEditor.redrawSelection();
-		if(VisualEditor.currentHightlight.length > 0 && VisualEditor.editMode == VisualEditor.EDIT_MODES.POINTER)
-		{
-			if(VisualEditor.currentHightlight[0].type == "location")
-			{
-				document.body.style.cursor = "move";
-			}
-			else
-			{
-				document.body.style.cursor = "auto";
-			}
-		}
-		else
-		{
+		
 			document.body.style.cursor = VisualEditor.getDefaultCursor();
-		}
+		
 		let currentlabel = "";
 		let currentrect = [];
 		
@@ -466,6 +528,7 @@ function canvasHover(e)
 				break;
 			}
 		}
+		VisualEditor.updateCursor();
 		
 }
 
@@ -488,6 +551,7 @@ function canvasMDown(e)
 			break;
 		}
 	}
+		VisualEditor.updateCursor();
 }
 
 function canvasMUp(e)
@@ -508,6 +572,7 @@ function canvasMUp(e)
 			break;
 		}
 	}
+		VisualEditor.updateCursor();
 }
 
 function canvasClick(e)
@@ -529,6 +594,7 @@ function canvasClick(e)
 			break;
 		}
 	}
+		VisualEditor.updateCursor();
 }
 
 

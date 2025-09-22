@@ -740,16 +740,31 @@ class VisualSocket extends VisualItem
 			
 	}
 
-	connect(line)
+	connect(wire)
 	{
-		console.log("connected <", line.getFullLabel(),"> to <", this.getFullLabel(), ">");
-		this.connections.push(line);
+		console.log("connected <", wire.getFullLabel(),"> to <", this.getFullLabel(), ">");
+		this.connections.push(wire);
 	}
 
-	disconnect(line)
+	disconnect(wire)
 	{
-		console.log("disconnected <", line.getFullLabel(),"> from <", this.getFullLabel(), ">");
-		this.connections = this.connections.filter(item=>item!==line);
+		console.log("disconnected <", wire.getFullLabel(),"> from <", this.getFullLabel(), ">");
+		this.connections = this.connections.filter(item=>item!==wire);
+	}
+	canMove(wire)
+	{
+		return (wire.to == this || wire.from == this);
+		
+	}
+	canAdd(wire)
+	{
+		const results = this.connections.filter(item=>item.parent == wire.parent);
+		return results.length ==0;
+	}
+	canStart(wire)
+	{
+		const results = this.connections.filter(item=>item.parent == wire.parent);
+		return results.length ==1;
 	}
 	getDrawingGroup()
 	{
