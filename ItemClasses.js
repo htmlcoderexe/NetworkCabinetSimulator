@@ -395,21 +395,6 @@ class VisualMap extends VisualItem {
 	}
 }
 
-function __VisualMap(name)
-{
-	let newobj = new VisualItem("map", name, null);
-	newobj.find = function(location, rack, frame, connector)
-	{
-		console.log("aaaaa", arguments);
-		let result = newobj.subItems.find((subItem)=>{return subItem.name === location});
-		if(result)
-		{
-			return result.find(rack, frame, connector);
-		}
-		return null;
-	};
-	return newobj;
-}
 
 class VisualLocation extends VisualItem {
 	constructor(map, name)
@@ -707,8 +692,6 @@ class VisualSocket extends VisualItem
 	updateSize()
 	{
 		super.updateSize();
-		//this.height = DIM_FRAME_HEIGHT;
-		//this.width = 13;
 	}
 	updatePosition()
 	{
@@ -724,19 +707,7 @@ class VisualSocket extends VisualItem
 	draw(ctx) 
 	{
 		const rr = new ItemRenderer(ctx, this.renderer.instructions);
-		//console.log(rr);
 		rr.render(this);
-		return;
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = "black";
-		const rect = this.getRect();
-		ctx.strokeRect(rect.x+0.5, rect.y+0.5 + 8, 9,23);
-		ctx.font = "8px monospace";
-		ctx.fillStyle = "rgb(237 28 36)";
-		ctx.fillText((this.slot+1)+" ", rect.x + 6, rect.y+ 8 - 1);
-		ctx.fillStyle = "rgb(0 100 200)";
-		ctx.fillText(((this.slot+1)*2-1)+" ", rect.x + 6, rect.y+ 8+0.5+8);
-		ctx.fillText(((this.slot+1)*2)+" ", rect.x + 6, rect.y+ 8+21);
 			
 	}
 
