@@ -13,9 +13,15 @@
   <script type="text/javascript" src="invparser.js"></script>
   <script type="text/javascript" src="main.js"></script>
   <style>
+  *{
+	
+		box-sizing: border-box;
+  }
 	body
 	{
 		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		padding:0;
+		margin:0;
 	}
 	.displayer
 	{
@@ -48,13 +54,28 @@
 		display: inline-block;
 		position:fixed;
 		width: 19vw;
-		top: 2rem;
-		left: 78vw;
+		top: 2vh;
+		left: 80vw;
 		border-radius: 3px;
 		border-style: solid;
 		border-width: 1px;
 		border-color: black;
-		height: 10rem;
+		height: 15vh;
+		overflow-y: scroll;
+		padding: 1rem;
+	}
+	#object_tree
+	{
+		display: inline-block;
+		position:fixed;
+		width: 19vw;
+		top: 19vh;
+		left: 80vw;
+		border-radius: 3px;
+		border-style: solid;
+		border-width: 1px;
+		border-color: black;
+		height: 79vh;
 		overflow-y: scroll;
 		padding: 1rem;
 	}
@@ -82,6 +103,11 @@
   </style>
 </head>
 <body>
+<template id="tree_item_tpl">
+<li class="tree_item">
+<h3 class="tree_item_name"></h3>
+</li>
+</template>
 <div id="toolbar_tools">
 <button id="bbb">⋙</button><button id="mode_pointer" onclick="VisualEditor.setModePointer();">⇖</button><button id="mode_rewire" onclick="VisualEditor.setModeWire();">⫯</button></div>
 <div class="displayer">
@@ -93,12 +119,12 @@
 <div id="controls">
 <h2 id="current_obj"></h2>
 </div>
-<div id="object_info"></div><br />
+<div id="object_info"></div>
+<ul id="object_tree"></ul><br />
 <textarea id="aaa"></textarea><textarea id="ccc"></textarea><textarea id="ddd"></textarea><script>
-	
+	VisualEditor.treeItemTemplate = document.getElementById("tree_item_tpl");
 	VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
 	VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
-
 	//drawMap(document.getElementById('graphdisplay'));
 	document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
 		canvasHover(e);
@@ -218,6 +244,10 @@
 		console.log(p.terrain);
 		console.log(p.rootObject);
 		console.log(VisualItem.hitboxMapping);
+		
+	VisualEditor.buildTree(document.getElementById("object_tree"), VisualEditor.fixedMap);
+	
+	VisualEditor.buildTree(document.getElementById("object_tree"), VisualEditor.lineMap);
 
 		
 	});

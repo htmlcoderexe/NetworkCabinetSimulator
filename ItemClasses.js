@@ -144,7 +144,7 @@ class VisualItem {
 		{
 			return this.label==""?this.name:this.label;
 		}
-		return this.parent.getFullLabel() + " / " + (this.label==""?this.name:this.label);
+		return this.parent.getFullLabel() + "/" + (this.label==""?this.name:this.label);
 	}
 
 	updateHitboxMapping()
@@ -624,14 +624,6 @@ class VisualFrame extends VisualItem
 				}
 			}
 		});
-		/*
-		for(let i = 0; i<24;i++)
-		{
-			let conn = new VisualSocket(this, (i+1).toString());
-			conn.slot = this.getNextSlot();
-			this.addItem(conn);
-		}
-		//*/
 		
 		
 		
@@ -652,7 +644,6 @@ class VisualFrame extends VisualItem
 	updatePosition()
 	{
 		this.cX = this.x + this.parent.cX;
-		//console.log("aaaaa",this.slot);
 		this.cY = this.y + this.parent.cY + this.slot * (this.height + DIM_FRAME_SPACING) + DIM_RACK_LABEL_SIZE;
 		
 		if(this.collapseView)

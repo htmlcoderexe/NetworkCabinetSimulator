@@ -58,8 +58,11 @@ class VisualEditor
 	static currentMoving = null;
 	static currentMovingX = 0;
 	static currentMovingY = 0;
+
 	static mapLayer = null;
 	static highlightLayer = null;
+	static treeItemTemplate = null;
+
 	static currentSingleItem = null;
 	static currentSingleType = "";
 	/**
@@ -174,6 +177,26 @@ class VisualEditor
 	{
 
 	};
+
+	static buildTree(target_node, target_object)
+	{
+		let tpl = VisualEditor.treeItemTemplate.content.cloneNode(true);
+		tpl.querySelector(".tree_item_name").append(target_object.getFullLabel());
+		if(target_object.subItems.length > 0 )
+		{
+			let subs = document.createElement("ul");
+			target_object.subItems.forEach((sub)=>{
+				this.buildTree(subs, sub);
+			});
+			tpl.querySelector(".tree_item").append(subs);
+		}
+		let el = null;
+			while(el = tpl.firstElementChild)
+			{
+				console.log(el);
+				target_node.appendChild(el);
+			}
+	}
 
 	static setModePointer()
 	{
