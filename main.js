@@ -231,7 +231,7 @@ class VisualEditor
 			let fromLine =VisualEditor.currentSingleItem;
 			if(fromLine.from != fromSocket && fromLine.to != fromSocket)
 			{
-				console.log("selecte socked is not one of the ends");
+				console.log("selected socket is not one of the ends");
 				return;
 			}
 			console.log("ready to wire!");
@@ -239,7 +239,21 @@ class VisualEditor
 			// temp patch to make the fake socket match the mouse exactly
 			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
 			VisualEditor.currentMovingY=-2;
-			mSocket.takeFrom(fromSocket, fromLine);
+			if(VisualEditor.shift)
+			{
+				let newpatch = new VisualPatch(fromLine.parent, fromLine.getNextSlot());
+				newpatch.from = fromSocket;
+				fromSocket.connect(newpatch);
+				newpatch.to = mSocket;
+				mSocket.connect(newpatch);
+				fromLine.parent.addItem(newpatch);
+				document.body.style.cursor = "copy";
+			}
+			else
+			{
+				mSocket.takeFrom(fromSocket, fromLine);
+			}
+			
 			VisualEditor.currentMoving = mSocket;
 			
 			VisualEditor.redrawSelection();
