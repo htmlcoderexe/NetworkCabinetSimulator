@@ -137,14 +137,17 @@ class VisualItem {
 		//console.log(rect);
 		return rect;
 	}
-
-	getFullLabel()
+	getLabel()
+	{
+		return this.label==""?this.name:this.label;
+	}
+	getFullLabel(separator = "/")
 	{
 		if(!this.parent)
 		{
-			return this.label==""?this.name:this.label;
+			return this.getLabel();
 		}
-		return this.parent.getFullLabel() + "/" + (this.label==""?this.name:this.label);
+		return this.parent.getFullLabel() + separator + (this.getLabel());
 	}
 
 	updateHitboxMapping()

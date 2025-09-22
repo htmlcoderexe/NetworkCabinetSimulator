@@ -180,8 +180,22 @@ class VisualEditor
 
 	static buildTree(target_node, target_object)
 	{
+		let styles = {
+			"location":"🏢",
+			"rack":"🗄",
+			"frame":"▭",
+			"socket":"🔌",
+			"line":"🚇",
+			"patch":"🔗",
+			"map":"🏙",
+			"linemap":"🗺"
+		};
 		let tpl = VisualEditor.treeItemTemplate.content.cloneNode(true);
-		tpl.querySelector(".tree_item_name").append(target_object.getFullLabel());
+		tpl.querySelector(".tree_item_name").append(target_object.getLabel());
+		tpl.querySelector(".tree_item").style.listStyleType = '"' + styles[target_object.type] + '"';
+		let safelbl = target_object.getFullLabel("_");
+		tpl.querySelector(".treetoggle").id = safelbl;
+		tpl.querySelector(".toggle_label").htmlFor = safelbl;
 		if(target_object.subItems.length > 0 )
 		{
 			let subs = document.createElement("ul");
@@ -193,7 +207,6 @@ class VisualEditor
 		let el = null;
 			while(el = tpl.firstElementChild)
 			{
-				console.log(el);
 				target_node.appendChild(el);
 			}
 	}

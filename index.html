@@ -100,12 +100,21 @@
 		background-color: #000000;
 		margin-right: 0.5rem;
 	}
+	.treetoggle
+	{
+		display:none;
+	}
+	.treetoggle:checked ~ ul
+	{
+		display:none;
+	}
   </style>
 </head>
 <body>
 <template id="tree_item_tpl">
 <li class="tree_item">
-<h3 class="tree_item_name"></h3>
+<input type="checkbox" class="treetoggle" checked />
+<label class="toggle_label"><span class="tree_item_name"></span></label>
 </li>
 </template>
 <div id="toolbar_tools">
@@ -209,7 +218,7 @@
 
 		let txt = document.getElementById('aaa').value;
 		
-		p = new VisualParser(txt, hwparser, new VisualMap("test"));
+		p = new VisualParser(txt, hwparser, new VisualMap("Equipment"));
 		p.inventory = VisualEditor.inventory;
 		warns = {...p.warncodes, ...hw_warns};
 		p.warncodes = warns;
@@ -226,7 +235,7 @@
 
 
 		let txt2 = document.getElementById('ccc').value;
-		p = new VisualParser(txt2, routeparser, new VisualLineMap("test"));
+		p = new VisualParser(txt2, routeparser, new VisualLineMap("Lines"));
 		warns = {...p.warncodes, ...hw_warns};
 		p.warncodes = warns;
 		p.terrain = window.patchmap.terrain;
