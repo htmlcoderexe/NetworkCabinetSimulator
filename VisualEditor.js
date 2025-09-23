@@ -181,14 +181,14 @@ class VisualEditor
 	static buildTree(target_node, target_object)
 	{
 		let styles = {
-			"location":"🏢",
-			"rack":"🗄",
-			"frame":"▭",
-			"socket":"🔌",
-			"line":"🚇",
-			"patch":"🔗",
-			"map":"🏙",
-			"linemap":"🗺"
+			"location":"🏢\\00FE0F",
+			"rack":"🗄\\00FE0F",
+			"frame":"🖥️\\00FE0F",
+			"socket":"🔌\\00FE0F",
+			"line":"🚇\\00FE0F",
+			"patch":"🔗\\00FE0F",
+			"map":"🏙\\00FE0F",
+			"linemap":"🗺\\00FE0F"
 		};
 		let tpl = VisualEditor.treeItemTemplate.content.cloneNode(true);
 		tpl.querySelector(".tree_item_name").append(target_object.getLabel());
