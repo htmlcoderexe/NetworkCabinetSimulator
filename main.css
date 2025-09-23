@@ -1,8 +1,7 @@
 
-*{
-	
+*, *::before, *::after {
     box-sizing: border-box;
-}
+  }
 body
 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -101,4 +100,18 @@ body
 #object_tree ul
 {
     padding-left: 1em;
+}
+.selected
+{
+    border: 2px solid red;
+}
+#object_tree span:hover
+{
+    border: 1px solid red;
+}
+#object_tree span
+{
+    width: 100%;
+    border: 1px solid transparent;
+    display: inline-block;
 }
