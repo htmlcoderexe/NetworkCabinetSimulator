@@ -1,45 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>NetworkCabinetSimulator</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/main.css">
-  <script type="text/javascript" src="VisualParser.js"></script>
-  <script type="text/javascript" src="ItemClasses.js"></script>
-  <script type="text/javascript" src="ItemRenderer.js"></script>
-  <script type="text/javascript" src="hwparser.js"></script>
-  <script type="text/javascript" src="routeparser.js"></script>
-  <script type="text/javascript" src="invparser.js"></script>
-  <script type="text/javascript" src="VisualEditor.js"></script>
-  <script type="text/javascript" src="main.js"></script>
-  <script type="text/javascript" src="init.js"></script>
-  <link rel="stylesheet" href="main.css" />
+	<title>NetworkCabinetSimulator</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="VisualParser.js"></script>
+	<script type="text/javascript" src="ItemClasses.js"></script>
+	<script type="text/javascript" src="ItemRenderer.js"></script>
+	<script type="text/javascript" src="hwparser.js"></script>
+	<script type="text/javascript" src="routeparser.js"></script>
+	<script type="text/javascript" src="invparser.js"></script>
+	<script type="text/javascript" src="VisualEditor.js"></script>
+	<script type="text/javascript" src="main.js"></script>
+	<script type="text/javascript" src="init.js"></script>
+	<link rel="stylesheet" href="main.css" />
 </head>
 <body>
-<template id="tree_item_tpl">
-<li class="tree_item">
-<input type="checkbox" class="treetoggle" checked />
-<span class="tree_item_name"></span>
-</li>
-</template>
-<div id="toolbar_tools">
-<button id="bbb">⋙</button><button id="mode_pointer" onclick="VisualEditor.setModePointer();">⇖</button><button id="mode_rewire" onclick="VisualEditor.setModeWire();">⫯</button></div>
-<div class="displayer">
-<canvas id="graphdisplay" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 1;">
-</canvas>
-<canvas id="selection_display" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 2;">
-</canvas>
-</div>
-<div id="controls">
-<h2 id="current_obj"></h2>
-</div>
-<div id="object_info"></div>
-<ul id="object_tree"></ul><br />
-<textarea id="aaa"></textarea><textarea id="ccc"></textarea><textarea id="ddd"></textarea>
-
-<script>
-	InitEditor();
-</script>
+	<template id="tree_item_tpl">
+		<li class="tree_item">
+			<input type="checkbox" class="treetoggle" checked />
+			<span class="tree_item_name"></span>
+		</li>
+	</template>
+	<div id="toolbar_tools">
+		<button id="bbb">⋙</button>
+		<button id="mode_pointer" onclick="VisualEditor.setModePointer();">⇖</button>
+		<button id="mode_rewire" onclick="VisualEditor.setModeWire();">⫯</button>
+	</div>
+	<div class="displayer">
+		<canvas id="graphdisplay" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+		<canvas id="selection_display" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 2;"></canvas>
+	</div>
+	<div id="controls">
+		<h2 id="current_obj"></h2>
+	</div>
+	<div id="object_info"></div>
+	<ul id="object_tree"></ul>
+	<br />
+	<textarea id="aaa"></textarea>
+	<textarea id="ccc"></textarea>
+	<textarea id="ddd"></textarea>
+	<script>
+		InitEditor();
+	</script>
 </body>
 </html>
