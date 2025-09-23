@@ -204,15 +204,70 @@ class VisualEditor
                 lbl.checked = !lbl.checked;
                 e.stopPropagation();
             }
-            if(e.target.nodeName!="INPUT")
-            {
-                //return false;
-            }
             // else do whatever one normally does on clicking a specific entry
             // #TODO: selecting items in the main display
+            else
+            {
+                let address = e.target.previousElementSibling.id.split("/");
+                let domain = address.shift();
+                console.log(address);
+                let item = null;
+                switch(domain)
+                {
+                    case "Equipment":
+                        {
+                            item = VisualEditor.fixedMap.find(...address);
+                            break;
+                        }
+                    case "Lines":
+                        {
+                            item = VisualEditor.lineMap.find(...address);
+                            break;
+                        }
+                }
+                console.log(item);
+                if(item)
+                {
+                    VisualEditor.currentSelection.set([item], true);
+                    VisualEditor.refreshView();
+                }
+            }
+            
+        });
+        tpl.querySelector(".tree_item").addEventListener("mouseover", (e)=>{
+            let identifier = e.target.querySelector(".treetoggle");
+            if(!identifier)
+            {
+                identifier = e.target.previousElementSibling;
+            }
+            let address = identifier.id.split("/");
+                let domain = address.shift();
+                console.log(address);
+                let item = null;
+                switch(domain)
+                {
+                    case "Equipment":
+                        {
+                            item = VisualEditor.fixedMap.find(...address);
+                            break;
+                        }
+                    case "Lines":
+                        {
+                            item = VisualEditor.lineMap.find(...address);
+                            break;
+                        }
+                }
+                console.log(item);
+                if(item)
+                {
+                    VisualEditor.currentHightlight = [item];
+                    VisualEditor.refreshView();
+                }
+
+
         });
 
-		let safelbl = target_object.getFullLabel("_");
+		let safelbl = target_object.getFullName("/");
 		tpl.querySelector(".treetoggle").id = safelbl;
 		//tpl.querySelector(".toggle_label").htmlFor = safelbl;
 		if(target_object.subItems.length > 0 )
