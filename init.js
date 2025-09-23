@@ -1,6 +1,7 @@
 function InitEditor()
 {
     VisualEditor.treeItemTemplate = document.getElementById("tree_item_tpl");
+    VisualEditor.treeViewContainer = document.getElementById("object_tree");
     VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
     //drawMap(document.getElementById('graphdisplay'));

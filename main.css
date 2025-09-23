@@ -19,9 +19,9 @@ body
 #aaa, #ccc, #ddd
 {
     box-sizing: border-box;
-    width: 49%;
+    width: 20vw;
     display: inline-block;
-    height: 50rem;
+    height: 3rem;
 }
 #toolbar_tools button
 {
@@ -101,11 +101,12 @@ body
 {
     padding-left: 1em;
 }
-.selected
+#object_tree span.selected
 {
-    border: 2px solid red;
+    border: 1px solid red;
+    font-weight: bold;
 }
-#object_tree span:hover
+#object_tree span:hover, #object_tree span.highlighted
 {
     border: 1px solid red;
 }

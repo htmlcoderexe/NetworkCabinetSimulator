@@ -62,6 +62,7 @@ class VisualEditor
 	static mapLayer = null;
 	static highlightLayer = null;
 	static treeItemTemplate = null;
+    static treeViewContainer = null;
 
 	static currentSingleItem = null;
 	static currentSingleType = "";
@@ -85,6 +86,12 @@ class VisualEditor
 		results.forEach(box=>hits.push(box.item));
 		return hits;
 	}
+
+    static getTreeItems()
+    {
+        return this.treeViewContainer ? this.treeViewContainer.querySelectorAll("span") : [];
+    }
+
 	static redrawSelection()
 	{
 		const ctx = VisualEditor.highlightLayer;
@@ -101,14 +108,44 @@ class VisualEditor
 			strokeStyle :"rgb(255 0 0 / 30%)",
 			lineWidth: 3
 		};
+        let itemIDs = [];
 		if(VisualEditor.currentHightlight)
 		{
 			VisualEditor.currentHightlight.forEach(box=>box.drawHighlight(ctx,style2));
-			VisualEditor.currentHightlight.forEach(box=>box.drawHighlight(ctx,style3));
+			VisualEditor.currentHightlight.forEach((box)=>{
+                box.drawHighlight(ctx,style3);
+                itemIDs.push(box.getFullName());
+            });
+            VisualEditor.getTreeItems().forEach((item)=>{
+                let objid = item.previousElementSibling.id;
+                if(itemIDs.find(id=>id==objid))
+                {
+                    item.classList.add("highlighted");
+                }
+                else
+                {
+                    item.classList.remove("highlighted");
+                }
+            });
 		}
+        itemIDs = [];
 		if(VisualEditor.currentSelection)
 		{
-			VisualEditor.currentSelection.selection.forEach(box=>box.drawHighlight(ctx,style));
+			VisualEditor.currentSelection.selection.forEach((box)=>{
+                box.drawHighlight(ctx,style);
+                itemIDs.push(box.getFullName());
+            });
+            VisualEditor.getTreeItems().forEach((item)=>{
+                let objid = item.previousElementSibling.id;
+                if(itemIDs.find(id=>id==objid))
+                {
+                    item.classList.add("selected");
+                }
+                else
+                {
+                    item.classList.remove("selected");
+                }
+            });
 		}
 	}
 	static redrawItems()
