@@ -2,8 +2,11 @@ function InitEditor()
 {
     VisualEditor.treeItemTemplate = document.getElementById("tree_item_tpl");
     VisualEditor.treeViewContainer = document.getElementById("object_tree");
+    VisualEditor.itemPropSheetTemplate = document.getElementById("item_propsheet");
+    VisualEditor.propSheetContainer = document.getElementById("object_info");
     VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
+   
     //drawMap(document.getElementById('graphdisplay'));
     document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
         canvasHover(e);
@@ -26,8 +29,10 @@ function InitEditor()
             console.log(VisualEditor.currentSelection.selection);
             console.log(VisualEditor.currentSelection.selection[0].type);
             
-            document.getElementById("object_info").innerText ="";
+            VisualEditor.propSheetContainer.innerText ="";
             VisualEditor.currentSelection.selection.forEach((item)=>{
+               VisualEditor.buildPropSheet(item);
+                /*
                 let infoblock = document.createElement("div");
                 infoblock.classList.add("infoblock");
                 let header = document.createElement("h4");
@@ -68,6 +73,7 @@ function InitEditor()
                 idata.append(item.type);
                 infoblock.appendChild(idata);
                 document.getElementById("object_info").appendChild(infoblock);
+                //*/
             });
         }
     };

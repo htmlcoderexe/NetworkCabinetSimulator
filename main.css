@@ -70,7 +70,6 @@ body
     padding: 0.5rem;
     border: 1px solid black;
     border-radius: 2px;
-    line-height: 0.6rem;
 }
 .line_badge
 {
@@ -113,7 +112,39 @@ body
 }
 #object_tree span
 {
-    width: calc(100% - 1.5 rem);
+    width: calc(100% - 2.5rem);
     border: 1px solid transparent;
     display: inline-block;
+}
+span.item_title[data-itemtype="location"]::before
+{
+    content: "🏢\00FE0F";
+}
+span.item_title[data-itemtype="rack"]::before
+{
+    content: "🗄\00FE0F";
+}
+span.item_title[data-itemtype="frame"]::before
+{
+    content: "🖥️\00FE0F";
+}
+span.item_title[data-itemtype="socket"]::before
+{
+    content: "🔌\00FE0F";
+}
+span.item_title[data-itemtype="line"]::before
+{
+    content: "🚇\00FE0F";
+}
+span.item_title[data-itemtype="patch"]::before
+{
+    content: "🔗\00FE0F";
+}
+span.item_title[data-itemtype="map"]::before
+{
+    content: "🏙\00FE0F";
+}
+span.item_title[data-itemtype="linemap"]::before
+{
+    content: "🗺\00FE0F";
 }

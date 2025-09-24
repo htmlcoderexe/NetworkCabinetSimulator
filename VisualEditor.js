@@ -222,12 +222,69 @@ class VisualEditor
 
 	static selectionChange = function()
 	{
-
+		
 	};
 
 	static buildPropSheet(target_object)
 	{
+		let tpl = VisualEditor.itemPropSheetTemplate.content.cloneNode(true);
+		let itemref = target_object.getFullName("/");
+		let item_label = tpl.querySelector(".item_title");
+		item_label.dataset.itemref = itemref;
+		item_label.dataset.itemtype = target_object.type;
+		item_label.append(target_object.getLabel());
+		let sheet = tpl.querySelector(".item_properties");
+		sheet.dataset.itemref = itemref;
+		switch(target_object.type)
+		{
+			case "location":
+			{
+				let toggle = document.createElement("input");
+				toggle.type = "checkbox";
+				toggle.checked = target_object.collapseState;
+				toggle.addEventListener("change",(e)=>{
+					if(e.target.checked)
+					{
+						target_object.collapse();
+					}
+					else
+					{
+						target_object.uncollapse();
+					}
+					VisualEditor.refreshView();
+				});
+				toggle.dataset.itemref = itemref;
+				toggle.id = itemref;
+				sheet.appendChild(toggle);
+				let lbl = document.createElement("label");
+				lbl.append("Compact view");
+				lbl.dataset.itemref = itemref;
+				lbl.htmlFor = itemref;
+				sheet.appendChild(lbl);
+				break;
+			}
+			case "patch":
+			{
+				let badge = document.createElement("div");
+				badge.classList.add("line_badge");
+				badge.append(" ");
+				badge.style.borderTopColor = target_object.parent.colour1;
+				badge.style.borderBottomColor = target_object.parent.colour2;
+				badge.dataset.lineName = target_object.parent.name;
+				badge.addEventListener("click",(e)=>{
+					VisualEditor.selectLine(e.target.dataset.lineName);
+				});
+				sheet.appendChild(badge);
+				break;
+			}
+		}
 
+		
+		let el = null;
+			while(el = tpl.firstElementChild)
+			{
+				VisualEditor.propSheetContainer.appendChild(el);
+			}
 	}
 
 	static buildTree(target_node, target_object)
