@@ -26,54 +26,9 @@ function InitEditor()
         console.log(VisualEditor.currentSelection);
         if(VisualEditor.currentSelection.selection.length > 0)
         {
-            console.log(VisualEditor.currentSelection.selection);
-            console.log(VisualEditor.currentSelection.selection[0].type);
-            
             VisualEditor.propSheetContainer.innerText ="";
             VisualEditor.currentSelection.selection.forEach((item)=>{
                VisualEditor.buildPropSheet(item);
-                /*
-                let infoblock = document.createElement("div");
-                infoblock.classList.add("infoblock");
-                let header = document.createElement("h4");
-                header.append(item.getFullLabel());
-                infoblock.appendChild(header);
-                let idata =document.createElement("span"); 
-                if(item.type == "patch")
-                {
-                    let badge = document.createElement("div");
-                    badge.classList.add("line_badge");
-                    badge.append(" ");
-                    badge.style.borderTopColor = item.parent.colour1;
-                    badge.style.borderBottomColor = item.parent.colour2;
-                    badge.dataset.lineName = item.parent.name;
-                    badge.addEventListener("click",(e)=>{
-                        VisualEditor.selectLine(e.target.dataset.lineName);
-                    });
-                    idata.appendChild(badge);
-                }
-                if(item.type == "location")
-                {
-                    let toggle = document.createElement("input");
-                    toggle.type = "checkbox";
-                    toggle.checked = item.collapseState;
-                    toggle.addEventListener("change",(e)=>{
-                        if(e.target.checked)
-                        {
-                            item.collapse();
-                        }
-                        else
-                        {
-                            item.uncollapse();
-                        }
-                        VisualEditor.refreshView();
-                    });
-                    idata.appendChild(toggle);
-                }
-                idata.append(item.type);
-                infoblock.appendChild(idata);
-                document.getElementById("object_info").appendChild(infoblock);
-                //*/
             });
         }
     };

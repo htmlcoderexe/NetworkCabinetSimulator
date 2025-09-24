@@ -277,6 +277,28 @@ class VisualEditor
 				sheet.appendChild(badge);
 				break;
 			}
+			case "line":
+			{
+				let c1 = document.createElement("input");
+				c1.type="color";
+				c1.value = target_object.colour1;
+				c1.addEventListener("change",(e)=>{
+					target_object.colour1 = c1.value;
+					VisualEditor.refreshView();
+				});
+				let c2 = document.createElement("input");
+				c2.type="color";
+				c2.value = target_object.colour2;
+				c2.addEventListener("change",(e)=>{
+					target_object.colour2 = c2.value;
+					VisualEditor.refreshView();
+				});
+				c1.dataset.itemref=itemref;
+				c2.dataset.itemref=itemref;
+				sheet.appendChild(c1);
+				sheet.appendChild(c2);
+				break;
+			}
 		}
 
 		
@@ -286,6 +308,7 @@ class VisualEditor
 				VisualEditor.propSheetContainer.appendChild(el);
 			}
 	}
+	
 
 	static buildTree(target_node, target_object)
 	{

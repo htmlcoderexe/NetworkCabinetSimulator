@@ -1,6 +1,6 @@
 LINE L0101
-    COLOUR1 BLUE
-    COLOUR2 GREEN
+    COLOUR1 #0000FF
+    COLOUR2 #00FF00
     LINK
         FROM office_1 R1 interchange 1
         TO office_1 R1 floors 1
@@ -14,8 +14,8 @@ LINE L0101
         TO office_2 R1 to_infra 1
         CABLE PATCH
 LINE L0102
-    COLOUR1 BLUE
-    COLOUR2 ORANGE
+    COLOUR1 #0000FF
+    COLOUR2 #FF7F00
     LINK
         FROM office_1 R1 interchange 3
         TO office_1 R1 floors 3
