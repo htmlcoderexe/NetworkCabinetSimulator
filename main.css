@@ -80,9 +80,9 @@ body
     border-top-style:solid;
     border-bottom-style: solid;
     border-color: #808080;
-    box-shadow: #000000 0px 0px 2px 2px;
+    box-shadow: #000000 0px 0px 0px 2px;
     background-color: #000000;
-    margin-right: 0.5rem;
+    margin-left: 0.5rem;
 }
 .treetoggle
 {
