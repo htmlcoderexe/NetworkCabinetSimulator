@@ -593,7 +593,7 @@ class VisualEditor
 					console.log("can't add a new wire from here");
 					return;
 				}
-				let newpatch = new VisualPatch(fromLine.parent, fromLine.getNextSlot());
+				let newpatch = new VisualPatch(fromLine.parent, fromLine.parent.getNextSlot());
 				newpatch.from = fromSocket;
 				fromSocket.connect(newpatch);
 				newpatch.to = mSocket;
