@@ -99,7 +99,7 @@ class VisualEditor
 
     static getTreeItems()
     {
-        return this.treeViewContainer ? this.treeViewContainer.querySelectorAll("span") : [];
+        return this.treeViewContainer ? this.treeViewContainer.querySelectorAll("span.tree_item_name") : [];
     }
 
 	static redrawSelection()
@@ -124,10 +124,10 @@ class VisualEditor
 			VisualEditor.currentHightlight.forEach(box=>box.drawHighlight(ctx,style2));
 			VisualEditor.currentHightlight.forEach((box)=>{
                 box.drawHighlight(ctx,style3);
-                itemIDs.push(box.getFullName());
+                itemIDs.push(box.getFullName("-"));
             });
             VisualEditor.getTreeItems().forEach((item)=>{
-                let objid = item.previousElementSibling.id;
+                let objid = item.dataset.itemref;
                 if(itemIDs.find(id=>id==objid))
                 {
                     item.classList.add("highlighted");
@@ -143,10 +143,10 @@ class VisualEditor
 		{
 			VisualEditor.currentSelection.selection.forEach((box)=>{
                 box.drawHighlight(ctx,style);
-                itemIDs.push(box.getFullName());
+                itemIDs.push(box.getFullName("-"));
             });
             VisualEditor.getTreeItems().forEach((item)=>{
-                let objid = item.previousElementSibling.id;
+                let objid = item.dataset.itemref;
                 if(itemIDs.find(id=>id==objid))
                 {
                     item.classList.add("selected");
@@ -225,6 +225,7 @@ class VisualEditor
 		
 	};
 
+
 	static buildPropSheet(target_object)
 	{
 		let tpl = VisualEditor.itemPropSheetTemplate.content.cloneNode(true);
@@ -284,6 +285,7 @@ class VisualEditor
 				c1.value = target_object.colour1;
 				c1.addEventListener("change",(e)=>{
 					target_object.colour1 = c1.value;
+                    VisualEditor.reportUpdate(target_object);
 					VisualEditor.refreshView();
 				});
 				let c2 = document.createElement("input");
@@ -291,6 +293,7 @@ class VisualEditor
 				c2.value = target_object.colour2;
 				c2.addEventListener("change",(e)=>{
 					target_object.colour2 = c2.value;
+                    VisualEditor.reportUpdate(target_object);
 					VisualEditor.refreshView();
 				});
 				c1.dataset.itemref=itemref;
@@ -310,7 +313,16 @@ class VisualEditor
 	}
 	
 
-	static buildTree(target_node, target_object)
+    static reportUpdate(target_object)
+    {
+        let safelbl = target_object.getFullName("-");
+        let node = VisualEditor.treeViewContainer.querySelector("li[data-itemref=\""+safelbl+"\"]");
+        if(node)
+        {
+            VisualEditor.buildTree(node,target_object,true);
+        }
+    }
+	static buildTree(target_node, target_object, replace = false)
 	{
 		let styles = {
 			"location":"🏢\\00FE0F",
@@ -322,7 +334,7 @@ class VisualEditor
 			"map":"🏙\\00FE0F",
 			"linemap":"🗺\\00FE0F"
 		};
-		let safelbl = target_object.getFullName("/");
+		let safelbl = target_object.getFullName("-");
 		let tpl = VisualEditor.treeItemTemplate.content.cloneNode(true);
 		let item_label = tpl.querySelector(".tree_item_name");
 		item_label.append(target_object.getLabel());
@@ -354,7 +366,7 @@ class VisualEditor
             // #TODO: selecting items in the main display
             else
             {
-                let address = e.target.dataset.itemref.split("/");
+                let address = e.target.dataset.itemref.split("-");
                 let domain = address.shift();
                 console.log(address);
                 let item = null;
@@ -382,7 +394,7 @@ class VisualEditor
         });
         tpl.querySelector(".tree_item").addEventListener("mouseover", (e)=>{
             let identifier = e.target.dataset.itemref;
-            let address = identifier.split("/");
+            let address = identifier.split("-");
                 let domain = address.shift();
                 console.log(address);
                 let item = null;
@@ -420,11 +432,16 @@ class VisualEditor
 			});
 			li.append(subs);
 		}
-		let el = null;
-			while(el = tpl.firstElementChild)
-			{
-				target_node.appendChild(el);
-			}
+        if(replace)
+        {
+            let collapsestate=!!target_node.querySelector("input[type=\"checkbox\"")?.checked;
+            tpl.firstElementChild.querySelector("input[type=\"checkbox\"").checked = collapsestate;
+            target_node.replaceWith( tpl.firstElementChild);
+        }
+        else
+        {
+            target_node.appendChild(tpl.firstElementChild);
+        }
 	}
 
 	static setModePointer()
@@ -582,6 +599,8 @@ class VisualEditor
 				newpatch.to = mSocket;
 				mSocket.connect(newpatch);
 				fromLine.parent.addItem(newpatch);
+                VisualEditor.reportUpdate(fromLine.parent);
+                
 				VisualEditor.subMode = this.SUB_MODES.WIRE_ADD;
 			}
 			else
