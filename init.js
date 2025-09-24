@@ -6,7 +6,7 @@ function InitEditor()
     VisualEditor.propSheetContainer = document.getElementById("object_info");
     VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
-   
+    VisualEditor.mouseArea =  document.getElementById('selection_display');
     //drawMap(document.getElementById('graphdisplay'));
     document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
         canvasHover(e);

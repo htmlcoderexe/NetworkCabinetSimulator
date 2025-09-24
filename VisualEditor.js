@@ -72,6 +72,7 @@ class VisualEditor
 	static highlightLayer = null;
     static treeViewContainer = null;
 	static propSheetContainer = null;
+    static mouseArea = null;
 
 	static treeItemTemplate = null;
 	static itemPropSheetTemplate = null;
@@ -446,13 +447,13 @@ class VisualEditor
 
 	static setModePointer()
 	{
-		document.body.style.cursor = "auto";
 		VisualEditor.editMode = this.EDIT_MODES.POINTER;
+        VisualEditor.updateCursor();
 	}
 	static setModeWire()
 	{
-		document.body.style.cursor = "alias";
 		VisualEditor.editMode = this.EDIT_MODES.WIRE;
+        VisualEditor.updateCursor();
 	}
 
 	static getCursorPointerMode()
@@ -542,7 +543,7 @@ class VisualEditor
 	static updateCursor()
 	{
 		let def_cursor = this.getDefaultCursor();
-		document.body.style.cursor = def_cursor;
+		VisualEditor.mouseArea.style.cursor = def_cursor;
 
 	}
 
@@ -738,7 +739,7 @@ class VisualEditor
 			VisualEditor.currentMovingX = VisualEditor.currentMoving.x - x;
 			VisualEditor.currentMovingY = VisualEditor.currentMoving.y - y;
 		}
-		document.body.style.cursor = VisualEditor.getDefaultCursor();
+		VisualEditor.updateCursor();
 		
 	}
 	static handleMUpPointerMode(x, y)
@@ -752,7 +753,7 @@ class VisualEditor
 		
 		VisualEditor.redrawSelection();
 		
-			document.body.style.cursor = VisualEditor.getDefaultCursor();
+        VisualEditor.updateCursor();
 		
 		let currentlabel = "";
 		let currentrect = [];
