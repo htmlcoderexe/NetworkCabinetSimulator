@@ -43,29 +43,39 @@ class VisualEditor
 {
 	static EDIT_MODES = {POINTER: 0, WIRE: 1, ADD: 2};
 	static SUB_MODES = {NONE: 0, WIRE_MOVE: 1, WIRE_ADD: 2, WIRE_REMOVE: 3, WIRE_SELECTED: 4, WIRE_LINE_SELECT: 5};
+	
 	static editMode = this.EDIT_MODES.POINTER;
 	static subMode = this.SUB_MODES.NONE;
-	static currentSelection = new VisualEditorSelection();
-	static currentHightlight = [];
-	static currentDepth = 0;
+	
+	
 	static ctrl = false;
 	static shift = false;
 	static mouseDownNow = false;
 	static mouseDownPrev = false;
-	static fixedMap = null;
-	static lineMap = null;
-	static inventory = null;
+
+	static currentDepth = 0;
+	static currentSelection = new VisualEditorSelection();
+	static currentHightlight = [];
+	static currentSingleItem = null;
+	static currentSingleType = "";
+
 	static currentMoving = null;
 	static currentMovingX = 0;
 	static currentMovingY = 0;
+	
+
+	static fixedMap = null;
+	static lineMap = null;
+	static inventory = null;
 
 	static mapLayer = null;
 	static highlightLayer = null;
-	static treeItemTemplate = null;
     static treeViewContainer = null;
+	static propSheetContainer = null;
 
-	static currentSingleItem = null;
-	static currentSingleType = "";
+	static treeItemTemplate = null;
+	static itemPropSheetTemplate = null;
+
 	/**
 	 * Checks if any registered component hitboxes intersect a given coordinate.
 	 * @param {number} x - X coordinate
@@ -214,6 +224,11 @@ class VisualEditor
 	{
 
 	};
+
+	static buildPropSheet(target_object)
+	{
+
+	}
 
 	static buildTree(target_node, target_object)
 	{
