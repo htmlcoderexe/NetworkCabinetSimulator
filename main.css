@@ -95,6 +95,7 @@ body
 }
 #object_tree
 {
+    list-style-position: inside; 
     padding-left: 2em;
 }
 #object_tree ul
@@ -112,7 +113,7 @@ body
 }
 #object_tree span
 {
-    width: 100%;
+    width: calc(100% - 1.5 rem);
     border: 1px solid transparent;
     display: inline-block;
 }

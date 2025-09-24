@@ -227,11 +227,25 @@ class VisualEditor
 			"map":"🏙\\00FE0F",
 			"linemap":"🗺\\00FE0F"
 		};
+		let safelbl = target_object.getFullName("/");
 		let tpl = VisualEditor.treeItemTemplate.content.cloneNode(true);
-		tpl.querySelector(".tree_item_name").append(target_object.getLabel());
-		tpl.querySelector(".tree_item").style.listStyleType = '"' + styles[target_object.type] + '"';
-
-        tpl.querySelector(".tree_item").addEventListener("click",(e)=>{
+		let item_label = tpl.querySelector(".tree_item_name");
+		item_label.append(target_object.getLabel());
+		item_label.dataset.itemref = safelbl;
+		if(target_object.type == "line")
+		{
+			let badge = document.createElement("div");
+			badge.classList.add("line_badge");
+			badge.append(" ");
+			badge.style.borderTopColor = target_object.colour1;
+			badge.style.borderBottomColor = target_object.colour2;
+			badge.dataset.itemref = safelbl;
+			tpl.querySelector(".tree_item_name").appendChild(badge);
+		}
+		let li = tpl.querySelector(".tree_item");
+		li.style.listStyleType = '"├' + styles[target_object.type] + '"';
+		li.dataset.itemref = safelbl;
+        li.addEventListener("click",(e)=>{
             console.log(e);
             console.log(e.target.nodeName);
             let lbl = e.target.querySelector(".treetoggle");
@@ -245,7 +259,7 @@ class VisualEditor
             // #TODO: selecting items in the main display
             else
             {
-                let address = e.target.previousElementSibling.id.split("/");
+                let address = e.target.dataset.itemref.split("/");
                 let domain = address.shift();
                 console.log(address);
                 let item = null;
@@ -272,12 +286,8 @@ class VisualEditor
             
         });
         tpl.querySelector(".tree_item").addEventListener("mouseover", (e)=>{
-            let identifier = e.target.querySelector(".treetoggle");
-            if(!identifier)
-            {
-                identifier = e.target.previousElementSibling;
-            }
-            let address = identifier.id.split("/");
+            let identifier = e.target.dataset.itemref;
+            let address = identifier.split("/");
                 let domain = address.shift();
                 console.log(address);
                 let item = null;
@@ -304,16 +314,16 @@ class VisualEditor
 
         });
 
-		let safelbl = target_object.getFullName("/");
 		tpl.querySelector(".treetoggle").id = safelbl;
 		//tpl.querySelector(".toggle_label").htmlFor = safelbl;
 		if(target_object.subItems.length > 0 )
 		{
 			let subs = document.createElement("ul");
+			subs.dataset.itemref = safelbl;
 			target_object.subItems.forEach((sub)=>{
 				this.buildTree(subs, sub);
 			});
-			tpl.querySelector(".tree_item").append(subs);
+			li.append(subs);
 		}
 		let el = null;
 			while(el = tpl.firstElementChild)
