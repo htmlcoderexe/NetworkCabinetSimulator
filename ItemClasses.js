@@ -9,7 +9,7 @@ const DIM_RACK_LABEL_SIZE = 30;
 const DIM_COLLAPSED_WIDTH = 100;
 
 class VisualItem {
-
+	static indent ="    ";
 	static hitboxMapping = [];
 
 	x = 0;
@@ -198,6 +198,29 @@ class VisualItem {
 	commit (parser) {
 		console.log("generic commit of type " + this.type);
 		return true;
+	}
+
+	getIndent(level)
+	{
+		return VisualItem.indent.repeat(level);
+	}
+	formatLine(keyword, indent, ...params)
+	{
+		return this.getIndent(indent) + keyword.toUpperCase() + " " + params.join(" ") + "\n";
+	}
+	_f(keyword, indent, ...params)
+	{
+		return this.formatLine(keyword, indent, ...params);
+	}
+	toCode(indent_level)
+	{
+		let output ="";
+
+		
+		this.subItems.forEach((item) => {
+			output+=item.toCode(indent_level + 1);
+		});
+		return output;
 	}
 
 	//**** updating the object */
@@ -424,6 +447,14 @@ class VisualLocation extends VisualItem {
 
 	}
 	
+	toCode(indent_level)
+	{
+		let output ="";
+		output+=this._f("location",indent_level,this.name);
+		output+=this._f("position",indent_level+1, this.x, this.y);
+		output+=this._f("label", indent_level+1, this.label)
+		return output+super.toCode(indent_level);
+	}
 	
 	commit(parser)
 	{
@@ -496,7 +527,14 @@ class VisualRack extends VisualItem {
 		this.slot = -1;
 		this.selectionOrder = 2;
 	}
-	
+	toCode(indent_level)
+	{
+		let output ="";
+		output+=this._f("rack",indent_level,this.name);
+		output+=this._f("slot",indent_level+1, this.slot+1);
+		output+=this._f("label", indent_level+1, this.label)
+		return output+super.toCode(indent_level);
+	}
 	commit(parser)
 	{
 		if(!this.name)
@@ -566,6 +604,15 @@ class VisualFrame extends VisualItem
 		this.width = DIM_RACK_WIDTH;
 		this.slot = -1;
 		this.frametype = "";
+	}
+	toCode(indent_level)
+	{
+		let output ="";
+		output+=this._f("frame",indent_level,this.name);
+		output+=this._f("slot",indent_level+1, this.slot+1);
+		output+=this._f("type",indent_level+1, this.frametype);
+		output+=this._f("label", indent_level+1, this.label)
+		return output;//+super.toCode(indent_level);
 	}
 	commit(parser)
 	{
@@ -814,7 +861,16 @@ class VisualLine extends VisualItem {
 		this.colour1 = "#808080";
 		this.colour2 = "#808080";
 	}
-
+	
+	toCode(indent_level)
+	{
+		let output ="";
+		output+=this._f("line",indent_level,this.name);
+		output+=this._f("colour1",indent_level+1, this.colour1);
+		output+=this._f("colour2",indent_level+1, this.colour2);
+		//output+=this._f("label", indent_level+1, this.label)
+		return output+super.toCode(indent_level);
+	}
 	getDrawingGroup()
 	{
 		const grp = [];
@@ -832,6 +888,16 @@ class VisualPatch extends VisualItem {
 		this.to = null;
 		this.selectionOrder = 4;
 		this.cable ="";
+	}
+	
+	toCode(indent_level)
+	{
+		let output ="";
+		output+=this._f("link",indent_level,this.name);
+		output+=this._f("from",indent_level+1, this.from.getFullName(" ").substring(10));
+		output+=this._f("to",indent_level+1, this.to.getFullName(" ").substring(10));
+		output+=this._f("cable", indent_level+1, this.cable)
+		return output;//+super.toCode(indent_level);
 	}
 	commit(parser)
 	{

@@ -32,7 +32,11 @@ function InitEditor()
             });
         }
     };
+    document.getElementById('bbb2').addEventListener("click",(e)=>{
+        document.getElementById('aaa').value=VisualEditor.fixedMap.toCode();
+        document.getElementById('ccc').value=VisualEditor.lineMap.toCode();
 
+    });
     document.getElementById('bbb').addEventListener("click",(e)=>{
 
         let p = null;
