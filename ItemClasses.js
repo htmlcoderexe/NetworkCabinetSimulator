@@ -298,6 +298,10 @@ class VisualItem {
 	 * @param {object} lineStyle - An object containing properties to set on the canvas object.
 	 */
 	drawHighlight (ctx, lineStyle) {
+		if(this.collapseView)
+		{
+			return;
+		}
 		const group = this.getDrawingGroup();
 		group.forEach((item) => {
 			item.drawOutline(ctx, lineStyle);
@@ -308,7 +312,7 @@ class VisualItem {
 	 */
 	testHit(x,y)
 	{
-		if(this.collapseView)
+		if(this.collapseView )
 		{
 			return false;
 		}
@@ -335,6 +339,11 @@ class VisualItem {
 				item.clearCollapseView();
 
 			});
+	}
+
+	toggleCollapseView()
+	{
+		this.collapseView ? this.clearCollapseView() : this.setCollapseView();
 	}
 
 	uncollapse(cascade = false)
@@ -529,6 +538,10 @@ class VisualRack extends VisualItem {
 	};
 	draw(ctx) 
 	{
+		if(this.collapseView)
+		{
+			return;
+		}
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = "black";
 		ctx.fillStyle = "black";
@@ -871,13 +884,19 @@ class VisualPatch extends VisualItem {
 	}
 	drawOutlineFunc(ctx)
 	{
+		/*
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX+3, this.from.cY+3);
-		ctx.lineTo(this.to.cX+3,this.to.cY+this.to.height-3);
+		ctx.moveTo(this.from.cX+0, this.from.cY+3);
+		ctx.lineTo(this.to.cX+0,this.to.cY+this.to.height-3);
 		ctx.stroke();
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX-3+this.to.width, this.from.cY+3);
-		ctx.lineTo(this.to.cX-3+this.to.width,this.to.cY+this.to.height-3);
+		ctx.moveTo(this.from.cX-0+this.to.width, this.from.cY+3);
+		ctx.lineTo(this.to.cX-0+this.to.width,this.to.cY+this.to.height-3);
+		ctx.stroke();
+		//*/
+		ctx.beginPath();
+		ctx.moveTo(this.from.cX+(this.to.width/2), this.from.cY+3);
+		ctx.lineTo(this.to.cX+(this.to.width/2),this.to.cY+this.to.height-3);
 		ctx.stroke();
 
 	}

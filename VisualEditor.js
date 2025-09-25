@@ -44,6 +44,8 @@ class VisualEditor
 	static EDIT_MODES = {POINTER: 0, WIRE: 1, ADD: 2};
 	static SUB_MODES = {NONE: 0, WIRE_MOVE: 1, WIRE_ADD: 2, WIRE_REMOVE: 3, WIRE_SELECTED: 4, WIRE_LINE_SELECT: 5};
 	
+	static ITEM_REF_SEPARATOR = "/";
+
 	static editMode = this.EDIT_MODES.POINTER;
 	static subMode = this.SUB_MODES.NONE;
 	
@@ -125,7 +127,7 @@ class VisualEditor
 			VisualEditor.currentHightlight.forEach(box=>box.drawHighlight(ctx,style2));
 			VisualEditor.currentHightlight.forEach((box)=>{
                 box.drawHighlight(ctx,style3);
-                itemIDs.push(box.getFullName("-"));
+                itemIDs.push(box.getFullName(VisualEditor.ITEM_REF_SEPARATOR));
             });
             VisualEditor.getTreeItems().forEach((item)=>{
                 let objid = item.dataset.itemref;
@@ -144,7 +146,7 @@ class VisualEditor
 		{
 			VisualEditor.currentSelection.selection.forEach((box)=>{
                 box.drawHighlight(ctx,style);
-                itemIDs.push(box.getFullName("-"));
+                itemIDs.push(box.getFullName(VisualEditor.ITEM_REF_SEPARATOR));
             });
             VisualEditor.getTreeItems().forEach((item)=>{
                 let objid = item.dataset.itemref;
@@ -316,7 +318,7 @@ class VisualEditor
 
     static reportUpdate(target_object)
     {
-        let safelbl = target_object.getFullName("-");
+        let safelbl = target_object.getFullName(VisualEditor.ITEM_REF_SEPARATOR);
         let node = VisualEditor.treeViewContainer.querySelector("li[data-itemref=\""+safelbl+"\"]");
         if(node)
         {
@@ -335,11 +337,27 @@ class VisualEditor
 			"map":"🏙\\00FE0F",
 			"linemap":"🗺\\00FE0F"
 		};
-		let safelbl = target_object.getFullName("-");
+		let safelbl = target_object.getFullName(VisualEditor.ITEM_REF_SEPARATOR);
 		let tpl = VisualEditor.treeItemTemplate.content.cloneNode(true);
 		let item_label = tpl.querySelector(".tree_item_name");
+		let toolbox = tpl.querySelector(".tool_buttons");
 		item_label.append(target_object.getLabel());
 		item_label.dataset.itemref = safelbl;
+		if(target_object.collapseView)
+		{
+			item_label.classList.add("tree_item_hidden");
+		}
+		toolbox.dataset.itemref = safelbl;
+		
+		let eye = document.createElement("a");
+		eye.append(target_object.collapseView ? "🕶️" : "👁️");
+		eye.addEventListener("click", (e)=>{
+			target_object.toggleCollapseView();
+			VisualEditor.reportUpdate(target_object);
+		});
+		eye.dataset.itemref= safelbl;
+		toolbox.appendChild(eye);
+
 		if(target_object.type == "line")
 		{
 			let badge = document.createElement("div");
@@ -367,7 +385,7 @@ class VisualEditor
             // #TODO: selecting items in the main display
             else
             {
-                let address = e.target.dataset.itemref.split("-");
+                let address = e.target.dataset.itemref.split(VisualEditor.ITEM_REF_SEPARATOR);
                 let domain = address.shift();
                 console.log(address);
                 let item = null;
@@ -395,7 +413,7 @@ class VisualEditor
         });
         tpl.querySelector(".tree_item").addEventListener("mouseover", (e)=>{
             let identifier = e.target.dataset.itemref;
-            let address = identifier.split("-");
+            let address = identifier.split(VisualEditor.ITEM_REF_SEPARATOR);
                 let domain = address.shift();
                 console.log(address);
                 let item = null;

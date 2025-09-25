@@ -96,6 +96,7 @@ body
 {
     list-style-position: inside; 
     padding-left: 2em;
+    user-select: none;
 }
 #object_tree ul
 {
@@ -116,6 +117,25 @@ body
     border: 1px solid transparent;
     display: inline-block;
 }
+
+#object_tree span.tool_buttons
+{
+    position: relative;
+    width: auto;
+    float: right;
+    visibility: hidden;
+}
+#object_tree span:hover span.tool_buttons 
+{
+    cursor: pointer;
+    visibility: visible;
+}
+
+span.tree_item_hidden
+{
+    color: #a5a5a5;
+}
+
 span.item_title[data-itemtype="location"]::before
 {
     content: "🏢\00FE0F";
