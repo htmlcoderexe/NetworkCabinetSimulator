@@ -452,7 +452,11 @@ class VisualLocation extends VisualItem {
 		let output ="";
 		output+=this._f("location",indent_level,this.name);
 		output+=this._f("position",indent_level+1, this.x, this.y);
-		output+=this._f("label", indent_level+1, this.label)
+		output+=this._f("label", indent_level+1, this.label);
+		if(this.collapseState)
+		{
+			output+=this._f("compact", indent_level+1, "");
+		}
 		return output+super.toCode(indent_level);
 	}
 	
@@ -466,6 +470,10 @@ class VisualLocation extends VisualItem {
 		if(!this.label)
 		{
 			parser.warn(WARN_LOCATION_NO_LABEL);
+		}
+		if(this.collapseState)
+		{
+			this.collapse();
 		}
 		return true;
 	}

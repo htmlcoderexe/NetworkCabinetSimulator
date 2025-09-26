@@ -96,6 +96,21 @@ hwparser = {
 		current.y = posy;
 		return true;
 	},
+	"COMPACT": function(current)
+	{
+		if(!current)
+		{
+			this.warn(this.WARN_UNEXPECTED_TOKEN);
+			return true;
+		}
+		if(current.type!="location")
+		{
+			this.warn(this.WARN_UNEXPECTED_TOKEN);
+			return true;
+		}
+		current.collapseState = true;
+		return true;
+	},
 	"LOCATION": function(current)
 	{
 		//console.log(this.objectStack);
