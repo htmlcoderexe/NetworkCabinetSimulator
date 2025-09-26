@@ -114,8 +114,11 @@ body
 #object_tree span
 {
     width: calc(100% - 2.5rem);
+    overflow: hidden;
+    white-space: nowrap;
     border: 1px solid transparent;
     display: inline-block;
+    height: 1.2rem;
 }
 
 #object_tree span.tool_buttons
