@@ -33,8 +33,8 @@ function InitEditor()
         }
     };
     document.getElementById('bbb2').addEventListener("click",(e)=>{
-        document.getElementById('aaa').value=VisualEditor.fixedMap.toCode();
-        document.getElementById('ccc').value=VisualEditor.lineMap.toCode();
+        document.getElementById('aaa').value=VisualEditor.fixedMap.toCode(0);
+        document.getElementById('ccc').value=VisualEditor.lineMap.toCode(0);
 
     });
     document.getElementById('bbb').addEventListener("click",(e)=>{
