@@ -445,7 +445,16 @@ class VisualEditor
                 console.log(item);
                 if(item)
                 {
+					if(e.ctrlKey)
+					{
+						
+                    VisualEditor.currentSelection.add([item], true);
+					}
+					else
+					{
+						
                     VisualEditor.currentSelection.set([item], true);
+					}
                     VisualEditor.refreshView();
                 }
             }
