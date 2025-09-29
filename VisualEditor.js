@@ -348,13 +348,25 @@ class VisualEditor
             VisualEditor.buildTree(node,target_object,true);
         }
     }
-	static createLineBadge(line)
+	static createLineBadge(line, passive = false)
 	{
 			let badge = document.createElement("div");
 			badge.classList.add("line_badge");
 			badge.append(" ");
 			badge.style.borderTopColor = line.colour1;
 			badge.style.borderBottomColor = line.colour2;
+			badge.dataset.lineName = line.name;
+			if(!passive)
+			{
+				
+				badge.addEventListener("click",(e)=>{
+					VisualEditor.selectLine(e.target.dataset.lineName);
+				});
+				badge.addEventListener("mouseover",(e)=>{
+                    VisualEditor.currentHightlight = [line];
+                    VisualEditor.refreshView();
+				});
+			}
 			return badge;
 	}
 	static buildTree(target_node, target_object, replace = false)
