@@ -269,11 +269,7 @@ class VisualEditor
 			}
 			case "patch":
 			{
-				let badge = document.createElement("div");
-				badge.classList.add("line_badge");
-				badge.append(" ");
-				badge.style.borderTopColor = target_object.parent.colour1;
-				badge.style.borderBottomColor = target_object.parent.colour2;
+				let badge = this.createLineBadge(target_object.parent);
 				badge.dataset.lineName = target_object.parent.name;
 				badge.addEventListener("click",(e)=>{
 					VisualEditor.selectLine(e.target.dataset.lineName);
@@ -305,6 +301,33 @@ class VisualEditor
 				sheet.appendChild(c2);
 				break;
 			}
+			case "frame":
+			{
+				target_object.subItems.forEach((socket)=>{
+					console.log(socket);
+					if(socket.connections.length>0)
+					{
+						let knownLines = [];
+						let socketLine = document.createElement("div");
+						socketLine.dataset.itemref = itemref;
+						let sname = document.createElement("span");
+						sname.dataset.itemref = itemref;
+						sname.append("🔌" + (socket.slot+1).toString());
+						socketLine.appendChild(sname);
+						socket.connections.forEach((conn)=>{
+							if(!knownLines.find((sl)=>sl==conn.parent))
+							{
+								knownLines.push(conn.parent);
+								let badge = this.createLineBadge(conn.parent);
+								badge.dataset.itemref = itemref;
+								socketLine.appendChild(badge);
+							}
+						});
+						sheet.appendChild(socketLine);
+					}
+				});
+				break;
+			}
 		}
 
 		
@@ -325,6 +348,15 @@ class VisualEditor
             VisualEditor.buildTree(node,target_object,true);
         }
     }
+	static createLineBadge(line)
+	{
+			let badge = document.createElement("div");
+			badge.classList.add("line_badge");
+			badge.append(" ");
+			badge.style.borderTopColor = line.colour1;
+			badge.style.borderBottomColor = line.colour2;
+			return badge;
+	}
 	static buildTree(target_node, target_object, replace = false)
 	{
 		let styles = {
@@ -360,11 +392,7 @@ class VisualEditor
 
 		if(target_object.type == "line")
 		{
-			let badge = document.createElement("div");
-			badge.classList.add("line_badge");
-			badge.append(" ");
-			badge.style.borderTopColor = target_object.colour1;
-			badge.style.borderBottomColor = target_object.colour2;
+			let badge = this.createLineBadge(target_object);
 			badge.dataset.itemref = safelbl;
 			tpl.querySelector(".tree_item_name").appendChild(badge);
 		}
