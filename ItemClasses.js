@@ -742,7 +742,8 @@ class VisualFrame extends VisualItem
 		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
 		ctx.font ="20px monospace";
 		// label
-		ctx.fillText(this.label, rect.x+this.width/2, rect.y+this.height-DIM_FRAME_SPACING/2 -5);
+		ctx.fillText(this.label, rect.x+this.width/2, rect.y+this.height-DIM_FRAME_SPACING/2 -7);
+		ctx.fillText(this.name, rect.x + DIM_FRAME_SIDES/2, rect.y + DIM_FRAME_HEIGHT-10);
 		
 		
 		super.draw(ctx);
