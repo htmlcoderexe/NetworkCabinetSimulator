@@ -943,14 +943,22 @@ class VisualPatch extends VisualItem {
 	{
 		ctx.save();
 		ctx.lineWidth = 3;
+		let offset = 3;
+		let startX = this.from.cX + (this.from.width/2);
+		let startY = this.from.cY + 3;
+		let endX = this.to.cX + (this.to.width/2);
+		let endY = this.to.cY + this.to.height - 3;
+		let angle = Math.atan2(endY-startY, endX-startX);
+		let rotX = -1 * (Math.sin(angle)) * offset;
+		let rotY = Math.cos(angle) * offset;
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX+3, this.from.cY+3);
-		ctx.lineTo(this.to.cX+3,this.to.cY+this.to.height-3);
+		ctx.moveTo(startX + rotX, startY+rotY);
+		ctx.lineTo(endX + rotX,endY+rotY);
 		ctx.strokeStyle =this.parent.colour1;
 		ctx.stroke();
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX-3+this.to.width, this.from.cY+3);
-		ctx.lineTo(this.to.cX-3+this.to.width,this.to.cY+this.to.height-3);
+		ctx.moveTo(startX - rotX, startY-rotY);
+		ctx.lineTo(endX - rotX,endY-rotY);
 		ctx.strokeStyle =this.parent.colour2;
 		ctx.stroke();
 		ctx.restore();
