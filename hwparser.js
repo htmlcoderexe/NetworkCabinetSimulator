@@ -48,12 +48,16 @@ hwparser = {
 			return true;
 		}
 		let slot = this.getInt();
-		current.slot = slot-1;
 		if(!slot)
 		{
 			this.statevars['last_param'] = 1;
 			this.warn(this.WARN_MISSING_PARAM);
-			current.slot = current.getNextSlot();
+			current.slot = -1;
+		}
+		else
+		{
+			
+		current.slot = slot-1;
 		}
 		return true;
 	},

@@ -106,12 +106,11 @@ class VisualItem {
 	 * @returns {int} - a numeric ID guaranteed to be unused in this object.
 	 */
 	getNextSlot () {
-		const current = this.nextSlot;
-		let newSlot = current + 1;
-		while (this.checkSlot(newSlot)) {
-			newSlot++;
+		let current = this.nextSlot;
+		while (this.checkSlot(current)) {
+			current++;
 		}
-		this.nextSlot = newSlot;
+		this.nextSlot = current + 1;
 		return current;
 	}
 	/**
@@ -120,6 +119,7 @@ class VisualItem {
 	 * @returns - true if ID is in use, false otherwise.
 	 */
 	checkSlot (slot) {
+		console.log("checking slot ", slot, " in ", this.subItems);
 		let collision = this.subItems.find((subItem) => { return subItem.slot === slot; });
 		return !!collision;
 	}
@@ -555,7 +555,17 @@ class VisualRack extends VisualItem {
 			parser.warn(WARN_LOCATION_NO_LABEL);
 		}
 		//TODO SLOT
-		
+		if(this.subItems.length>0)
+		{
+			this.subItems.forEach((item)=>{
+				
+		if(item.slot === -1)
+		{
+			
+			item.slot = this.getNextSlot();
+		}
+			});
+		}
 		return true;
 	}
 	updateSize()
@@ -632,10 +642,6 @@ class VisualFrame extends VisualItem
 		if(!this.label)
 		{
 			parser.warn(WARN_LOCATION_NO_LABEL);
-		}
-		if(this.slot === -1)
-		{
-			this.slot = this.parent.getNextSlot();
 		}
 		
 		
