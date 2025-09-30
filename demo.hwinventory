@@ -84,24 +84,24 @@ BANK RJ45x4
      NEXT
 CONNECTOR SFP
     LABEL SFP
-    DIM 13 18
+    DIM 11 18
     RENDER
         LDVAR 0 SLOT
         INC 0
         PEN 1 black
         FONT 8px monospace
-        RECT 2 8 9 5
+        RECT 2 8 7 5
         FILL rgb(237 28 36)
         DVAR 0 8 7
 CONNECTOR SFP_F
     LABEL SFP
-    DIM 13 18
+    DIM 11 18
     RENDER
         LDVAR 0 SLOT
         INC 0
         PEN 1 black
         FONT 8px monospace
-        RECT 2 0 9 5
+        RECT 2 0 7 5
         FILL rgb(237 28 36)
         DVAR 0 8 13
 FRAME SWITCH_48_BANK_TEST
