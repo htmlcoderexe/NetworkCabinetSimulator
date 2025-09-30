@@ -10,6 +10,7 @@ class ItemRenderer
     {
         this.ctx = ctx;
         this.commands = commands;
+        ctx.textAlign ="center";
         //console.log(this.commands);
     }
     render(item)

@@ -17,24 +17,24 @@ CONNECTOR LC_PAIR
         DVAR 0 8 16
 CONNECTOR RJ45
     LABEL RJ45
-    DIM 13 18
+    DIM 11 18
     RENDER
         LDVAR 0 SLOT
         INC 0
         PEN 1 black
         FONT 8px monospace
-        RECT 2 8 9 5
+        RECT 2 8 7 5
         FILL rgb(237 28 36)
         DVAR 0 8 7
 CONNECTOR RJ45_F
     LABEL RJ45
-    DIM 13 18
+    DIM 11 18
     RENDER
         LDVAR 0 SLOT
         INC 0
         PEN 1 black
         FONT 8px monospace
-        RECT 2 0 9 5
+        RECT 2 0 7 5
         FILL rgb(237 28 36)
         DVAR 0 8 13
 BANK RJ45x16

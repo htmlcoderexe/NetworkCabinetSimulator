@@ -264,6 +264,17 @@ class VisualItem {
 			item.draw(ctx);
 		});
 	}
+	drawTop(ctx)
+	{
+		
+		if(this.collapseView)
+		{
+			return;
+		}
+		this.subItems.forEach((item) => {
+			item.drawTop(ctx);
+		});
+	}
 	drawCollapsed(ctx) {
 		if(this.collapseState)
 		{
@@ -754,6 +765,17 @@ class VisualFrame extends VisualItem
 		
 		super.draw(ctx);
 	}
+	drawTop(ctx)
+	{ctx.lineWidth = 1;
+		ctx.strokeStyle = "black";
+		ctx.fillStyle = "white";
+		const rect = this.getRect();
+		
+		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
+		ctx.fillRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
+		
+		super.drawTop(ctx);
+	}
 }
 
 class VisualSocket extends VisualItem
@@ -783,9 +805,32 @@ class VisualSocket extends VisualItem
 	}
 	draw(ctx) 
 	{
+		ctx.fillStyle="#FFFFFF";
+		ctx.fillRect(this.cX+0.0,this.cY+1,this.width,this.height-1);
+		const lines = this.connections.length;
+		for(let i=0;i<lines;i++)
+		{
+			//console.log(this.connections[i].parent);
+			ctx.lineWidth = 4;
+			ctx.beginPath();
+			ctx.moveTo(this.cX+2,this.cY + Math.floor(i* this.height/lines));
+			ctx.lineTo(this.cX+2,this.cY + Math.floor((i+1)* this.height/lines));
+			ctx.strokeStyle = this.connections[i].parent.colour1;
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.cX+this.width-3,this.cY + Math.floor(i* this.height/lines));
+			ctx.lineTo(this.cX+this.width-3,this.cY + Math.floor((i+1)* this.height/lines));
+			ctx.strokeStyle = this.connections[i].parent.colour2;
+			//console.log(this.connections[i].parent.colour2);
+			ctx.stroke();
+		}
 		const rr = new ItemRenderer(ctx, this.renderer.instructions);
 		rr.render(this);
 			
+	}
+	drawTop(ctx)
+	{
+		this.draw(ctx);
 	}
 
 	connect(wire)

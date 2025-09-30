@@ -122,6 +122,27 @@ class VisualEditor
 			lineWidth: 3
 		};
         let itemIDs = [];
+		if(VisualEditor.currentSelection)
+		{
+			VisualEditor.currentSelection.selection.forEach((box)=>{
+			
+					box.drawTop(ctx);
+                box.drawHighlight(ctx,style);
+                itemIDs.push(box.getFullName(VisualEditor.ITEM_REF_SEPARATOR));
+            });
+            VisualEditor.getTreeItems().forEach((item)=>{
+                let objid = item.dataset.itemref;
+                if(itemIDs.find(id=>id==objid))
+                {
+                    item.classList.add("selected");
+                }
+                else
+                {
+                    item.classList.remove("selected");
+                }
+            });
+		}
+        itemIDs = [];
 		if(VisualEditor.currentHightlight)
 		{
 			VisualEditor.currentHightlight.forEach(box=>box.drawHighlight(ctx,style2));
@@ -138,25 +159,6 @@ class VisualEditor
                 else
                 {
                     item.classList.remove("highlighted");
-                }
-            });
-		}
-        itemIDs = [];
-		if(VisualEditor.currentSelection)
-		{
-			VisualEditor.currentSelection.selection.forEach((box)=>{
-                box.drawHighlight(ctx,style);
-                itemIDs.push(box.getFullName(VisualEditor.ITEM_REF_SEPARATOR));
-            });
-            VisualEditor.getTreeItems().forEach((item)=>{
-                let objid = item.dataset.itemref;
-                if(itemIDs.find(id=>id==objid))
-                {
-                    item.classList.add("selected");
-                }
-                else
-                {
-                    item.classList.remove("selected");
                 }
             });
 		}
@@ -304,7 +306,7 @@ class VisualEditor
 			case "frame":
 			{
 				target_object.subItems.forEach((socket)=>{
-					console.log(socket);
+					//console.log(socket);
 					if(socket.connections.length>0)
 					{
 						let knownLines = [];
