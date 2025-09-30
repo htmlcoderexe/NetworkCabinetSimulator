@@ -894,6 +894,117 @@ class VisualLine extends VisualItem {
 		});
 		return grp;
 	}
+
+	commit(parser)
+	{
+		let linksInOrder = [];
+		let seenFroms = [];
+		let seenTos = [];
+		let seenConnections = [];
+		this.subItems.forEach((link)=>{
+			let thisFrom = link.from;
+			let thisTo = link.to;
+			if(!thisFrom || !thisTo)
+			{
+				parser.warn(WARN_BAD_LINK);
+				return;
+			}
+			// if the connection is already in the list, remove it
+			if(seenConnections.find((conn)=>conn === thisFrom))
+			{
+				seenConnections = seenConnections.filter((conn2)=>conn2 !== thisFrom);
+			}
+			// else add it to the list
+			// any connection seen an even amount of times will be gone
+			// any odd amount will remain
+			else
+			{
+				seenConnections.push(thisFrom);
+			}
+			if(seenConnections.find((conn)=>conn === thisTo))
+			{
+				seenConnections = seenConnections.filter((conn2)=>conn2 !== thisTo);
+			}
+			else
+			{
+				seenConnections.push(thisTo);
+			}
+			
+			// log all connections
+			seenFroms.push(thisFrom);
+			seenTos.push(thisTo);
+		});
+		console.log(seenConnections);
+		if(seenConnections.length !=2)
+		{
+			// malformed line
+		}
+		else
+		{
+			// determine start
+			let firstPoint = null;
+			let lastPoint = null;
+			let currentPoint = null;
+			let nextPoint = null;
+			let availableLinks = this.subItems.slice();
+			if(seenFroms.find((conn)=>conn == seenConnections[0]))
+			// [0] is the start
+			{
+				firstPoint = seenConnections[0];
+				lastPoint = seenConnections[1];
+			}
+			else
+			{
+				firstPoint = seenConnections[1];
+				lastPoint = seenConnections[0];
+			}
+			currentPoint = firstPoint;
+			let linkIdCounter = 0;		   // a sensible safeguard 
+			while(currentPoint!==lastPoint && linkIdCounter < this.subItems.length)
+			{
+				let linked = availableLinks.filter((link)=>
+					(link.to === currentPoint || link.from ===currentPoint)
+					);
+				if(linked.length<1)
+				{
+					// discontinuity??
+					break;
+				}
+				if(linked.length>1)
+				{
+					// some other discrepancy
+					break;
+				}
+				let currentLink = linked[0];
+				let nextPoint = currentLink.from === currentPoint ? currentLink.to : currentLink.from;
+				currentLink.unlink();
+				currentLink.from = currentPoint;
+				currentLink.to = nextPoint;
+				currentLink.commit(parser);
+				currentLink.name = linkIdCounter;
+				currentPoint = nextPoint;
+				availableLinks = availableLinks.filter((link)=>link!==currentLink);
+				linkIdCounter++;
+				console.log("renumbered", currentLink, "to ", linkIdCounter-1);
+			}
+		this.subItems.sort((a,b)=>a.name - b.name);
+		}
+		return true;
+	}
+
+	getLinkBetween(socket1, socket2)
+	{
+		return this.subItems.find((link)=>
+		(link.to === socket1 && link.from ===socket2)
+		|| (link.to === socket2 && link.from ===socket1)
+		);
+	}
+	getLinksVisiting(socket)
+	{
+		return this.subItems.filter((link)=>
+		(link.to === socket || link.from ===socket)
+		);
+	}
 }
 
 class VisualPatch extends VisualItem {
@@ -919,6 +1030,13 @@ class VisualPatch extends VisualItem {
 		this.to.connect(this);
 		this.from.connect(this);
 		return true;
+	}
+	unlink()
+	{
+		this.to.disconnect(this);
+		this.from.disconnect(this);
+		this.to = null;
+		this.from = null;
 	}
 	updateSize()
 	{

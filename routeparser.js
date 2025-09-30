@@ -1,3 +1,5 @@
+const WARN_BAD_LINK = 201;
+const WARN_ORPHAN_LINK = 202;
 
 routeparser = {
 	"COLOUR1": function(current)
