@@ -235,10 +235,24 @@ class VisualEditor
 	{
 		let tpl = VisualEditor.itemPropSheetTemplate.content.cloneNode(true);
 		let itemref = target_object.getFullName("/");
+		let item_badge = tpl.querySelector(".item_badge");
+		item_badge.dataset.itemref = itemref;
+		item_badge.dataset.itemtype = target_object.type;
 		let item_label = tpl.querySelector(".item_title");
 		item_label.dataset.itemref = itemref;
 		item_label.dataset.itemtype = target_object.type;
-		item_label.append(target_object.getLabel());
+		item_label.value = target_object.getLabel();
+        item_label.addEventListener("click",(e)=>
+        {
+            item_label.readOnly = false;
+        });
+        item_label.addEventListener("blur",(e)=>
+        {
+            target_object.label = item_label.value.trim();
+            item_label.readOnly = true;
+            VisualEditor.reportUpdate(target_object);
+            VisualEditor.refreshView();
+        });
 		let sheet = tpl.querySelector(".item_properties");
 		sheet.dataset.itemref = itemref;
 		switch(target_object.type)
