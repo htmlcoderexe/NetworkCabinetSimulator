@@ -71,7 +71,7 @@ function InitEditor()
 
         let txt2 = document.getElementById('ccc').value;
         p = new VisualParser(txt2, routeparser, new VisualLineMap("Lines"));
-        warns = {...p.warncodes, ...hw_warns};
+        warns = {...p.warncodes, ...route_warns};
         p.warncodes = warns;
         p.terrain = window.patchmap.terrain;
         //console.log(p.warncodes);

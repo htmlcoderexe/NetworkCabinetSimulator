@@ -928,7 +928,10 @@ class VisualLine extends VisualItem {
 		output+=this._f("line",indent_level,this.name);
 		output+=this._f("colour1",indent_level+1, this.colour1);
 		output+=this._f("colour2",indent_level+1, this.colour2);
-		//output+=this._f("label", indent_level+1, this.label)
+		if(this.label!="")
+		{
+			output+=this._f("label", indent_level+1, this.label)
+		}
 		return output+super.toCode(indent_level);
 	}
 	getDrawingGroup()
@@ -1065,6 +1068,10 @@ class VisualPatch extends VisualItem {
 	{
 		let output ="";
 		output+=this._f("link",indent_level,this.name);
+		if(this.label!="")
+		{
+			output+=this._f("label", indent_level+1, this.label)
+		}
 		output+=this._f("from",indent_level+1, this.from.getFullName(" ").substring(10));
 		output+=this._f("to",indent_level+1, this.to.getFullName(" ").substring(10));
 		output+=this._f("cable", indent_level+1, this.cable)
