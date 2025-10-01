@@ -800,6 +800,10 @@ class VisualSocket extends VisualItem
 		super("socket", name, frame);
 		this.selectionOrder = 5;
 	}
+	getLabel()
+	{
+		return this.label==""?this.name : "(" + this.name + ") " + this.label;
+	}
 	updateSize()
 	{
 		super.updateSize();
@@ -1088,6 +1092,10 @@ class VisualPatch extends VisualItem {
 		output+=this._f("to",indent_level+1, this.to.getFullName(" ").substring(10));
 		output+=this._f("cable", indent_level+1, this.cable)
 		return output;//+super.toCode(indent_level);
+	}
+	getLabel()
+	{
+		return this.label==""?this.name : "(" + this.name + ") " + this.label;
 	}
 	commit(parser)
 	{

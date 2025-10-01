@@ -241,7 +241,7 @@ class VisualEditor
 		let item_label = tpl.querySelector(".item_title");
 		item_label.dataset.itemref = itemref;
 		item_label.dataset.itemtype = target_object.type;
-		item_label.value = target_object.getLabel();
+		item_label.value = target_object.label == "" ? target_object.getLabel() : target_object.label;
         item_label.addEventListener("click",(e)=>
         {
             item_label.readOnly = false;
