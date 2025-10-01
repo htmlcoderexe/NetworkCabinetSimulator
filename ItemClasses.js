@@ -633,6 +633,7 @@ class VisualFrame extends VisualItem
 		this.width = DIM_RACK_WIDTH;
 		this.slot = -1;
 		this.frametype = "";
+		this.socketlabels = {};
 	}
 	toCode(indent_level)
 	{
@@ -640,7 +641,13 @@ class VisualFrame extends VisualItem
 		output+=this._f("frame",indent_level,this.name);
 		output+=this._f("slot",indent_level+1, this.slot+1);
 		output+=this._f("type",indent_level+1, this.frametype);
-		output+=this._f("label", indent_level+1, this.label)
+		output+=this._f("label", indent_level+1, this.label);
+		this.subItems.forEach(socket => {
+			if(socket.label!="")
+			{	
+				output+=this._f("socketlabel", indent_level+1, socket.name, socket.label);
+			}
+		});
 		return output;//+super.toCode(indent_level);
 	}
 	commit(parser)
@@ -720,7 +727,12 @@ class VisualFrame extends VisualItem
 				}
 			}
 		});
-		
+		this.subItems.forEach((socket)=>{
+			if(this.socketlabels[socket.name])
+			{
+				socket.label = this.socketlabels[socket.name];
+			}
+		});
 		
 		
 		return true;

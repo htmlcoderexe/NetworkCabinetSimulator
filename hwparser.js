@@ -82,6 +82,34 @@ hwparser = {
 		current.frametype = ftype;
 		return true;
 	},
+	"SOCKETLABEL": function(current)
+	{
+		if(!current)
+		{
+			this.warn(this.WARN_UNEXPECTED_TOKEN);
+			return true;
+		}
+		let socketname = this.getWord();
+		if(!socketname)
+		{
+			this.statevars['last_param'] = 1;
+			this.warn(this.WARN_MISSING_PARAM);
+			return true;
+		}
+		let socketlabel = this.getRest();
+		if(!socketlabel)
+		{
+			this.statevars['last_param'] = 2;
+			this.warn(this.WARN_MISSING_PARAM);
+		}
+		if(current.type!="frame")
+		{
+			this.WARN_UNEXPECTED_TOKEN;
+			return true;
+		}
+		current.socketlabels[socketname]=socketlabel;
+		return true;
+	},
 	"POSITION": function(current)
 	{
 		if(!current)
