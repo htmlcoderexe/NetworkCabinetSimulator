@@ -9,25 +9,81 @@ const DIM_RACK_LABEL_SIZE = 30;
 const DIM_COLLAPSED_WIDTH = 100;
 
 class VisualItem {
+	/**
+	 * Indent used when outputting code.
+	 */
 	static indent ="    ";
+	/**
+	Contains hitboxes of all VisualItems.
+	 */
 	static hitboxMapping = [];
-
+	/**
+	This item's X coordinate, relative to parent.
+	 */
 	x = 0;
+	/**
+	This item's Y coordinate, relative to parent.
+	 */
 	y = 0;
+	/**
+	This item's X coordinate, relative to the canvas, calculated.
+	 */
 	cX = 0;
+	/**
+	This item's Y coordinate, relative to the canvas, calculated.
+	 */
 	cY = 0;
+	/**
+	This item's height.
+	 */
 	height = 1;
+	/**
+	This item's width.
+	 */
 	width = 1;
+	/**
+	This item's normal selection priority.
+	 */
 	selectionOrder = 0;
+	/**
+	This item's selection priority, override.
+	 */
 	overrideSO = 0;
+	/**
+	This item's label, can be empty.
+	 */
 	label = "";
+	/**
+	Contains any items that are part of this item.
+	 */
 	subItems = [];
+	/**
+	Unique name to identify this item amongst any sibling items.
+	 */
 	name = "";
+	/**
+	This item's containing item - null for root items.
+	 */
 	parent = null;
+	/**
+	Represents the item's type.
+	 */
 	type = "";
+	/**
+	Keeps track of the next free slot (unique integer identifier among sibling items).
+	 */
 	nextSlot = 0;
+	/**
+	Applies to diagonal testing on the item's hitbox.
+	 */
 	flip = false;
+	/**
+	This element's explicit collapsed/compact state.
+	 */
 	collapseState = false;
+	/**
+	This flag determines if the item will be rendered as collapsed or not.
+	 */
 	collapseView = false;
 	/**
 	 * Creates a generic base object.
@@ -137,55 +193,93 @@ class VisualItem {
 		//console.log(rect);
 		return rect;
 	}
-	getLabel()
-	{
-		return this.label==""?this.name:this.label;
-	}
+	/**
+	 * Retrieves a combined label of this item and its parents.
+	 * @param {string} separator - the string to separate the label's components with. 
+	 * @returns - the full label.
+	 */
 	getFullLabel(separator = "/")
 	{
 		if(!this.parent)
 		{
 			return this.getLabel();
 		}
+		// if this is not the topmost item, recurse
 		return this.parent.getFullLabel(separator) + separator + (this.getLabel());
 	}
+	/**
+	 * Retrieves this item's fully qualified name uniquely identifying the item inside the root item.
+	 * @param {string} separator - the string to separate individual names.
+	 * @returns - the fully qualified name.
+	 */
 	getFullName(separator = "/")
 	{
 		if(!this.parent)
 		{
 			return this.name;
 		}
+		// if this is not the topmost item, recurse
 		return this.parent.getFullName(separator) + separator + (this.name);
 	}
-
+	/**
+	 * Refreshes all items' hitboxes.
+	 */
 	updateHitboxMapping()
 	{
+		// check if the item already has an entry
 		let hitboxRef = VisualItem.hitboxMapping.find((hitbox)=>hitbox.item === this);
 		if(!hitboxRef)
 		{
+			// create if not
 			hitboxRef = {};
 			VisualItem.hitboxMapping.push(hitboxRef);
 		}
+		// reference to the item 
 		hitboxRef.item = this;
+		// selection priority, bumping it with the override
 		hitboxRef.level = Math.max(this.selectionOrder, this.overrideSO);
+		// hitbox for rough detection
 		hitboxRef.hitbox = this.getRect();
+		// display string (for status bar usage or such)
 		hitboxRef.label = this.getFullLabel();
+		// recurse to subitems
 		this.subItems.forEach((item) => {
 			item.updateHitboxMapping();
 		});
 		
 	}
-
-
-	getOrigin () {
-		let result = { x: this.x, y: this.y };
-		if (this.parent) {
-			let pO = this.parent.getOrigin();
-			result.x += pO.x;
-			result.y += pO.y;
-		}
-		return result;
+	/**
+	 * Generates a string to indent a code line with.
+	 * @param {Number} level - indent level to generate
+	 * @returns {string} - the string to prepend to the code line.
+	 */
+	getIndent(level)
+	{
+		return VisualItem.indent.repeat(level);
 	}
+	/**
+	 * Formats a code line that can be parsed.
+	 * @param {string} keyword - the keyword to use
+	 * @param {number} indent - the line's indent level
+	 * @param  {...string} params - params for the keyword
+	 * @returns {string} - a properly formatted and indented code line, terminated by a newline.
+	 */
+	formatLine(keyword, indent, ...params)
+	{
+		return this.getIndent(indent) + keyword.toUpperCase() + " " + params.join(" ") + "\n";
+	}
+	/**
+	 * A shortcut for @see VisualItem.formatLine()
+	 * @param {string} keyword - the keyword to use
+	 * @param {number} indent - the line's indent level
+	 * @param  {...string} params - params for the keyword
+	 * @returns {string} - a properly formatted and indented code line, terminated by a newline.
+	 */
+	_f(keyword, indent, ...params)
+	{
+		return this.formatLine(keyword, indent, ...params);
+	}
+
 
 	//************* Stuff to override begins here */
 
@@ -199,20 +293,22 @@ class VisualItem {
 		console.log("generic commit of type " + this.type);
 		return true;
 	}
-
-	getIndent(level)
+	/**
+	 * Returns a label to be used for display - either the item's explicit label
+	 * or a derived value. By default, this uses the item's name if the label is empty.
+	 * @returns {string} - the display label.
+	 */
+	getLabel()
 	{
-		return VisualItem.indent.repeat(level);
+		return this.label==""?this.name:this.label;
 	}
-	formatLine(keyword, indent, ...params)
-	{
-		return this.getIndent(indent) + keyword.toUpperCase() + " " + params.join(" ") + "\n";
-	}
-	_f(keyword, indent, ...params)
-	{
-		return this.formatLine(keyword, indent, ...params);
-	}
-	toCode(indent_level)
+	/**
+	 * Generates code representing this item's current non-volatile state,
+	 * which, when parsed, will result in a copy of this item.
+	 * @param {number} indent_level - a starting indent level.
+	 * @returns 
+	 */
+	toCode(indent_level = 0)
 	{
 		let output ="";
 
@@ -249,24 +345,23 @@ class VisualItem {
 	 * @param {CanvasRenderingContext2D} ctx - The candvas to render to.
 	 */
 	draw (ctx) {
+		// default to not drawing anything if item is hidden.
 		if(this.collapseView)
 		{
 			return;
 		}
-		//ctx.clearRect(0,0,1024,1024);
-		/*
-		ctx.strokeStyle = "green";
-		ctx.lineWidth = 3;
-		const rect = this.getRect();
-		ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-		*/
 		this.subItems.forEach((item) => {
 			item.draw(ctx);
 		});
 	}
+	/**
+	 * Renders the object, gets called when the object needs to be rendered
+	 * on the top layer.
+	 * @param {CanvasRenderingContext2D} ctx - the canvas to render to. 
+	 */
 	drawTop(ctx)
 	{
-		
+		// default to not drawing anything if item is hidden.
 		if(this.collapseView)
 		{
 			return;
@@ -275,7 +370,12 @@ class VisualItem {
 			item.drawTop(ctx);
 		});
 	}
+	/**
+	 * Renders the object's collapsed form if applicable.
+	 * @param {CanvasRenderingContext2D} ctx - the canvas to render to. 
+	 */
 	drawCollapsed(ctx) {
+		// default to drawing the object normally
 		if(this.collapseState)
 		{
 			this.draw(ctx);
@@ -342,85 +442,100 @@ class VisualItem {
 		});
 	}
 	/**
-	 * 
+	 * Checks if this item collides with the specified coordinates.
+	 * @param {number} x - the X coordinate to test
+	 * @param {number} y - the Y coordinate to test
+	 * @returns {boolean} - true if the item collides, false otherwise.
 	 */
 	testHit(x,y)
 	{
+		// do not collide hidden items
 		if(this.collapseView )
 		{
 			return false;
 		}
-		//console.log(x,y);
+		// by default just test against the item's bounding box
 		return this.getRect().contains(x,y);
 	}
-	
+	/**
+	 * Hides the item and its subitems.
+	 */
 	setCollapseView()
 	{
 		this.collapseView = true;
-		
-			this.subItems.forEach((item)=>
-			{
-				item.setCollapseView();
+		this.subItems.forEach((item)=>
+		{
+			item.setCollapseView();
 
-			});
+		});
 	}
+	/**
+	 * Unhides the item and its subitems.
+	 */
 	clearCollapseView()
 	{
-		this.collapseView = false;
-		
-			this.subItems.forEach((item)=>
-			{
-				item.clearCollapseView();
+		this.collapseView = false;		
+		this.subItems.forEach((item)=>
+		{
+			item.clearCollapseView();
 
-			});
+		});
 	}
-
+	/**
+	 * Toggles the item's visibility.
+	 */
 	toggleCollapseView()
 	{
 		this.collapseView ? this.clearCollapseView() : this.setCollapseView();
 	}
-
-	uncollapse(cascade = false)
+	/**
+	 * Collapses the item, setting it to collapsed state and hiding its contents.
+	 */
+	collapse()
 	{
-
-		this.collapseState = false;
-		this.overrideSO = 0;
-		//this.collapseView = true;
-		if(this.subItems.length > 0)
-		{
-			this.subItems.forEach((item)=>
-			{
-				item.clearCollapseView();
-
-			});
-		}
-		this.updateSize();
-		this.updatePosition();
-
-	}
-	
-	collapse(cascade = false)
-	{
-		
 		this.collapseState = true;
+		// override selection priority to make it easier to select
 		this.overrideSO = 100;
-		//this.collapseView = true;
+		// hide, not collapse, any contents
 		if(this.subItems.length > 0)
 		{
 			this.subItems.forEach((item)=>
 			{
 				item.setCollapseView();
-
 			});
 		}
+		// do a refresh since the item's dimensions may have changed
 		this.updateSize();
 		this.updatePosition();
-		
+	}
+	/**
+	 * Uncollapses the item, setting it to normal state and unhiding its contents.
+	 */
+	uncollapse()
+	{
+		this.collapseState = false;
+		// reset selection priority to default
+		this.overrideSO = 0;
+		// unhide the contents, not affecting explicit collapse state
+		if(this.subItems.length > 0)
+		{
+			this.subItems.forEach((item)=>
+			{
+				item.clearCollapseView();
+			});
+		}
+		// do a refresh since the item's dimensions may have changed
+		this.updateSize();
+		this.updatePosition();
 	}
 }
 
 
-
+/**
+ * A skeleton class mainly existing for
+ * the boilerplate to copypaste when a new item
+ * type is created.
+ */
 class VisualTEMPLATE extends VisualItem {
 	constructor(line, name)	{
 		super("tpl", name, line);
@@ -439,17 +554,19 @@ class VisualTEMPLATE extends VisualItem {
 	}
 }
 
-
-
+/**
+ * Container for fixed installations, parent item for Locations
+ */
 class VisualMap extends VisualItem {
 	constructor(name)
 	{
 		super("map", name);
-
 	}
 }
 
-
+/**
+ * Represents a fixed location grouping racks and other such items.
+ */
 class VisualLocation extends VisualItem {
 	constructor(map, name)
 	{
@@ -462,8 +579,12 @@ class VisualLocation extends VisualItem {
 	{
 		let output ="";
 		output+=this._f("location",indent_level,this.name);
+		// actually stores the position
 		output+=this._f("position",indent_level+1, this.x, this.y);
 		output+=this._f("label", indent_level+1, this.label);
+		// compact/collapse state is also stored as 
+		// compact locations are useful for visualising
+		// unimportant/less relevant items
 		if(this.collapseState)
 		{
 			output+=this._f("compact", indent_level+1, "");
@@ -473,6 +594,7 @@ class VisualLocation extends VisualItem {
 	
 	commit(parser)
 	{
+		// must have a name, rest is optional
 		if(!this.name)
 		{
 			parser.warn(WARN_LOCATION_NO_NAME);
@@ -482,6 +604,7 @@ class VisualLocation extends VisualItem {
 		{
 			parser.warn(WARN_LOCATION_NO_LABEL);
 		}
+		// run the collapse function if it starts out collapsed
 		if(this.collapseState)
 		{
 			this.collapse();
@@ -491,6 +614,7 @@ class VisualLocation extends VisualItem {
 
 	updatePosition()
 	{
+		// top level item, so renders at actual coordinates
 		this.cX = this.x;
 		this.cY = this.y;
 		super.updatePosition();
@@ -500,49 +624,57 @@ class VisualLocation extends VisualItem {
 	{
 		if(this.collapseState)
 		{
+			// render a collapsed location tall enough to show its label
 			this.height = DIM_RACK_LABEL_SIZE + DIM_RACK_SPACING;
 			this.width = DIM_COLLAPSED_WIDTH;
 			super.updateSize();
+			// exit
 			return;
 		}
+		// for full size, calculate height based
+		// on the tallest rack contained
 		let maxh=0;
 		this.subItems.forEach((item)=>{
+			// make sure each rack first calculates its size
 			item.updateSize();
 			maxh = maxh < item.height ? item.height : maxh;
 		});
+		// width is based on the number of racks
 		this.width = this.subItems.length * (DIM_RACK_WIDTH+DIM_RACK_SPACING) + DIM_RACK_SPACING;
 		this.height = maxh + DIM_RACK_LABEL_SIZE*2;
 	}
 	draw(ctx) 
 	{
 		ctx.strokeStyle = "black";
-		
 		ctx.lineWidth = 1;
-		
 		ctx.fillStyle = "white";
+		// draw a simple rectangle
 		const rect = this.getRect();
 		ctx.fillRect(rect.x+0.5, rect.y+0.5, rect.width, rect.height);
 		ctx.strokeRect(rect.x+0.5, rect.y+0.5, rect.width, rect.height);
-		
+		// draw the label
 		ctx.fillStyle = "black";
 		ctx.textAlign = "center";
 		ctx.font ="20px monospace";
 		ctx.fillText(this.label, rect.x+rect.width/2, rect.y+DIM_RACK_SPACING-3);
-		
+		// if collapsed, don't draw anything inside
 		if(this.collapseState == true)
 		{
 			return;
 		}
 		super.draw(ctx);
 	};
-	
 }
-
+/**
+ * Represents a single rack of equipment (Frames)
+ */
 class VisualRack extends VisualItem {
 	constructor(location, name)
 	{
 		super("rack", name, location);
+		// standard width
 		this.width = DIM_RACK_WIDTH;
+		// if not set later, will be dynamically assigned
 		this.slot = -1;
 		this.selectionOrder = 2;
 	}
@@ -550,6 +682,8 @@ class VisualRack extends VisualItem {
 	{
 		let output ="";
 		output+=this._f("rack",indent_level,this.name);
+		// #TODO: keep track if the slot was originally assigned
+		// and only write it here if it was
 		output+=this._f("slot",indent_level+1, this.slot+1);
 		output+=this._f("label", indent_level+1, this.label)
 		return output+super.toCode(indent_level);
@@ -565,16 +699,15 @@ class VisualRack extends VisualItem {
 		{
 			parser.warn(WARN_LOCATION_NO_LABEL);
 		}
-		//TODO SLOT
+		// assign a slot to every frame that doesn't
+		// have one explicitly set
 		if(this.subItems.length>0)
 		{
 			this.subItems.forEach((item)=>{
-				
-		if(item.slot === -1)
-		{
-			
-			item.slot = this.getNextSlot();
-		}
+				if(item.slot === -1)
+				{
+					item.slot = this.getNextSlot();
+				}
 			});
 		}
 		return true;
@@ -582,9 +715,12 @@ class VisualRack extends VisualItem {
 	updateSize()
 	{
 		super.updateSize();
+		// currently the height just depends on the amount of frames
+		// #TODO: account for explicit slots
 		this.height = this.subItems.length * (DIM_FRAME_BOTTOM+DIM_FRAME_HEIGHT) + DIM_RACK_LABEL_SIZE;
-		
 		this.width = DIM_RACK_WIDTH;
+		// needed to propagate change to the sockets
+		// so that the lines attached render in a reasonable location
 		if(this.collapseView)
 		{
 			this.height = 1;
@@ -593,9 +729,10 @@ class VisualRack extends VisualItem {
 	}
 	updatePosition()
 	{
+		// calculate ofset based on this rack's slot
 		this.cX = this.x + this.parent.cX + this.slot * (this.width + DIM_RACK_SPACING) + DIM_RACK_SPACING;
 		this.cY = this.y + this.parent.cY + DIM_RACK_LABEL_SIZE;
-		
+		// if location is collapsed, place roughly in the top middle
 		if(this.collapseView)
 		{
 			this.cX = this.parent.cX + DIM_COLLAPSED_WIDTH/2;
@@ -605,6 +742,7 @@ class VisualRack extends VisualItem {
 	};
 	draw(ctx) 
 	{
+		// nothing is drawn in collapsed view
 		if(this.collapseView)
 		{
 			return;
@@ -612,43 +750,51 @@ class VisualRack extends VisualItem {
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = "black";
 		ctx.fillStyle = "black";
+		// draw a rectangle
 		const rect = this.getRect();
 		ctx.strokeRect(rect.x+0.5, rect.y+0.5, rect.width, rect.height);
 		ctx.font ="20px monospace";
-		// label
+		// draw label
 		ctx.fillText(this.label, rect.x+this.width/2, rect.y+DIM_RACK_SPACING - 3);
-		
-		
 		super.draw(ctx);
 	}
 }
-
+/**
+ * A frame contains sockets to connect wires to
+ */
 class VisualFrame extends VisualItem
 {
 	constructor(rack, name)
 	{
 		super("frame", name, rack);
 		this.selectionOrder = 3;
+		// standard sizes
 		this.height = DIM_FRAME_HEIGHT + DIM_FRAME_BOTTOM;
 		this.width = DIM_RACK_WIDTH;
+		// defaults to dynamic assignment
 		this.slot = -1;
+		// contains the template used for the frame
 		this.frametype = "";
+		// contains any socket labels on sockets in this frame
 		this.socketlabels = {};
 	}
 	toCode(indent_level)
 	{
 		let output ="";
 		output+=this._f("frame",indent_level,this.name);
+		//#TODO: only write this if a slot was specified in original file
 		output+=this._f("slot",indent_level+1, this.slot+1);
 		output+=this._f("type",indent_level+1, this.frametype);
 		output+=this._f("label", indent_level+1, this.label);
+		// sockets aren't stored in the file
+		// any custom labels are stored with the frame
 		this.subItems.forEach(socket => {
 			if(socket.label!="")
 			{	
 				output+=this._f("socketlabel", indent_level+1, socket.name, socket.label);
 			}
 		});
-		return output;//+super.toCode(indent_level);
+		return output;
 	}
 	commit(parser)
 	{
@@ -661,52 +807,58 @@ class VisualFrame extends VisualItem
 		{
 			parser.warn(WARN_LOCATION_NO_LABEL);
 		}
-		
-		
+		// get the template
 		let ftpl = parser.inventory.find(this.frametype);
+		// reject the frame if the template reference is invalid
 		if(!ftpl || ftpl.type!="frame_tpl")
 		{
 			parser.statevars['frame_tpl_name'] = this.frametype;
 			parser.warn(WARN_BAD_FRAME_TPL);
 			return false;
 		}
-		
+		// add sockets from the template
 		ftpl.elements.forEach((el)=>{
 			switch(el.type)
 			{
+				// connectors are added directly
 				case "connector":
 				{
 					let connref = parser.inventory.find(el.name);
+					// make sure connector is valid
 					if(!connref)
 					{
-
+						// this only fails the specific socket, not the whole frame
 						return false;
 					}
 					let slot = this.getNextSlot();
+					// #TODO: more clear numbering system
+					// currently slots are 0-indexed internally but 1-indexed
+					// for naming and display
 					let conn = new VisualSocket(this, (slot+1).toString());
 					conn.slot = slot;
+					// the renderer is a subItem named "main"
 					conn.renderer = connref.find("main");
 					conn.width = connref.width;
 					conn.height = connref.height;
 					conn.x = el.x;
 					conn.y = el.y;
 					this.addItem(conn);
-
 					break;
 				}
+				// banks are collections of connectors
 				case "bank":
 				{
 					let bankref = parser.inventory.find(el.name);
+					// validate the bank reference
 					if(!bankref)
 					{
-
 						return false;
 					}
+					// same as the parent loop, go through each connector
 					bankref.elements.forEach((el2)=>{
 						let connref = parser.inventory.find(el2.name);
 						if(!connref)
 						{
-
 							return false;
 						}
 						let slot = this.getNextSlot();
@@ -717,32 +869,33 @@ class VisualFrame extends VisualItem
 						conn.height = connref.height;
 						conn.x = el2.x + el.x;
 						conn.y = el2.y + el.y;
-						
 						this.addItem(conn);
 					});
 				}
+				// any unexpected types are ignored
 				default:
 				{
 					return;
 				}
 			}
 		});
+		// apply any custom labels
 		this.subItems.forEach((socket)=>{
 			if(this.socketlabels[socket.name])
 			{
 				socket.label = this.socketlabels[socket.name];
 			}
 		});
-		
-		
 		return true;
 	}
 
 	updateSize()
 	{
 		super.updateSize();
+		// standard size
 		this.height = DIM_FRAME_HEIGHT + DIM_FRAME_BOTTOM;
 		this.width = DIM_RACK_WIDTH;
+		// unless collapsed
 		if(this.collapseView)
 		{
 			this.height = 1;
@@ -752,8 +905,11 @@ class VisualFrame extends VisualItem
 	updatePosition()
 	{
 		this.cX = this.x + this.parent.cX;
+		// vertical position based on slot
 		this.cY = this.y + this.parent.cY + this.slot * (this.height + DIM_FRAME_SPACING) + DIM_RACK_LABEL_SIZE;
-		
+		// if collapsed, every frame is at the same point
+		// needed to force the sockets in the same spot for
+		// wire visualisation when collapsed
 		if(this.collapseView)
 		{
 			this.cX =this.parent.cX;
@@ -767,33 +923,44 @@ class VisualFrame extends VisualItem
 		ctx.strokeStyle = "black";
 		ctx.fillStyle = "black";
 		const rect = this.getRect();
-		
+		// draw a rectangle of standard size
+		// plenty of padding on the sides and bottom
 		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
 		ctx.font ="20px monospace";
-		// label
+		// label on the bottom
 		ctx.fillText(this.label, rect.x+this.width/2, rect.y+this.height-DIM_FRAME_SPACING/2 -7);
+		// name on the left - should be a short numeric ID
 		ctx.fillText(this.name, rect.x + DIM_FRAME_SIDES/2, rect.y + DIM_FRAME_HEIGHT-10);
-		
-		
 		super.draw(ctx);
 	}
 	drawTop(ctx)
-	{ctx.lineWidth = 1;
+	{
+		ctx.lineWidth = 1;
 		ctx.strokeStyle = "black";
 		ctx.fillStyle = "white";
 		const rect = this.getRect();
-		
+		// fill a white background to override items underneath
 		ctx.fillRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
 		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
-		
 		super.drawTop(ctx);
 	}
 }
-
+/**
+ * Sockets are inside frames and have wires connected to them
+ */
 class VisualSocket extends VisualItem
 {
+	/**
+	 * List of wires currently connected
+	 */
 	connections = [];
+	/**
+	 * Renderer assigned to the socket.
+	 */
 	renderer = null;
+	/**
+	 * stores the connector's type name (such as RJ45 or SC)
+	 */
 	typename = "generic";
 	constructor(frame, name)
 	{
@@ -802,6 +969,7 @@ class VisualSocket extends VisualItem
 	}
 	getLabel()
 	{
+		// if no label, shows as "5", if label is applied, shows as "(5) label"
 		return this.label==""?this.name : "(" + this.name + ") " + this.label;
 	}
 	updateSize()
@@ -810,8 +978,10 @@ class VisualSocket extends VisualItem
 	}
 	updatePosition()
 	{
+		// #TODO: fix the hardcoded value for the various offsets used here
 		this.cX = this.x + this.parent.cX + DIM_FRAME_SIDES + 5;
 		this.cY = this.y + this.parent.cY + 2;
+		// if inside collapsed item, stick it to the top left of the item
 		if(this.collapseView)
 		{
 			this.cX =this.parent.cX;
@@ -821,14 +991,20 @@ class VisualSocket extends VisualItem
 	}
 	draw(ctx) 
 	{
+		// fill out the socket's dimensions with white background
 		ctx.fillStyle="#FFFFFF";
 		ctx.fillRect(this.cX+0.0,this.cY+1,this.width,this.height-1);
+		// draw markers indicated connected lines if any
 		const lines = this.connections.length;
 		for(let i=0;i<lines;i++)
 		{
-			//console.log(this.connections[i].parent);
 			ctx.lineWidth = 4;
 			ctx.beginPath();
+			// the Y coordinate here splits the socket's height between each
+			// distinct line
+			// 1 line draws from 0.0 to 1.0
+			// 2 lines draw from 0.0 to 0.5 and from 0.5 to 1.0
+			// etc
 			ctx.moveTo(this.cX+2,this.cY + Math.floor(i* this.height/lines));
 			ctx.lineTo(this.cX+2,this.cY + Math.floor((i+1)* this.height/lines));
 			ctx.strokeStyle = this.connections[i].parent.colour1;
@@ -837,39 +1013,59 @@ class VisualSocket extends VisualItem
 			ctx.moveTo(this.cX+this.width-3,this.cY + Math.floor(i* this.height/lines));
 			ctx.lineTo(this.cX+this.width-3,this.cY + Math.floor((i+1)* this.height/lines));
 			ctx.strokeStyle = this.connections[i].parent.colour2;
-			//console.log(this.connections[i].parent.colour2);
 			ctx.stroke();
 		}
+		// run the renderer to draw the actual socket
 		const rr = new ItemRenderer(ctx, this.renderer.instructions);
 		rr.render(this);
-			
 	}
 	drawTop(ctx)
 	{
 		this.draw(ctx);
 	}
-
+	/**
+	 * Connects a given wire to the socket
+	 * @param {VisualPatch} wire 
+	 */
 	connect(wire)
 	{
 		console.log("connected <", wire.getFullLabel(),"> to <", this.getFullLabel(), ">");
 		this.connections.push(wire);
 	}
-
+	/**
+	 * Disconnects a given wire from the socket
+	 * @param {VisualPatch} wire 
+	 */
 	disconnect(wire)
 	{
 		console.log("disconnected <", wire.getFullLabel(),"> from <", this.getFullLabel(), ">");
 		this.connections = this.connections.filter(item=>item!==wire);
 	}
+	/**
+	 * Checks if the wire is connected to this socket and can be moved
+	 * @param {VisualPatch} wire - wire to check
+	 * @returns {boolean}
+	 */
 	canMove(wire)
 	{
 		return (wire.to == this || wire.from == this);
-		
 	}
+	/**
+	 * Checks if a connection from a given wire's Line can be added to the socket
+	 * In effect, checks if the Line already exists on the socket
+	 * @param {VisualPatch} wire 
+	 * @returns 
+	 */
 	canAdd(wire)
 	{
 		const results = this.connections.filter(item=>item.parent == wire.parent);
-		return results.length ==0;
+		return results.length == 0;
 	}
+	/**
+	 * Checks if a wire's Line can be extended to this socket
+	 * @param {VisualPatch} wire 
+	 * @returns 
+	 */
 	canStart(wire)
 	{
 		const results = this.connections.filter(item=>item.parent == wire.parent);
@@ -877,15 +1073,20 @@ class VisualSocket extends VisualItem
 	}
 	getDrawingGroup()
 	{
+		// when highlighting the socket, also highlight any wires attached
 		return [this, ...this.connections];
 	}
-
+	/**
+	 * Disconnects a wire from the given socket, and the other wire that belongs to the same line
+	 * as the supplied reference wire. Then, attaches both to this socket.
+	 * @param {VisualPatch} other - the socket to disconnect from
+	 * @param {VisualPatch} line - wire to disconnect
+	 */
 	takeFrom(other, line)
 	{
 		let thisIsFrom = line.from == other;
 		let otherline = null;
-		console.log("called with params",other, line);
-			other.disconnect(line);
+		other.disconnect(line);
 		if(thisIsFrom)
 		{
 			// find the other link on same connection
@@ -893,8 +1094,6 @@ class VisualSocket extends VisualItem
 			if(otherline)
 				otherline.to = this;
 			line.from = this;
-			console.log("this line was STARTING at the target");
-			console.log(line, otherline);
 		}
 		else
 		{
@@ -903,19 +1102,12 @@ class VisualSocket extends VisualItem
 			if(otherline)
 				otherline.from = this;
 			line.to = this;
-			console.log("this line was ENDING at the target");
-			console.log(line, otherline);
-
 		}
-			console.log("before disconnect");
-			console.log(this, line, other, otherline);
-			console.log("after disconnect");
-			if(otherline)
-				other.disconnect(otherline);
-			this.connect(line);
-			if(otherline)
-				this.connect(otherline);
-			console.log(this, line, other, otherline);
+		if(otherline)
+			other.disconnect(otherline);
+		this.connect(line);
+		if(otherline)
+			this.connect(otherline);
 
 	}
 }
