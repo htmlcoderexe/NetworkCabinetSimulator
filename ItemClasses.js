@@ -1079,42 +1079,48 @@ class VisualSocket extends VisualItem
 	/**
 	 * Disconnects a wire from the given socket, and the other wire that belongs to the same line
 	 * as the supplied reference wire. Then, attaches both to this socket.
+	 * If no other wire is attached, then only the given wire is moved.
 	 * @param {VisualPatch} other - the socket to disconnect from
-	 * @param {VisualPatch} line - wire to disconnect
+	 * @param {VisualPatch} wire - wire to disconnect
 	 */
-	takeFrom(other, line)
+	takeFrom(other, wire)
 	{
-		let thisIsFrom = line.from == other;
-		let otherline = null;
-		other.disconnect(line);
+		// determine if the wire starts or ends at this socket
+		let thisIsFrom = wire.from == other;
+		let otherWire = null;
+		// first, remove the wire from the target socket
+		other.disconnect(wire);
+		// #TODO: refactor this ugliness
 		if(thisIsFrom)
 		{
 			// find the other link on same connection
-			otherline = line.from.connections.find((item)=>item.parent.name == line.parent.name);
-			if(otherline)
-				otherline.to = this;
-			line.from = this;
+			otherWire = wire.from.connections.find((item)=>item.parent.name == wire.parent.name);
+			if(otherWire)
+				otherWire.to = this;
+			wire.from = this;
 		}
 		else
 		{
 			// find the other link on same connection
-			otherline = line.to.connections.find((item)=>item.parent.name == line.parent.name);
-			if(otherline)
-				otherline.from = this;
-			line.to = this;
+			otherWire = wire.to.connections.find((item)=>item.parent.name == wire.parent.name);
+			if(otherWire)
+				otherWire.from = this;
+			wire.to = this;
 		}
-		if(otherline)
-			other.disconnect(otherline);
-		this.connect(line);
-		if(otherline)
-			this.connect(otherline);
+		if(otherWire)
+			other.disconnect(otherWire);
+		this.connect(wire);
+		if(otherWire)
+			this.connect(otherWire);
 
 	}
 }
 
 
 
-
+/**
+ * Top-level container for all the wiring articles and other "movable" items
+ */
 class VisualLineMap extends VisualItem
 {
 	constructor(name){
@@ -1122,12 +1128,22 @@ class VisualLineMap extends VisualItem
 		}
 
 }
-
+/**
+ * Defines a "line" - a contiguous set of wire links with two defined end points.
+ */
 class VisualLine extends VisualItem {
+
+	/**
+	 * One of the two colours making up the line's colour code
+	 */
+	colour1 = "#808080";
+	/**
+	 * One of the two colours making up the line's colour code
+	 */
+	colour2 = "#808080";
+	
 	constructor(map, name) {
 		super("line", name, map);
-		this.colour1 = "#808080";
-		this.colour2 = "#808080";
 	}
 	
 	toCode(indent_level)
@@ -1136,6 +1152,7 @@ class VisualLine extends VisualItem {
 		output+=this._f("line",indent_level,this.name);
 		output+=this._f("colour1",indent_level+1, this.colour1);
 		output+=this._f("colour2",indent_level+1, this.colour2);
+		// only write the label if actually set
 		if(this.label!="")
 		{
 			output+=this._f("label", indent_level+1, this.label)
@@ -1145,6 +1162,10 @@ class VisualLine extends VisualItem {
 	getDrawingGroup()
 	{
 		const grp = [];
+		// the line itself has no highlighting
+		// instead, highlight all its links
+		// technically, each socket bar endpoints is highlighted twice
+		// this is okay
 		this.subItems.forEach((item)=>{
 			grp.push(...item.getDrawingGroup());
 		});
@@ -1153,19 +1174,27 @@ class VisualLine extends VisualItem {
 
 	commit(parser)
 	{
-		let linksInOrder = [];
+		// walk thorough the entire line, ensuring all links
+		// are in the correct order and detecting any anomalies
+		
+		// keep track of sockets seen as a link's starting or ending point
 		let seenFroms = [];
 		let seenTos = [];
+		// also keep track of which points have been seen before
 		let seenConnections = [];
+		// go through every item, noting down the points visited by each link
 		this.subItems.forEach((link)=>{
+			// get the endpoints
 			let thisFrom = link.from;
 			let thisTo = link.to;
+			// if any endpoints are missing, that link is bad
 			if(!thisFrom || !thisTo)
 			{
 				parser.warn(WARN_BAD_LINK);
-				return;
+				// skip the bad link
+				return false;
 			}
-			// if the connection is already in the list, remove it
+			// if the endpoint is already in the list, remove it
 			if(seenConnections.find((conn)=>conn === thisFrom))
 			{
 				seenConnections = seenConnections.filter((conn2)=>conn2 !== thisFrom);
@@ -1177,6 +1206,7 @@ class VisualLine extends VisualItem {
 			{
 				seenConnections.push(thisFrom);
 			}
+			// do the same as above
 			if(seenConnections.find((conn)=>conn === thisTo))
 			{
 				seenConnections = seenConnections.filter((conn2)=>conn2 !== thisTo);
@@ -1190,19 +1220,27 @@ class VisualLine extends VisualItem {
 			seenFroms.push(thisFrom);
 			seenTos.push(thisTo);
 		});
+		// in a properly formed line, there should be exactly two endpoints that
+		// are each visited only by one link - the start and the end
 		console.log(seenConnections);
 		if(seenConnections.length !=2)
 		{
 			// malformed line
+			// #TODO: something
 		}
 		else
 		{
-			// determine start
+			// determine start point
 			let firstPoint = null;
 			let lastPoint = null;
 			let currentPoint = null;
 			let nextPoint = null;
+			// clone the array of links
 			let availableLinks = this.subItems.slice();
+			// pick one of the remaining points as the start 
+			// this is not 100% reliable as there may be cases where
+			// both points are a start point for a link or both are an end point
+			// but this is a sane heuristic
 			if(seenFroms.find((conn)=>conn == seenConnections[0]))
 			// [0] is the start
 			{
@@ -1214,10 +1252,13 @@ class VisualLine extends VisualItem {
 				firstPoint = seenConnections[1];
 				lastPoint = seenConnections[0];
 			}
+			// begin with the starting point
 			currentPoint = firstPoint;
-			let linkIdCounter = 0;		   // a sensible safeguard 
+			// init a link number counter
+			let linkIdCounter = 0;		   // |v|   a sensible safeguard        |v|
 			while(currentPoint!==lastPoint && linkIdCounter < this.subItems.length)
 			{
+				// find a link that connects to the current point
 				let linked = availableLinks.filter((link)=>
 					(link.to === currentPoint || link.from ===currentPoint)
 					);
@@ -1228,33 +1269,54 @@ class VisualLine extends VisualItem {
 				}
 				if(linked.length>1)
 				{
-					// some other discrepancy
+					// some other discrepancy, branching?
 					break;
 				}
+				// else should only be one link, use it
 				let currentLink = linked[0];
-				let nextPoint = currentLink.from === currentPoint ? currentLink.to : currentLink.from;
+				// designate the other end of the link as the next point
+				nextPoint = currentLink.from === currentPoint ? currentLink.to : currentLink.from;
+				// pick the link out
 				currentLink.unlink();
+				// connect the link in correct direction
 				currentLink.from = currentPoint;
 				currentLink.to = nextPoint;
+				// this notifies the sockets of the connection changes
 				currentLink.commit(parser);
+				// number the link
 				currentLink.name = linkIdCounter;
+				// advance to the next point
 				currentPoint = nextPoint;
+				// remove the newly processed link from the candidates
 				availableLinks = availableLinks.filter((link)=>link!==currentLink);
+				// increment the link number
 				linkIdCounter++;
 				console.log("renumbered", currentLink, "to ", linkIdCounter-1);
 			}
+		// put the links in the new order inside the Line
 		this.subItems.sort((a,b)=>a.name - b.name);
 		}
 		return true;
 	}
-
+	/**
+	 * Finds a link between two specified sockets
+	 * @param {VisualSocket} socket1 
+	 * @param {VisualSocket} socket2 
+	 * @returns {VisualPatch?} - a link if one is found in this Line 
+	 */
 	getLinkBetween(socket1, socket2)
 	{
+		// check both directions
 		return this.subItems.find((link)=>
 		(link.to === socket1 && link.from ===socket2)
 		|| (link.to === socket2 && link.from ===socket1)
 		);
 	}
+	/**
+	 * Finds any links in this Line that connect to the specified socket.
+	 * @param {VisualSocket} socket 
+	 * @returns {VisualPatch[]} - an array containing any links found 
+	 */
 	getLinksVisiting(socket)
 	{
 		return this.subItems.filter((link)=>
@@ -1263,19 +1325,33 @@ class VisualLine extends VisualItem {
 	}
 }
 
+/**
+ * Represents a single connection (link, wire) between two endpoints (sockets).
+ */
 class VisualPatch extends VisualItem {
+	/**
+	 * The start point of this link.
+	 */
+	from = null;
+	/**
+	 * The end point of this link.
+	 */
+	to = null;
+	/**
+	 * An optional name of a bundle, cable or other group associated with this link.
+	 */
+	cable ="";
+
 	constructor(line, name)	{
 		super("patch", name, line);
-		this.from = null;
-		this.to = null;
 		this.selectionOrder = 4;
-		this.cable ="";
 	}
 	
 	toCode(indent_level)
 	{
 		let output ="";
 		output+=this._f("link",indent_level,this.name);
+		// write the label if one is set
 		if(this.label!="")
 		{
 			output+=this._f("label", indent_level+1, this.label)
@@ -1283,18 +1359,29 @@ class VisualPatch extends VisualItem {
 		output+=this._f("from",indent_level+1, this.from.getFullName(" ").substring(10));
 		output+=this._f("to",indent_level+1, this.to.getFullName(" ").substring(10));
 		output+=this._f("cable", indent_level+1, this.cable)
-		return output;//+super.toCode(indent_level);
+		return output;
 	}
 	getLabel()
 	{
+		// if the link has a label, include its number in the display string
 		return this.label==""?this.name : "(" + this.name + ") " + this.label;
 	}
 	commit(parser)
 	{
+		// fail the link if either or both endpoints are not set
+		if(!this.to || !this.from)
+		{
+			parser.warn(WARN_BAD_LINK);
+			return false;
+		}
+		// notify both endpoints of the connection
 		this.to.connect(this);
 		this.from.connect(this);
 		return true;
 	}
+	/**
+	 * Disconnects this link from its endpoints.
+	 */
 	unlink()
 	{
 		this.to.disconnect(this);
@@ -1305,66 +1392,109 @@ class VisualPatch extends VisualItem {
 	updateSize()
 	{
 		super.updateSize();
-
 	}
 	updatePosition()
 	{
+		// define a rectangle from the endpoints
 		const startX = this.from.cX;
 		const startY = this.from.cY;
 		const endX = this.to.cX + this.to.width;
 		const endY = this.to.cY + this.to.height;
-		const dX = endX-startX;
-		const dY = endY - startY;
-		this.flip = (dX*dY) < 0;
+		// normalise the rectangle, making it have strictly positive width and height
+		// this is done by picking the smallest of each coordinate
 		this.cX = startX > endX ? endX : startX;
 		this.cY = startY > endY ? endY : startY;
+		// the line representing the link is one of the diagonals of the rectangle.
+		// if both X and Y increase or decrease, that diagonal is from top-left to bottom-right
+		// if their signs are different, the diagonal is "flipped".
+		// in the following diagram, 4 links are illustrated
+		// (O) is the starting point, and A, B, C, D are endpoints of 4 links
+		// NB: the Y axis goes downwards in this coordinate system!
+		//                                
+		//           y-                        All 4 links have the exact same width and height calculated
+		//           |                         for the bounding rectangle. The normalisation process moves
+		//        A--b--B                      the coordinates then to match up to the original points. 
+		//        |\ | /|					   Only the link OD remains unchanged here, as D has higher X and Y
+		//        | \|/ |                      coordinates than O. OA switches the points around - A is the
+		// x-  ---n--O--m----------> x+        starting coordinate for the rectangle now and it ends at O.
+		//        | /|\ |                      The remaining two links create new points - OB becomes bm and
+		//        |/ | \|                      OC becomes nc - but the "regular" diagonal is pointing the wrong
+		//        C--c--D                      way, which is handled in the collision function.
+		//           | 
+		//           v
+		//
+		//           y+
+		//         
+		const dX = endX - startX;
+		const dY = endY - startY;
+		// fortunately, it easy to check if that's the case - the diagonal
+		// only "flips" if exactly one of the pair of differences is negative
+		// meaning the product of these difference is negative
+		this.flip = (dX*dY) < 0;
+		// set the resulting rectangle's size to the absolute value of the differences.
 		this.width = Math.abs(dX);
 		this.height = Math.abs(dY);
-
 		super.updatePosition();
 	}
 
 	testHit(x, y)
 	{
+		// as a link is a line between two corners of its bounding rectangle,
+		// test for the diagonal collision (selecting the "flipped" diagonal 
+		// if determined by the code in the updatePosition method)
 		return this.getRect().diagonal(x, y, 6, this.flip);
 	}
 	draw(ctx)
 	{
+		// save the drawing settings to restore later
 		ctx.save();
+
 		ctx.lineWidth = 3;
+		// this controls how far the 2 lines will "spread" from the centreline
 		let offset = 3;
+		let vertical_margin = 3
+		// determine the starting and ending points for the centreline
+		// aim for the centreline of the sockets
 		let startX = this.from.cX + (this.from.width/2);
-		let startY = this.from.cY + 3;
 		let endX = this.to.cX + (this.to.width/2);
-		let endY = this.to.cY + this.to.height - 3;
+		// starts at the top of the sockets, with a small hardcoded margin
+		let startY = this.from.cY + vertical_margin;
+		// ends at the bottom with the same margin
+		let endY = this.to.cY + this.to.height - vertical_margin;
+		// determine the angle (respective to the X axis)
 		let angle = Math.atan2(endY-startY, endX-startX);
+		// technically we are rotating the vector [0, offset] by the rotation matrix from the angle
+		//
+		//     [cos(θ) -sin(θ)]  [x]  =>    [x * cos(θ) - y * sin(θ)]
+		//     [sin(θ)  cos(θ)]  [y]  =>    [x * sin(θ) + y * cos(θ)]
+		//
+		//
+		// we get away with only doing half of the rotation matrix, as the X value is 0
+		// 
+		//   [x] => [-y * sin(θ)]
+		//   [y] => [ y * cos(θ)]
 		let rotX = -1 * (Math.sin(angle)) * offset;
 		let rotY = Math.cos(angle) * offset;
+		// draw the first line
 		ctx.beginPath();
 		ctx.moveTo(startX + rotX, startY+rotY);
 		ctx.lineTo(endX + rotX,endY+rotY);
 		ctx.strokeStyle =this.parent.colour1;
 		ctx.stroke();
 		ctx.beginPath();
+		// flipping both coordinates of the offset is the same as rotating it by 180 degrees
+		// which is conveniently the same as reflecting it 
+		// which results in the second line being nicely positioned at the other side 
 		ctx.moveTo(startX - rotX, startY-rotY);
 		ctx.lineTo(endX - rotX,endY-rotY);
 		ctx.strokeStyle =this.parent.colour2;
 		ctx.stroke();
+		// restore settings
 		ctx.restore();
-
 	}
 	drawOutlineFunc(ctx)
 	{
-		/*
-		ctx.beginPath();
-		ctx.moveTo(this.from.cX+0, this.from.cY+3);
-		ctx.lineTo(this.to.cX+0,this.to.cY+this.to.height-3);
-		ctx.stroke();
-		ctx.beginPath();
-		ctx.moveTo(this.from.cX-0+this.to.width, this.from.cY+3);
-		ctx.lineTo(this.to.cX-0+this.to.width,this.to.cY+this.to.height-3);
-		ctx.stroke();
-		//*/
+		// draw a single line right in the middle
 		ctx.beginPath();
 		ctx.moveTo(this.from.cX+(this.to.width/2), this.from.cY+3);
 		ctx.lineTo(this.to.cX+(this.to.width/2),this.to.cY+this.to.height-3);
@@ -1373,11 +1503,15 @@ class VisualPatch extends VisualItem {
 	}
 	getDrawingGroup()
 	{
+		// highlight both endpoints along with the link
 		return [this.from,this,this.to];
 	}
 }
 
-
+/**
+ * Represents a renderer definition for a socket type
+ * Currently is a dummy to capture the data for the renderer class
+ */
 class VisualRenderer extends VisualItem {
 	instructions = [];
 	constructor(parent, name)
@@ -1386,7 +1520,9 @@ class VisualRenderer extends VisualItem {
 	}
 
 }
-
+/**
+ * Represents a connector template
+ */
 class VisualConnectorTemplate extends VisualItem {
 	constructor(parent, name)
 	{
@@ -1394,6 +1530,9 @@ class VisualConnectorTemplate extends VisualItem {
 	}
 }
 
+/**
+ * Represents a connector bank - a collection of connectors
+ */
 class VisualConnectorBank extends VisualItem {
 	elements = [];
 	constructor(parent, name)
@@ -1401,7 +1540,9 @@ class VisualConnectorBank extends VisualItem {
 		super("socket_bank",name, parent);
 	}
 }
-
+/**
+ * Represents a frame template
+ */
 class VisualFrameTemplate extends VisualItem {
 	elements = [];
 	constructor(parent, name)
@@ -1409,7 +1550,9 @@ class VisualFrameTemplate extends VisualItem {
 		super("frame_tpl", name, parent);
 	}
 }
-
+/**
+ * Top-level item containing the various templates
+ */
 class VisualInventory extends VisualItem {
 	constructor(name)
 	{
