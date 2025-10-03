@@ -1090,29 +1090,31 @@ class VisualSocket extends VisualItem
 		let otherWire = null;
 		// first, remove the wire from the target socket
 		other.disconnect(wire);
-		// #TODO: refactor this ugliness
+		// find the other link on same connection
+		otherWire = other.connections.find((item)=>item.parent.name == wire.parent.name);
+		// assign the wires' endpoints as applicable
+		this.connect(wire);
 		if(thisIsFrom)
 		{
-			// find the other link on same connection
-			otherWire = wire.from.connections.find((item)=>item.parent.name == wire.parent.name);
-			if(otherWire)
-				otherWire.to = this;
 			wire.from = this;
 		}
 		else
 		{
-			// find the other link on same connection
-			otherWire = wire.to.connections.find((item)=>item.parent.name == wire.parent.name);
-			if(otherWire)
-				otherWire.from = this;
 			wire.to = this;
 		}
 		if(otherWire)
+		{
+			if(thisIsFrom)
+			{
+				otherWire.to = this;
+			}
+			else
+			{
+				otherWire.from = this;
+			}
 			other.disconnect(otherWire);
-		this.connect(wire);
-		if(otherWire)
 			this.connect(otherWire);
-
+		}
 	}
 }
 
