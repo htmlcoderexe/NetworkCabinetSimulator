@@ -554,58 +554,6 @@ class VisualTEMPLATE extends VisualItem {
 	}
 }
 
-/**
- * Represents a renderer definition for a socket type
- * Currently is a dummy to capture the data for the renderer class
- */
-class VisualRenderer extends VisualItem {
-	instructions = [];
-	constructor(parent, name)
-	{
-		super("renderer",name, parent);
-	}
-
-}
-/**
- * Represents a connector template
- */
-class VisualConnectorTemplate extends VisualItem {
-	constructor(parent, name)
-	{
-		super("socket_tpl",name, parent);
-	}
-}
-
-/**
- * Represents a connector bank - a collection of connectors
- */
-class VisualConnectorBank extends VisualItem {
-	elements = [];
-	constructor(parent, name)
-	{
-		super("socket_bank",name, parent);
-	}
-}
-/**
- * Represents a frame template
- */
-class VisualFrameTemplate extends VisualItem {
-	elements = [];
-	constructor(parent, name)
-	{
-		super("frame_tpl", name, parent);
-	}
-}
-/**
- * Top-level item containing the various templates
- */
-class VisualInventory extends VisualItem {
-	constructor(name)
-	{
-		super("inventory",name, null);
-	}
-
-}
 
 
 
