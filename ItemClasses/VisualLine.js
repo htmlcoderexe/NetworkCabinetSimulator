@@ -12,6 +12,15 @@ class VisualLine extends VisualItem {
 	 * One of the two colours making up the line's colour code
 	 */
 	colour2 = "#808080";
+
+    /**
+    Computed starting point of the line
+     */
+    start = null;
+    /**
+    Computed starting point of the line
+     */
+    end = null;
 	
 	constructor(map, name) {
 		super("line", name, map);
@@ -61,7 +70,7 @@ class VisualLine extends VisualItem {
 			// if any endpoints are missing, that link is bad
 			if(!thisFrom || !thisTo)
 			{
-				parser.warn(WARN_BAD_LINK);
+				parser?.warn(WARN_BAD_LINK);
 				// skip the bad link
 				return false;
 			}
@@ -102,8 +111,6 @@ class VisualLine extends VisualItem {
 		else
 		{
 			// determine start point
-			let firstPoint = null;
-			let lastPoint = null;
 			let currentPoint = null;
 			let nextPoint = null;
 			// clone the array of links
@@ -115,19 +122,19 @@ class VisualLine extends VisualItem {
 			if(seenFroms.find((conn)=>conn == seenConnections[0]))
 			// [0] is the start
 			{
-				firstPoint = seenConnections[0];
-				lastPoint = seenConnections[1];
+				this.start = seenConnections[0];
+				this.end = seenConnections[1];
 			}
 			else
 			{
-				firstPoint = seenConnections[1];
-				lastPoint = seenConnections[0];
+				this.start = seenConnections[1];
+				this.end = seenConnections[0];
 			}
 			// begin with the starting point
-			currentPoint = firstPoint;
+			currentPoint = this.start;
 			// init a link number counter
 			let linkIdCounter = 0;		   // |v|   a sensible safeguard        |v|
-			while(currentPoint!==lastPoint && linkIdCounter < this.subItems.length)
+			while(currentPoint!==this.end && linkIdCounter < this.subItems.length)
 			{
 				// find a link that connects to the current point
 				let linked = availableLinks.filter((link)=>

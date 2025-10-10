@@ -478,6 +478,18 @@ class VisualEditor
 			}
 			case "line":
 			{
+				let start_lbl = document.createElement("div");
+				start_lbl.append(this.createHotLabel(target_object.start));
+				start_lbl.append(" @ [");
+				start_lbl.append(this.createHotLabel(target_object.start.parent));
+				start_lbl.append("]");
+				let end_lbl = document.createElement("div");
+				end_lbl.append(this.createHotLabel(target_object.end));
+				end_lbl.append(" @ [");
+				end_lbl.append(this.createHotLabel(target_object.end.parent));
+				end_lbl.append("]");
+				sheet.appendChild(start_lbl);
+				sheet.appendChild(end_lbl);
                 // two colour pickers for the line's 2 colours
                 // <input type="color"> does NOT support named colours
 				let c1 = document.createElement("input");
@@ -589,6 +601,35 @@ class VisualEditor
 			}
 			return badge;
 	}
+	/**
+	 * Generates a text label that will act as a proxy for the item, highlighting it when hovered
+	   and selecting it when clicked. Supports the Ctrl key.
+	 * @param {VisualItem} item - the item to link to the label.
+	 * @param {string} tagname - the HTML tag name to use for the label, defaults to "span"
+	 * @returns The text label as a HTML element.
+	 */
+	static createHotLabel(item, tagname="span")
+	{
+		let lbl = document.createElement(tagname);
+		lbl.append(item.getLabel());
+		lbl.addEventListener("click",(e)=>{
+			if(e.ctrlKey)
+			{
+				VisualEditor.currentSelection.add([item], true);
+			}
+			else
+			{	
+				VisualEditor.currentSelection.set([item], true);
+			}
+			VisualEditor.refreshView();
+		});
+		lbl.addEventListener("mouseover", (e)=>{
+			VisualEditor.currentHightlight = [item];
+			VisualEditor.redrawSelection();
+		});
+		return lbl;
+	}
+
     /**
      * Builds a tree view with the object as the root item. The tree is built recursively.
      * The tree is then either inserted or replaces a specified HTML element.
@@ -912,10 +953,13 @@ class VisualEditor
 		// if currently moving a wire, and a socket is clicked, connect the wire to the socket and exit
 		if(VisualEditor.currentMoving && VisualEditor.currentMoving.type == "socket" &&  results[0]?.type == "socket")
 		{
-			results[0].takeFrom(VisualEditor.currentMoving, VisualEditor.currentMoving.connections[0]);
-            // reset state 
+			let newlink =VisualEditor.currentMoving.connections[0]
+			results[0].takeFrom(VisualEditor.currentMoving, newlink);
+            // #HACK! do it properly later.
+			newlink.parent.commit(null);
+			// reset state 
 			VisualEditor.currentMoving = null;
-			VisualEditor.currentSelection.clear();
+			VisualEditor.currentSelection.set([newlink]);
 			VisualEditor.refreshView();
 			VisualEditor.subMode = VisualEditor.SUB_MODES.NONE;
 			return;
