@@ -27,12 +27,21 @@ body
 {
     width: 4rem;
     height: 4rem;
-    font-size: 3rem;
+    font-size: 2rem;
     padding: 0.5rem;
     padding-top: 0px;
     padding-bottom: 2px;
     line-height: 5%;
+    background: #FFFFFF;
+    border-radius: 0;
+    border: 3px solid black;
     
+}
+
+#toolbar_tools button:hover, #toolbar_tools button:active
+{
+    background: #E0D0FF;
+    border: 3px solid #200040;
 }
 #object_info
 {
