@@ -83,6 +83,7 @@ function InitEditor()
         p.rootObject.draw(VisualEditor.mapLayer);
         window.patchmap.routes = p.rootObject;
         VisualEditor.lineMap = p.rootObject;
+        VisualEditor.lineMap.commit(p);
         
 
         console.log(p.terrain);

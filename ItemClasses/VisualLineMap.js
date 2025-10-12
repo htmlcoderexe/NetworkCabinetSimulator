@@ -10,8 +10,21 @@ class VisualLineMap extends VisualItem
 	looseLinks = null;
 	constructor(name){
 		 super("linemap", name, null);
-		 this.looseLinks= new VisualLine(this,"looseLinks");
-		 this.looseLinks.label = "Loose links";
-		 this.subItems.push(this.looseLinks);
 		}
+	commit(parser)
+	{
+		let existinglooselinks = this.find("looseLinks");
+		if(existinglooselinks)
+		{
+			this.looseLinks=existinglooselinks;
+			console.log("Loaded existing loose links line");
+		}
+		else
+		{
+			this.looseLinks= new VisualLine(this,"looseLinks");
+			this.looseLinks.label = "Loose links";
+			this.subItems.push(this.looseLinks);
+			console.log("Created loose links line");
+		}
+	}
 }
