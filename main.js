@@ -28,6 +28,11 @@ function canvasHover(e)
 				VisualEditor.handleMMoveWireMode(x,y);
 				break;
 			}
+			case VisualEditor.EDIT_MODES.LINK:
+			{
+				VisualEditor.handleMMoveLinkMode(x,y);
+				break;
+			}
 		}
 		VisualEditor.updateCursor();
 		
@@ -51,6 +56,11 @@ function canvasMDown(e)
 			VisualEditor.handleMDownWireMode(x,y);
 			break;
 		}
+		case VisualEditor.EDIT_MODES.LINK:
+		{
+			VisualEditor.handleMDownLinkMode(x,y);
+			break;
+		}
 	}
 		VisualEditor.updateCursor();
 }
@@ -70,6 +80,11 @@ function canvasMUp(e)
 		case VisualEditor.EDIT_MODES.WIRE:
 		{
 			VisualEditor.handleMUpWireMode(x,y);
+			break;
+		}
+		case VisualEditor.EDIT_MODES.LINK:
+		{
+			VisualEditor.handleMUpLinkMode(x,y);
 			break;
 		}
 	}
@@ -92,6 +107,11 @@ function canvasClick(e)
 		case VisualEditor.EDIT_MODES.WIRE:
 		{
 			VisualEditor.handleWireMode(x,y,dbl);
+			break;
+		}
+		case VisualEditor.EDIT_MODES.LINK:
+		{
+			VisualEditor.handleLinkMode(x,y,dbl);
 			break;
 		}
 	}

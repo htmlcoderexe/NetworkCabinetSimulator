@@ -54,6 +54,10 @@ class VisualLine extends VisualItem {
 
 	commit(parser)
 	{
+		if(this.name == "looseLinks")
+		{
+			return true;
+		}
 		// walk thorough the entire line, ensuring all links
 		// are in the correct order and detecting any anomalies
 		

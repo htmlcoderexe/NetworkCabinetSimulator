@@ -76,11 +76,14 @@ class VisualEditor
     /**
      * Main edit modes.
      */
-	static EDIT_MODES = {POINTER: 0, WIRE: 1, ADD: 2};
+	static EDIT_MODES = {POINTER: 0, WIRE: 1, LINK: 2};
     /**
      * Submodes applicable to main edit modes.
      */
-	static SUB_MODES = {NONE: 0, WIRE_MOVE: 1, WIRE_ADD: 2, WIRE_REMOVE: 3, WIRE_SELECTED: 4, WIRE_LINE_SELECT: 5};
+	static SUB_MODES = {NONE: 0, 
+		WIRE_MOVE: 1, WIRE_ADD: 2, WIRE_REMOVE: 3, WIRE_SELECTED: 4, WIRE_LINE_SELECT: 5,
+		LINK_END: 6
+	};
 	/**
      * Default separator for full item references.
      */
@@ -479,16 +482,23 @@ class VisualEditor
 			case "line":
 			{
 				let start_lbl = document.createElement("div");
-				start_lbl.append(this.createHotLabel(target_object.start));
-				start_lbl.append(" @ [");
-				start_lbl.append(this.createHotLabel(target_object.start.parent));
-				start_lbl.append("]");
 				let end_lbl = document.createElement("div");
-				end_lbl.append(this.createHotLabel(target_object.end));
-				end_lbl.append(" @ [");
-				end_lbl.append(this.createHotLabel(target_object.end.parent));
-				end_lbl.append("]");
-				sheet.appendChild(start_lbl);
+				if(target_object.name!="looseLinks")
+				{
+					start_lbl.append(this.createHotLabel(target_object.start));
+					start_lbl.append(" @ [");
+					start_lbl.append(this.createHotLabel(target_object.start.parent));
+					start_lbl.append("]");
+					end_lbl.append(this.createHotLabel(target_object.end));
+					end_lbl.append(" @ [");
+					end_lbl.append(this.createHotLabel(target_object.end.parent));
+					end_lbl.append("]");
+					sheet.appendChild(start_lbl);
+				}
+				else
+				{
+					end_lbl.append("This contains any links not assigned to a line.")
+				}
 				sheet.appendChild(end_lbl);
                 // two colour pickers for the line's 2 colours
                 // <input type="color"> does NOT support named colours
@@ -823,6 +833,14 @@ class VisualEditor
         VisualEditor.updateCursor();
 	}
     /**
+     * Sets the editor mode to wiring (moving existing wires and extending lines).
+     */
+	static setModeLink()
+	{
+		VisualEditor.editMode = this.EDIT_MODES.LINK;
+        VisualEditor.updateCursor();
+	}
+    /**
      * Gets the appropriate cursor while in default mode.
      * @returns {string} a CSS name for the cursor.
      */
@@ -834,6 +852,28 @@ class VisualEditor
         {
             cursor = "move";
         }
+		return cursor;
+	}
+    /**
+     * Gets the appropriate cursor while in default mode.
+     * @returns {string} a CSS name for the cursor.
+     */
+	static getCursorLinkMode()
+	{
+		let cursor = "alias";
+        // if hovering an empty spot on a location, show move cursor
+        if(VisualEditor.currentHightlight[0]?.connections?.length <1 && VisualEditor.subMode == this.SUB_MODES.NONE)
+        {
+            cursor = "copy";
+        }
+		if(VisualEditor.currentHightlight[0]?.connections?.length > 1)
+		{
+			cursor = "not-allowed";
+		}
+		if(VisualEditor.subMode == this.SUB_MODES.LINK_END && VisualEditor.currentHightlight[0]?.connections?.length>0)
+		{
+			cursor = "not-allowed";
+		}
 		return cursor;
 	}
     /**
@@ -921,6 +961,10 @@ class VisualEditor
 			case VisualEditor.EDIT_MODES.WIRE:
 			{
 				return this.getCursorWireMode();
+			}
+			case VisualEditor.EDIT_MODES.LINK:
+			{
+				return this.getCursorLinkMode();
 			}
 		}
 	}
@@ -1208,6 +1252,120 @@ class VisualEditor
 		let currentrect = [];
 		window.fiber.current = currentlabel;
 	    window.fiber.selection = currentrect;
+	}
+
+	static handleLinkMode(x,y,dbl)
+	{
+		let results = VisualEditor.getMouseHits(x, y, true);
+		if(results.length < 1)
+		{
+			return;
+		}
+		let item = results[0];
+		if(item.type != "socket")
+		{
+			return;
+		}
+		// check if the target socket is empty
+		if(VisualEditor.subMode == VisualEditor.SUB_MODES.LINK_END)
+		{
+			if( results[0].connections.length >0)
+			{
+				return
+			}
+			let newlink =VisualEditor.currentMoving.connections[0]
+			results[0].takeFrom(VisualEditor.currentMoving, newlink);
+			// reset state 
+			VisualEditor.currentMoving = null;
+			VisualEditor.currentSelection.clear();
+			VisualEditor.refreshView();
+			VisualEditor.subMode = VisualEditor.SUB_MODES.NONE;
+			return;
+
+		}
+		if(results[0].connections.length <1)
+		{
+			
+            // make a fake socket to attach the wire to
+			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
+			// temp patch to make the fake socket match the mouse exactly
+			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
+			VisualEditor.currentMovingY=-2;
+			// create a wire, attach it from the target socket to the fake socket
+			let newpatch = new VisualPatch(VisualEditor.lineMap.looseLinks, VisualEditor.lineMap.getNextSlot());
+			newpatch.from = results[0];
+			results[0].connect(newpatch);
+			newpatch.to = mSocket;
+			mSocket.connect(newpatch);
+			VisualEditor.lineMap.looseLinks.subItems.push(newpatch);
+			VisualEditor.reportUpdate(VisualEditor.lineMap.looseLinks);
+			VisualEditor.subMode = this.SUB_MODES.LINK_END;
+		
+			// attach the fake socket to the mouse
+			VisualEditor.currentMoving = mSocket;
+			// refresh
+			VisualEditor.redrawSelection();
+			return;
+		}
+		else if(results[0].connections.length == 1 && results[0].connections[0].parent == VisualEditor.lineMap.looseLinks)
+		{ // make a fake socket to attach the wire to
+			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
+			// temp patch to make the fake socket match the mouse exactly
+			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
+			VisualEditor.currentMovingY=-2;
+            
+
+			mSocket.takeFrom(results[0], results[0].connections[0]);
+			VisualEditor.subMode = this.SUB_MODES.LINK_END;
+			// attach the fake socket to the mouse
+			VisualEditor.currentMoving = mSocket;
+			// refresh
+			VisualEditor.redrawSelection();
+			return;
+			
+		}
+	}
+    /**
+     * Handles mouse up events in wiring mode.
+     * @param {Number} x - x coordinate of mouse
+     * @param {Number} y - y coordinate of mouse
+     * @returns 
+     */
+	static handleMUpLinkMode(x, y)
+	{
+
+	}
+    /**
+     * Handles mouse downs in wiring mode.
+     * @param {Number} x - x coordinate of mouse
+     * @param {Number} y - y coordinate of mouse
+     */
+	static handleMDownLinkMode(x, y)
+	{
+
+	}
+    /**
+     * Handles mouse moving in wiring mode.
+     * @param {Number} x - x coordinate of mouse
+     * @param {Number} y - y coordinate of mouse
+     */
+	static handleMMoveLinkMode(x, y)
+	{
+		VisualEditor.currentHightlight = [];
+		let results = VisualEditor.getMouseHits(x, y, true);
+        // see if any sockets are under the mouse
+		results = results.filter((item)=>item.selectionOrder == 5);
+		if(results && results.length>0)
+		{
+			VisualEditor.currentHightlight = results;
+		}
+		
+		VisualEditor.redrawSelection();
+        // refresh mouse attached items
+		if(VisualEditor.currentMoving)
+		{
+			VisualEditor.currentMoving.updatePosition();
+		}
 	}
 }
 
