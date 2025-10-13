@@ -53,10 +53,10 @@
 			<div id="toolbar_tools">
 				<button id="bbb">⋙</button>
 				<button id="bbb2">⋘</button>
-				<button id="mode_pointer" onclick="VisualEditor.setModePointer();">⇖</button>
-				<button id="mode_rewire" onclick="VisualEditor.setModeWire();">⫯</button>
-				<button id="mode_link" onclick="VisualEditor.setModeLink();">+</button>
-				<button id="add_line" onclick="VisualEditor.createLine();">L</button>
+				<button class="mode_button" data-mode="pointer" id="mode_pointer" onclick="VisualEditor.setEditorModeHandler(event)">⇖</button>
+				<button class="mode_button" data-mode="wire" id="mode_rewire" onclick="VisualEditor.setEditorModeHandler(event)">⫯</button>
+				<button class="mode_button" data-mode="link" id="mode_link" onclick="VisualEditor.setEditorModeHandler(event)">+</button>
+				<button disabled id="add_line" onclick="VisualEditor.createLine();">L</button>
 			</div>
 			<div class="displayer">
 				<canvas id="graphdisplay" width = "2024" height="2024" style="border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 1;"></canvas>

@@ -36,6 +36,7 @@ body
 {
     width:79%;
     display: inline-block;
+    vertical-align: top;
     height:100%;
     top:0;
     position:relative;
@@ -43,7 +44,7 @@ body
 }
 #toolbar_tools
 {
-    height: 10%;
+    padding: 3px;
 }
 #toolbar_tools button
 {
@@ -56,8 +57,24 @@ body
     line-height: 5%;
     background: #FFFFFF;
     border-radius: 0;
-    border: 3px solid black;
-    
+    border: 3px solid black;   
+}
+
+#toolbar_tools button:hover, #toolbar_tools button:active
+{
+    background: #E0D0FF;
+    border-color: #200040;
+}
+#toolbar_tools button:disabled
+{
+    background: #D0D0D0;
+    border-color: #7F7F7F;
+    color: #7F7F7F;
+}
+#toolbar_tools button.current_mode
+{
+    background: #E0D0FF;
+    border: 6px solid #200040;
 }
 .displayer
 {
@@ -65,12 +82,6 @@ body
     z-index: 3;
     height:80%;
     overflow:scroll;
-}
-
-#toolbar_tools button:hover, #toolbar_tools button:active
-{
-    background: #E0D0FF;
-    border: 3px solid #200040;
 }
 #rightpane
 {
@@ -81,6 +92,7 @@ body
     top:0%;
     position:absolute;
     right: 1px;
+    vertical-align: top;
 }
 #object_info
 {

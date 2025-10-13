@@ -51,8 +51,8 @@ function doHResize(e)
         n_w_pct = n_min;
         p_w_pct = 100-n_min;
     }
-    prev.style.width = (p_w_pct-1) + "%";
-    next.style.width = (n_w_pct-1) + "%";
+    prev.style.width = "calc("+(p_w_pct) + "% - 7px)";
+    next.style.width = "calc("+(n_w_pct) + "% - 7px)";
     // fucking CSS sizing 
 }
 function endHResize(e)
@@ -79,6 +79,7 @@ function InitEditor()
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
     VisualEditor.mouseArea =  document.getElementById('selection_display');
     VisualEditor.newLineDialogue =  document.getElementById('new_line_dialog');
+    VisualEditor.toolBar =  document.getElementById('toolbar_tools');
     //drawMap(document.getElementById('graphdisplay'));
     document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
         canvasHover(e);
@@ -104,6 +105,7 @@ function InitEditor()
             });
         }
     };
+    document.getElementById("mode_pointer").click();
     document.getElementById('bbb2').addEventListener("click",(e)=>{
         document.getElementById('aaa').value=VisualEditor.fixedMap.toCode(0);
         document.getElementById('ccc').value=VisualEditor.lineMap.toCode(0);

@@ -177,6 +177,10 @@ class VisualEditor
      */
     static mouseArea = null;
     /**
+     * A HTML element containing the toolbar buttons.
+     */
+    static toolBar = null;
+    /**
      * A reference to an HTML template for a single tree view item.
      */
 	static treeItemTemplate = null;
@@ -359,6 +363,7 @@ class VisualEditor
 				VisualEditor.currentSingleItem = VisualEditor.currentSelection.selection[0];
 				VisualEditor.currentSingleType = VisualEditor.currentSingleItem.type;
 				console.log("exactly one item of type <" + VisualEditor.currentSingleType + "> picked");
+			VisualEditor.toolBar.querySelector("#add_line").disabled = VisualEditor.currentSingleType != "socket";
 			}
             // otherwise, clear the currentSingle* properties
 			else
@@ -861,7 +866,7 @@ class VisualEditor
 			line.addItem(newpatch);
 			VisualEditor.lineMap.addItem(line);
 			VisualEditor.reportUpdate(VisualEditor.lineMap);
-			VisualEditor.editMode = this.EDIT_MODES.WIRE;
+			VisualEditor.toolBar.querySelector("#mode_rewire").click();
 			VisualEditor.subMode = this.SUB_MODES.WIRE_MOVE;
 			// attach the fake socket to the mouse
 			VisualEditor.currentMoving = mSocket;
@@ -883,7 +888,7 @@ class VisualEditor
      */
 	static setModePointer()
 	{
-		VisualEditor.editMode = this.EDIT_MODES.POINTER;
+		
         VisualEditor.updateCursor();
 	}
     /**
@@ -891,7 +896,7 @@ class VisualEditor
      */
 	static setModeWire()
 	{
-		VisualEditor.editMode = this.EDIT_MODES.WIRE;
+		
         VisualEditor.updateCursor();
 	}
     /**
@@ -902,6 +907,60 @@ class VisualEditor
 		VisualEditor.editMode = this.EDIT_MODES.LINK;
         VisualEditor.updateCursor();
 	}
+
+	/**
+	 * Sets editor mode to specified mode.
+	 */
+	static setEditorModeHandler(e)
+	{
+		let mode = e.currentTarget.dataset.mode ?? "";
+		let editMode = this.EDIT_MODES.POINTER;
+		switch(mode)
+		{
+			case "wire":
+			{
+				editMode = this.EDIT_MODES.WIRE;
+				break;
+			}
+			case "link":
+			{
+				editMode = this.EDIT_MODES.LINK;
+				break;
+			}
+		}
+		VisualEditor.setEditorMode(editMode,VisualEditor.SUB_MODES.NONE);
+		VisualEditor.toolBar.querySelectorAll(".mode_button").forEach((b)=>{
+			if(b.dataset.mode==mode)
+			{
+				b.classList.add("current_mode");
+
+			}
+			else
+			{
+				b.classList.remove("current_mode");
+			}
+		});
+	}
+	/**
+	 * Sets editor mode to specified mode.
+	 */
+	static setEditorMode(mode, submode=-1)
+	{
+		if(submode!=-1)
+		{
+			VisualEditor.subMode = submode;
+			VisualEditor.editMode = mode;
+		}
+		else
+		{
+			VisualEditor.editMode = mode;
+		}
+        VisualEditor.updateCursor();
+	}
+
+
+
+
     /**
      * Gets the appropriate cursor while in default mode.
      * @returns {string} a CSS name for the cursor.
