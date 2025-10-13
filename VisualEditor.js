@@ -393,12 +393,13 @@ class VisualEditor
      * Builds a property sheet for a given item, and inserts it into the sheet container.
      * @param {VisualItem} target_object - the subject of the property sheet.
      */
-	static buildPropSheet(target_object)
+	static buildPropSheet(target_object, rebuild = false)
 	{
         // load the template
 		let tpl = VisualEditor.itemPropSheetTemplate.content.cloneNode(true);
         // this reference will be stuck into every single HTML element downstream, for convenience
 		let itemref = target_object.getFullName("/");
+		tpl.firstElementChild.dataset.itemref=itemref;
         // the item badge styles itself as needed with CSS
 		let item_badge = tpl.querySelector(".item_badge");
 		item_badge.dataset.itemref = itemref;
@@ -578,10 +579,18 @@ class VisualEditor
 		}
 
 		// now shove all this stuff into the container
-		let el = null;
-        while(el = tpl.firstElementChild)
+		if(rebuild)
+		{
+			VisualEditor.propSheetContainer.querySelectorAll(".infoblock").forEach((b)=>{
+				if(b.dataset.itemref == itemref)
+				{
+					b.replaceWith(tpl.firstElementChild);
+				}
+			});
+		}
+        else
         {
-            VisualEditor.propSheetContainer.appendChild(el);
+            VisualEditor.propSheetContainer.appendChild(tpl.firstElementChild);
         }
 	}
 	
@@ -599,6 +608,7 @@ class VisualEditor
             // if found, hollow out the <li> and build that item's tree inside of it
             VisualEditor.buildTree(node,target_object,true);
         }
+		VisualEditor.buildPropSheet(target_object, true);
     }
     /**
      * Creates a colour-coded badge indicating a specifc line, optionally clickable to select that line.
