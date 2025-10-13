@@ -1,5 +1,76 @@
+
+function beginVResize(e)
+{
+    e.target.parentElement.addEventListener("pointermove", doVResize);
+    e.target.parentElement.addEventListener("pointerup", endVResize);
+}
+function doVResize(e)
+{
+    console.log(e.currentTarget);
+    let h = e.y ;
+    console.log(h);
+    let prev = e.currentTarget.firstElementChild;
+    let next = e.currentTarget.firstElementChild.nextElementSibling.nextElementSibling;
+    let parent_height = e.currentTarget.offsetHeight;
+    console.log(parent_height);
+    prev.style.height = ((h/ parent_height)*100-1) + "%";
+    next.style.height = (99-(h / parent_height)*100) + "%";
+}
+function endVResize(e)
+{
+    e.currentTarget.removeEventListener("pointermove", doVResize);
+    e.currentTarget.removeEventListener("pointerup", endVResize);
+}
+function beginHResize(e)
+{
+    e.target.parentElement.addEventListener("pointermove", doHResize);
+    e.target.parentElement.addEventListener("pointerup", endHResize);
+}
+function doHResize(e)
+{
+    console.log(e.currentTarget);
+    let w = e.x ;
+    console.log(w);
+    let prev = e.currentTarget.firstElementChild;
+    let next = e.currentTarget.firstElementChild.nextElementSibling.nextElementSibling;
+    let parent_width = e.currentTarget.offsetWidth;
+    console.log(parent_width);
+    let p_w_pct =((w/ parent_width)*100);
+    let n_w_pct =100-((w / parent_width)*100);
+    let p_min = window.getComputedStyle(prev).getPropertyValue("min-width").slice(0,-1);
+    let n_min = window.getComputedStyle(next).getPropertyValue("min-width").slice(0,-1);
+    console.log(prev.style,next.style);
+    console.log(p_w_pct, p_min, n_w_pct, n_min);
+    if(p_w_pct<p_min)
+    {
+        p_w_pct = p_min;
+        n_w_pct = 100-p_min;
+    }
+    if(n_w_pct<n_min)
+    {
+        n_w_pct = n_min;
+        p_w_pct = 100-n_min;
+    }
+    prev.style.width = (p_w_pct-1) + "%";
+    next.style.width = (n_w_pct-1) + "%";
+    // fucking CSS sizing 
+}
+function endHResize(e)
+{
+    e.currentTarget.removeEventListener("pointermove", doHResize);
+    e.currentTarget.removeEventListener("pointerup", endHResize);
+}
+
 function InitEditor()
 {
+
+    document.querySelectorAll(".vresize").forEach((e)=>{
+        e.addEventListener("pointerdown",beginVResize);
+    });
+    document.querySelectorAll(".hresize").forEach((e)=>{
+        e.addEventListener("pointerdown",beginHResize);
+    });
+
     VisualEditor.treeItemTemplate = document.getElementById("tree_item_tpl");
     VisualEditor.treeViewContainer = document.getElementById("object_tree");
     VisualEditor.itemPropSheetTemplate = document.getElementById("item_propsheet");

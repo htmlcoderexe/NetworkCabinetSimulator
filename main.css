@@ -8,20 +8,42 @@ body
     padding:0;
     margin:0;
 }
-.displayer
+#main
 {
-    position:relative;
-    z-index: 3;
-    width:75vw;
-    height:80vh;
-    overflow:scroll;
+    width: 100vw;
+    height:100vh;
+    position:absolute;
 }
-#aaa, #ccc, #ddd
+.vresize
 {
-    box-sizing: border-box;
-    width: 20vw;
+    width: 100%;
+    height: 4px;
+    border: none;
+    background: #CECECE;
+    cursor: row-resize;
+}
+.hresize
+{
+    width: 4px;
+    height: 100%;
+    border: none;
+    background: #CECECE;
+    cursor: col-resize;
     display: inline-block;
-    height: 3rem;
+}
+
+#leftpane
+{
+    width:79%;
+    display: inline-block;
+    height:100%;
+    top:0;
+    position:relative;
+    min-width:20%;
+}
+#toolbar_tools
+{
+    height: 10%;
 }
 #toolbar_tools button
 {
@@ -37,42 +59,63 @@ body
     border: 3px solid black;
     
 }
+.displayer
+{
+    position:relative;
+    z-index: 3;
+    height:80%;
+    overflow:scroll;
+}
 
 #toolbar_tools button:hover, #toolbar_tools button:active
 {
     background: #E0D0FF;
     border: 3px solid #200040;
 }
+#rightpane
+{
+    width:19%;
+    min-width:20%;
+    display: inline-block;
+    height:98%;
+    top:0%;
+    position:absolute;
+    right: 1px;
+}
 #object_info
 {
     display: inline-block;
-    position:fixed;
-    width: 19vw;
-    top: 2vh;
-    left: 80vw;
+    width: 100%;
     border-radius: 3px;
     border-style: solid;
     border-width: 1px;
     border-color: black;
-    height: 15vh;
+    height: 25%;
     overflow-y: scroll;
     padding: 1rem;
 }
 #object_tree
 {
     display: inline-block;
-    position:fixed;
-    width: 19vw;
-    top: 19vh;
-    left: 80vw;
+    width: 100%;
     border-radius: 3px;
     border-style: solid;
     border-width: 1px;
     border-color: black;
-    height: 79vh;
+    height: 75%;
     overflow-y: scroll;
     padding: 1rem;
+    margin:0;
 }
+
+#aaa, #ccc, #ddd
+{
+    box-sizing: border-box;
+    width: 30%;
+    display: inline-block;
+    height: 3rem;
+}
+
 .infoblock
 {
     background-color: #ceffce;
