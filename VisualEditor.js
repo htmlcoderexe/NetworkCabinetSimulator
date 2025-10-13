@@ -184,6 +184,10 @@ class VisualEditor
      * A reference to an HTML template for an item property sheet.
      */
 	static itemPropSheetTemplate = null;
+	/**
+	 * A reference to an HTML <dialog> for creating a new line.
+	 */
+	static newLineDialogue = null;
 
 	/**
 	 * Checks if any registered component hitboxes intersect a given coordinate.
@@ -816,6 +820,64 @@ class VisualEditor
             target_node.appendChild(tpl.firstElementChild);
         }
 	}
+
+
+	static createLine()
+	{
+		console.log("creating line");
+		// only initiate on socket
+		if(!VisualEditor.currentSingleItem || VisualEditor.currentSingleType!="socket")
+		{
+			return;
+		}
+		console.log("actually creating line");
+		
+		VisualEditor.newLineDialogue.showModal();
+
+	}
+
+	static createLineResult(e)
+	{
+		console.log("after dlg");
+		console.log(VisualEditor.newLineDialogue.returnValue);
+		if(VisualEditor.newLineDialogue.returnValue)
+		{
+            // make a fake socket to attach the wire to
+			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
+			// temp patch to make the fake socket match the mouse exactly
+			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
+			VisualEditor.currentMovingY=-2;
+			let fromSocket=VisualEditor.currentSingleItem;
+			if(VisualEditor.lineMap.checkName(VisualEditor.newLineDialogue.returnValue))
+			{
+				return;
+			}
+			let line = new VisualLine(VisualEditor.lineMap, VisualEditor.newLineDialogue.returnValue);
+			let newpatch = new VisualPatch(line, line.getNextSlot());
+			newpatch.from = VisualEditor.currentSingleItem;
+			fromSocket.connect(newpatch);
+			newpatch.to = mSocket;
+			mSocket.connect(newpatch);
+			line.addItem(newpatch);
+			VisualEditor.lineMap.addItem(line);
+			VisualEditor.reportUpdate(VisualEditor.lineMap);
+			VisualEditor.editMode = this.EDIT_MODES.WIRE;
+			VisualEditor.subMode = this.SUB_MODES.WIRE_MOVE;
+			// attach the fake socket to the mouse
+			VisualEditor.currentMoving = mSocket;
+			// refresh
+			VisualEditor.redrawSelection();
+
+		}
+
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	///////////////////// EDITOR MODES BELOW /////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+
+
+
     /**
      * Sets the editor mode to default (selecting and moving items).
      */
