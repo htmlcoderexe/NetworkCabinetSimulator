@@ -165,7 +165,7 @@ class VisualFrame extends VisualItem
 		const rect = this.getRect();
 		// draw a rectangle of standard size
 		// plenty of padding on the sides and bottom
-		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
+		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH-1, DIM_FRAME_HEIGHT-1);
 		ctx.font ="20px monospace";
 		// label on the bottom
 		ctx.fillText(this.label, rect.x+this.width/2, rect.y+this.height-DIM_FRAME_SPACING/2 -7);
@@ -181,7 +181,7 @@ class VisualFrame extends VisualItem
 		const rect = this.getRect();
 		// fill a white background to override items underneath
 		ctx.fillRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
-		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
+		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH-1, DIM_FRAME_HEIGHT-1);
 		super.drawTop(ctx);
 	}
 }

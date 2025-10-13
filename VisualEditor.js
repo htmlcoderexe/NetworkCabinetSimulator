@@ -192,6 +192,10 @@ class VisualEditor
 	 * A reference to an HTML <dialog> for creating a new line.
 	 */
 	static newLineDialogue = null;
+	/**
+	 * A reference to an HTML <dialog> for adding frames to a rack.
+	 */
+	static addFrameDialogue = null;
 
 	/**
 	 * Checks if any registered component hitboxes intersect a given coordinate.
@@ -221,6 +225,33 @@ class VisualEditor
     {
         return this.treeViewContainer ? this.treeViewContainer.querySelectorAll("span.tree_item_name") : [];
     }
+
+	static loadInventory(inventory)
+	{
+		VisualEditor.inventory = inventory;
+		console.log(VisualEditor.inventory.subItems);
+		let frames = VisualEditor.inventory.subItems.filter(vi=>vi.type=="frame_tpl");
+		console.log(frames);
+		let framerenders = document.createElement("canvas");
+		framerenders.width = DIM_FRAME_WIDTH;
+		framerenders.height=DIM_FRAME_HEIGHT * (frames.length)
+		let ctx1 = framerenders.getContext("2d");
+		for(let i=0;i<frames.length;i++)
+		{
+			let f = new VisualFrame(inventory, " ");
+			f.label =" ";
+			f.frametype=frames[i].name;
+			f.commit(VisualEditor);
+			//f.updateSize();
+			f.cY=DIM_FRAME_HEIGHT *i-2;
+			f.cX=(-1 * DIM_FRAME_SIDES);
+			f.subItems.forEach((sub)=>{sub.updatePosition()});
+			f.drawTop(ctx1);
+			console.log(f);
+		}
+		VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(framerenders);
+	}
+
     /**
      * Refreshes the highlight and selection outlines in both the visual view and the tree view.
      */
@@ -845,6 +876,19 @@ class VisualEditor
         }
 	}
 
+	static showAddFrameDlg()
+	{
+		console.log("loading dlg");
+		// only initiate on socket
+		if(!VisualEditor.currentSingleItem || VisualEditor.currentSingleType!="socket")
+		{
+			return;
+		}
+		console.log("will work");
+		
+		VisualEditor.addFrameDialogue.showModal();
+
+	}
 
 	static createLine()
 	{

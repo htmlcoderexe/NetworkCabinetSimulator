@@ -80,6 +80,7 @@ function InitEditor()
     VisualEditor.mouseArea =  document.getElementById('selection_display');
     VisualEditor.newLineDialogue =  document.getElementById('new_line_dialog');
     VisualEditor.toolBar =  document.getElementById('toolbar_tools');
+    VisualEditor.addFrameDialogue = document.getElementById("add_frame_dialog");
     //drawMap(document.getElementById('graphdisplay'));
     document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
         canvasHover(e);
@@ -123,7 +124,7 @@ function InitEditor()
         p.init();
         p.go();
         console.log(p.rootObject);
-        VisualEditor.inventory = p.rootObject;
+        VisualEditor.loadInventory(p.rootObject);
 
         let txt = document.getElementById('aaa').value;
         
