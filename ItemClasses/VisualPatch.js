@@ -64,6 +64,16 @@ class VisualPatch extends VisualItem {
 		this.to = null;
 		this.from = null;
 	}
+    /**
+     * Reverses the link's direction.
+     */
+    reverse()
+    {
+        let tmp = this.from;
+        this.from = this.to;
+        this.to = tmp;
+    }
+    
 	updateSize()
 	{
 		super.updateSize();

@@ -503,6 +503,15 @@ class VisualEditor
 					end_lbl.append(this.createHotLabel(target_object.end.parent));
 					end_lbl.append("]");
 					sheet.appendChild(start_lbl);
+					let flipper = document.createElement("button");
+					flipper.append("▲swap▼");
+					flipper.addEventListener("click",(e)=>{
+						console.log(target_object);
+						target_object.reverse();
+						VisualEditor.reportUpdate(target_object);
+					});
+					sheet.appendChild(flipper);
+
 				}
 				else
 				{

@@ -205,4 +205,20 @@ class VisualLine extends VisualItem {
 		(link.to === socket || link.from ===socket)
 		);
 	}
+    /**
+     * Reverses the line's direction.
+     */
+     reverse()
+     {
+        this.subItems.forEach((l)=>{
+            l.reverse();
+        });
+        let tmp = this.start;
+        this.start = this.end;
+        this.end = tmp;
+        this.updatePosition();
+        this.updateSize();
+        this.updateHitboxMapping();
+        
+     }
 }
