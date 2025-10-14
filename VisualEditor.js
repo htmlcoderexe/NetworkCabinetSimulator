@@ -797,17 +797,6 @@ class VisualEditor
      */
 	static buildTree(target_node, target_object, replace = false)
 	{
-        // #TODO: CSS and data attributes instead of this mess
-		let styles = {
-			"location":"🏢\\00FE0F",
-			"rack":"🗄\\00FE0F",
-			"frame":"🖥️\\00FE0F",
-			"socket":"🔌\\00FE0F",
-			"line":"🚇\\00FE0F",
-			"patch":"🔗\\00FE0F",
-			"map":"🏙\\00FE0F",
-			"linemap":"🗺\\00FE0F"
-		};
         // this will be added to every HTML element involved for good measure
 		let safelbl = target_object.getFullName(VisualEditor.ITEM_REF_SEPARATOR);
         // get the template out
@@ -816,6 +805,13 @@ class VisualEditor
 		let item_label = tpl.querySelector(".tree_item_name");
         // this will contain tool buttons that can pop up on hovering the item in the list
 		let toolbox = tpl.querySelector(".tool_buttons");
+        // add a line badge if the item is a Line
+		if(target_object.type == "line")
+		{
+			let badge = this.createLineBadge(target_object);
+			badge.dataset.itemref = safelbl;
+			item_label.appendChild(badge);
+		}
 		item_label.append(target_object.getLabel());
 		item_label.dataset.itemref = safelbl;
         // indicate that this item is hidden from view/collapsed
@@ -833,19 +829,9 @@ class VisualEditor
 		});
 		eye.dataset.itemref= safelbl;
 		toolbox.appendChild(eye);
-        // add a line badge if the item is a Line
-		if(target_object.type == "line")
-		{
-			let badge = this.createLineBadge(target_object);
-			badge.dataset.itemref = safelbl;
-			tpl.querySelector(".tree_item_name").appendChild(badge);
-		}
         // this is the <li> containing this item
 		let li = tpl.querySelector(".tree_item");
-        // some fake box drawing thing
-        // #TODO: some CSS chicanery with ::last-child or whatever it was called to
-        // make the last item show a ↳ instead
-		li.style.listStyleType = '"├' + styles[target_object.type] + '"';
+		li.dataset.itemtype = target_object.type;
 		li.dataset.itemref = safelbl;
         // the following implements collapsible tree view that behaves more or less like one expects it to
         // black magic fuckery begins here
