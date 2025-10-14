@@ -196,6 +196,12 @@ class VisualEditor
 	 * A reference to an HTML <dialog> for adding frames to a rack.
 	 */
 	static addFrameDialogue = null;
+	/**
+	 * Contains the data: URL for the frame pre-render.
+	 */
+	static framePreRenderSrc ="";
+
+	static frameTypeRegistry = {};
 
 	/**
 	 * Checks if any registered component hitboxes intersect a given coordinate.
@@ -249,8 +255,22 @@ class VisualEditor
 			f.subItems.forEach((sub)=>{sub.updatePosition()});
 			f.drawTop(ctx1);
 			console.log(f);
+			VisualEditor.frameTypeRegistry[frames[i].name] = {"index": i, "desc": frames[i].label};
 		}
-		VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(framerenders);
+		VisualEditor.framePreRenderSrc = framerenders.toDataURL("png");
+		//VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(framerenders);
+	}
+
+	static generateFramePreviewSprite(index, tagname="div")
+	{
+		let el = document.createElement(tagname);
+		el.style.backgroundImage="url(" + VisualEditor.framePreRenderSrc + ")";
+		el.style.width = DIM_FRAME_WIDTH+"px";
+		el.style.height= DIM_FRAME_HEIGHT+"px";
+		el.style.position="relative";
+		el.style.backgroundPositionX=0;
+		el.style.backgroundPositionY= index * -1 * DIM_FRAME_HEIGHT+"px";
+		return el;
 	}
 
     /**
@@ -402,7 +422,7 @@ class VisualEditor
 				VisualEditor.currentSingleItem = VisualEditor.currentSelection.selection[0];
 				VisualEditor.currentSingleType = VisualEditor.currentSingleItem.type;
 				console.log("exactly one item of type <" + VisualEditor.currentSingleType + "> picked");
-			VisualEditor.toolBar.querySelector("#add_line").disabled = VisualEditor.currentSingleType != "socket";
+				this.updateContextTools();
 			}
             // otherwise, clear the currentSingle* properties
 			else
@@ -421,6 +441,14 @@ class VisualEditor
         // run the user-replaceable function (#TODO: proper event handling? does JS do that?)
 		this.selectionChange();
 	}
+
+	static updateContextTools()
+	{
+		VisualEditor.toolBar.querySelector("#add_line").disabled = VisualEditor.currentSingleType != "socket";
+		VisualEditor.toolBar.querySelector("#add_frame").disabled = VisualEditor.currentSingleType != "rack";
+			
+	}
+
     /**
      * This is fired if the SelectionChange event is triggered - replace with event handler.
      */
@@ -526,6 +554,36 @@ class VisualEditor
 					VisualEditor.selectLine(e.target.dataset.lineName);
 				});
 				sheet.appendChild(badge);
+				break;
+			}
+			case "rack":
+			{
+				let previousSlot = -1;
+				target_object.subItems.forEach((f)=>{
+					if(f.slot-previousSlot>1)
+					{
+						let start =previousSlot+1;
+						let end = f.slot-1
+						let addbutton = document.createElement("button");
+						addbutton.append("Insert frame");
+						addbutton.addEventListener("click",(e)=>{
+							VisualEditor.showAddFrameDlg(start+1, end+1,itemref);
+						});
+						sheet.appendChild(addbutton);
+					}
+					let idx = VisualEditor.frameTypeRegistry[f.frametype]['index'];
+					let frame = VisualEditor.generateFramePreviewSprite(idx);
+					frame.dataset.itemref=itemref;
+					sheet.appendChild(frame);
+					previousSlot=f.slot;
+				});
+				let start =previousSlot+1;
+						let addbutton = document.createElement("button");
+						addbutton.append("Insert frame");
+						addbutton.addEventListener("click",(e)=>{
+							VisualEditor.showAddFrameDlg(start+1, 100,itemref);
+						});
+						sheet.appendChild(addbutton);
 				break;
 			}
 			case "line":
@@ -707,6 +765,28 @@ class VisualEditor
 		return lbl;
 	}
 
+	static find(address)
+	{
+		let domain = address.shift();
+		console.log(address);
+		let item = null;
+		// look in either of the current 2 types of items
+		switch(domain)
+		{
+			case "Equipment":
+			{
+				item = VisualEditor.fixedMap.find(...address);
+				break;
+			}
+			case "Lines":
+			{
+				item = VisualEditor.lineMap.find(...address);
+				break;
+			}
+		}
+		return item;
+	}
+
     /**
      * Builds a tree view with the object as the root item. The tree is built recursively.
      * The tree is then either inserted or replaces a specified HTML element.
@@ -792,23 +872,7 @@ class VisualEditor
                 // can't miss one
                 let address = e.target.dataset.itemref.split(VisualEditor.ITEM_REF_SEPARATOR);
                 // currently the "top" level gets special treatment as those are separate objects
-                let domain = address.shift();
-                console.log(address);
-                let item = null;
-                // look in either of the current 2 types of items
-                switch(domain)
-                {
-                    case "Equipment":
-                        {
-                            item = VisualEditor.fixedMap.find(...address);
-                            break;
-                        }
-                    case "Lines":
-                        {
-                            item = VisualEditor.lineMap.find(...address);
-                            break;
-                        }
-                }
+                let item = VisualEditor.find(address);
                 console.log(item);
                 // if found, do selection
                 // add on Ctrl else select the item as is
@@ -884,18 +948,77 @@ class VisualEditor
         }
 	}
 
-	static showAddFrameDlg()
+	static showAddFrameDlg(min, max, rackID)
 	{
 		console.log("loading dlg");
 		// only initiate on socket
-		if(!VisualEditor.currentSingleItem || VisualEditor.currentSingleType!="socket")
+		if(!VisualEditor.currentSingleItem || VisualEditor.currentSingleType!="rack")
 		{
 			return;
 		}
 		console.log("will work");
-		
+		VisualEditor.addFrameDialogue.querySelector('#rackref').value = rackID;
+		console.log(rackID);
+		VisualEditor.addFrameDialogue.querySelector("#slot").value =min;
+		VisualEditor.addFrameDialogue.querySelector("#slot").min =min;
+		VisualEditor.addFrameDialogue.querySelector("#slot").max =max;
+		let frames = document.createElement("div");
+		let names = Object.keys(VisualEditor.frameTypeRegistry);
+		let checked = true;
+		let list = document.createElement("ul");
+		list.id = "framelist";
+		names.forEach((fname)=>{
+			let idx = VisualEditor.frameTypeRegistry[fname]['index'];
+			let flbl = VisualEditor.frameTypeRegistry[fname]['desc'] == "" ? fname :  VisualEditor.frameTypeRegistry[fname]['desc'];
+			let img = VisualEditor.generateFramePreviewSprite(idx);
+			let lbl = document.createElement("label");
+			lbl.htmlFor="frame_opt_" + idx;
+			lbl.appendChild(img);
+			lbl.append(flbl);
+			let row = document.createElement("li");
+			row.appendChild(lbl);
+			let radbtn = document.createElement("input");
+			radbtn.value=fname;
+			radbtn.type="radio";
+			radbtn.name="frameselector";
+			radbtn.id="frame_opt_" +idx;
+			radbtn.checked = checked;
+			if(checked)
+			{
+				checked = false;
+			}
+			row.appendChild(radbtn);
+			list.appendChild(row);
+		});
+		VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(list);
+		VisualEditor.addFrameDialogue.returnValue ="";
 		VisualEditor.addFrameDialogue.showModal();
 
+	}
+	static addFrameResult()
+	{
+		if(VisualEditor.addFrameDialogue.returnValue!="ok")
+		{
+			return;
+		}
+		let frame = VisualEditor.addFrameDialogue.querySelector('input[name=frameselector]:checked').value;
+		let slot = VisualEditor.addFrameDialogue.querySelector('#slot').value;
+		let rackID = VisualEditor.addFrameDialogue.querySelector('#rackref').value.split(VisualEditor.ITEM_REF_SEPARATOR);
+		console.log(rackID);
+		let rack = VisualEditor.find(rackID);
+		if(rack)
+		{
+			let newframe = new VisualFrame(rack, slot);
+			newframe.slot = slot-1;
+			newframe.frametype = frame;
+			newframe.label=slot;
+			newframe.commit(VisualEditor);
+			rack.addItem(newframe);
+			rack.updateSize();
+			rack.updatePosition();
+			VisualEditor.reportUpdate(rack);
+			VisualEditor.refreshView();
+		}
 	}
 
 	static createLine()

@@ -48,8 +48,14 @@
 			<button onclick="VisualEditor.newLineDialogue.close(document.getElementById('linename').value);">Create line</button>
 		</form>
 	</dialog>
-	<dialog id="add_frame_dialog">
-		<div id="framescroller"><canvas id="framelist"></canvas></div>
+	<dialog id="add_frame_dialog" onclose="VisualEditor.addFrameResult()">
+		<form method="dialog">
+		<label for="slot">Add to slot: </label><input id="slot" type="number" />
+		<span>Select frame:</span>
+		<ul id="framelist"></ul>
+		<input type="hidden" id="rackref" />
+		<button onclick="VisualEditor.addFrameDialogue.close('ok');">OK</button>
+		</form>
 	</dialog>
 	<div id="main">
 		<div id="leftpane">
@@ -60,7 +66,7 @@
 				<button class="mode_button" data-mode="wire" id="mode_rewire" onclick="VisualEditor.setEditorModeHandler(event)">⫯</button>
 				<button class="mode_button" data-mode="link" id="mode_link" onclick="VisualEditor.setEditorModeHandler(event)">+</button>
 				<button disabled id="add_line" onclick="VisualEditor.createLine();">L</button>
-				<button id="add_frame" onclick="VisualEditor.showAddFrameDlg();">F</button>
+				<button disabled id="add_frame" onclick="VisualEditor.showAddFrameDlg();">F</button>
 				<button id="add_location" onclick="VisualEditor.showAddFrameDlg();">🏢</button>
 			</div>
 			<div class="displayer">

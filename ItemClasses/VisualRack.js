@@ -5,6 +5,7 @@
 class VisualRack extends VisualItem {
 
 	lowestSlot = 0;
+	highestSlot = 1000;
 	constructor(location, name)
 	{
 		super("rack", name, location);
@@ -51,6 +52,7 @@ class VisualRack extends VisualItem {
 	updateSize()
 	{
 		super.updateSize();
+		this.subItems.sort((a,b)=>a.slot-b.slot);
 		// calculate the lowest and highest slot numbers
 		let lowestslot = 1000; // reasonable
 		let highestslot = 0;
@@ -62,6 +64,7 @@ class VisualRack extends VisualItem {
 			highestslot = Math.max(f.slot-1, highestslot);
 		});
 		this.lowestSlot = lowestslot+1;
+		this.highestSlot = highestslot+1;
 		// calculate the number of slots the rack spans, at least 1
 		span = Math.max(1,(highestslot-lowestslot+1));
 		this.height = span * (DIM_FRAME_BOTTOM+DIM_FRAME_HEIGHT) + DIM_RACK_LABEL_SIZE;
