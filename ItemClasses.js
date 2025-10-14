@@ -350,6 +350,7 @@ class VisualItem {
 		{
 			return;
 		}
+		VisualEditor.drawCallCount++;
 		this.subItems.forEach((item) => {
 			item.draw(ctx);
 		});

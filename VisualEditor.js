@@ -336,12 +336,19 @@ class VisualEditor
         // use the object/item layer
 		const ctx = VisualEditor.mapLayer;
 		ctx.clearRect(0,0,5000,5000);
+		VisualEditor.drawCallCount=0;
         // draw the "fixed" items (locations, racks etc)
 		VisualEditor.fixedMap.draw(ctx);
+		console.log("Equipment draw calls: " + VisualEditor.drawCallCount);
+		VisualEditor.drawCallCount=0;
         // draw the "movable" items (cabling)
 		VisualEditor.lineMap.draw(ctx);
+		console.log("Linemap draw calls: " + VisualEditor.drawCallCount);
+		VisualEditor.drawCallCount=0;
         // draw collapsed items
 		VisualEditor.fixedMap.drawCollapsed(ctx);
+		console.log("Collapsed draw calls: " + VisualEditor.drawCallCount);
+		VisualEditor.drawCallCount=0;
 	}
     /**
      * Performs a complete refresh of all displays and item properties.

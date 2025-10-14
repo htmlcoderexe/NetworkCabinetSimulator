@@ -131,6 +131,7 @@ class VisualPatch extends VisualItem {
 	}
 	draw(ctx)
 	{
+		VisualEditor.drawCallCount++;
 		// save the drawing settings to restore later
 		ctx.save();
 

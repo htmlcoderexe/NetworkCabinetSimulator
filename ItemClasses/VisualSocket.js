@@ -45,6 +45,7 @@ class VisualSocket extends VisualItem
 	}
 	draw(ctx) 
 	{
+		VisualEditor.drawCallCount++;
 		// fill out the socket's dimensions with white background
 		ctx.fillStyle="#FFFFFF";
 		ctx.fillRect(this.cX+0.0,this.cY+1,this.width,this.height-2);
