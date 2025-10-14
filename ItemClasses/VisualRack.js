@@ -3,6 +3,8 @@
  * Represents a single rack of equipment (Frames)
  */
 class VisualRack extends VisualItem {
+
+	lowestSlot = 0;
 	constructor(location, name)
 	{
 		super("rack", name, location);
@@ -49,9 +51,20 @@ class VisualRack extends VisualItem {
 	updateSize()
 	{
 		super.updateSize();
-		// currently the height just depends on the amount of frames
-		// #TODO: account for explicit slots
-		this.height = this.subItems.length * (DIM_FRAME_BOTTOM+DIM_FRAME_HEIGHT) + DIM_RACK_LABEL_SIZE;
+		// calculate the lowest and highest slot numbers
+		let lowestslot = 1000; // reasonable
+		let highestslot = 0;
+		// the rack will render from lowest non-empty slot to highest non-empty slot
+		let span = 0;
+		// the -1 and +1 are used for conversion between 0-based and 1-based enumerations
+		this.subItems.forEach((f)=>{
+			lowestslot = Math.min(f.slot-1, lowestslot);
+			highestslot = Math.max(f.slot-1, highestslot);
+		});
+		this.lowestSlot = lowestslot+1;
+		// calculate the number of slots the rack spans, at least 1
+		span = Math.max(1,(highestslot-lowestslot+1));
+		this.height = span * (DIM_FRAME_BOTTOM+DIM_FRAME_HEIGHT) + DIM_RACK_LABEL_SIZE;
 		this.width = DIM_RACK_WIDTH;
 		// needed to propagate change to the sockets
 		// so that the lines attached render in a reasonable location

@@ -235,6 +235,7 @@ class VisualEditor
 		let framerenders = document.createElement("canvas");
 		framerenders.width = DIM_FRAME_WIDTH;
 		framerenders.height=DIM_FRAME_HEIGHT * (frames.length)
+		framerenders.id="framelist";
 		let ctx1 = framerenders.getContext("2d");
 		for(let i=0;i<frames.length;i++)
 		{

@@ -146,7 +146,9 @@ class VisualFrame extends VisualItem
 	{
 		this.cX = this.x + this.parent.cX;
 		// vertical position based on slot
-		this.cY = this.y + this.parent.cY + this.slot * (this.height + DIM_FRAME_SPACING) + DIM_RACK_LABEL_SIZE;
+		// also takes the rack's "offset" into account, as the lowest slot
+		// number is rendered at the "0" position but might be non-0
+		this.cY = this.y + this.parent.cY + (this.slot-this.parent.lowestSlot) * (this.height + DIM_FRAME_SPACING) + DIM_RACK_LABEL_SIZE;
 		// if collapsed, every frame is at the same point
 		// needed to force the sockets in the same spot for
 		// wire visualisation when collapsed
