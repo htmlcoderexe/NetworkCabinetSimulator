@@ -252,3 +252,23 @@ span.item_badge[data-itemtype="linemap"]::before
 {
     content: "🗺\00FE0F";
 }
+
+.framelistcontainer
+{
+    height: 20rem;
+    overflow-y: scroll;
+    position:relative;
+}
+.framelistcontainer ul
+{
+    list-style-type: none;
+}
+.framelistcontainer span
+{
+    display: inline-block;
+}
+
+.framelistcontainer input:checked + label
+{
+    border: 1px solid red;
+}

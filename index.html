@@ -51,8 +51,9 @@
 	<dialog id="add_frame_dialog" onclose="VisualEditor.addFrameResult()">
 		<form method="dialog">
 		<label for="slot">Add to slot: </label><input id="slot" type="number" />
-		<span>Select frame:</span>
-		<ul id="framelist"></ul>
+		<h2>Select frame:</h2>
+		<div class="framelistcontainer">
+		<ul id="framelist"></ul></div>
 		<input type="hidden" id="rackref" />
 		<button onclick="VisualEditor.addFrameDialogue.close('ok');">OK</button>
 		</form>

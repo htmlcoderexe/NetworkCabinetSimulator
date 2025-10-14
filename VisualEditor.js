@@ -970,13 +970,12 @@ class VisualEditor
 		names.forEach((fname)=>{
 			let idx = VisualEditor.frameTypeRegistry[fname]['index'];
 			let flbl = VisualEditor.frameTypeRegistry[fname]['desc'] == "" ? fname :  VisualEditor.frameTypeRegistry[fname]['desc'];
-			let img = VisualEditor.generateFramePreviewSprite(idx);
+			let img = VisualEditor.generateFramePreviewSprite(idx,"span");
 			let lbl = document.createElement("label");
 			lbl.htmlFor="frame_opt_" + idx;
 			lbl.appendChild(img);
 			lbl.append(flbl);
 			let row = document.createElement("li");
-			row.appendChild(lbl);
 			let radbtn = document.createElement("input");
 			radbtn.value=fname;
 			radbtn.type="radio";
@@ -988,6 +987,7 @@ class VisualEditor
 				checked = false;
 			}
 			row.appendChild(radbtn);
+			row.appendChild(lbl);
 			list.appendChild(row);
 		});
 		VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(list);
