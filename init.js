@@ -63,7 +63,15 @@ function endHResize(e)
 
 function InitEditor()
 {
-
+        let maptext = window.localStorage.getItem("editor_fixedmap_code");
+        if(maptext)
+        document.getElementById('aaa').value =maptext;
+        let linetext = window.localStorage.getItem("editor_linemap_code");
+        if(linetext)
+        document.getElementById('ccc').value =linetext;
+        let invtext = window.localStorage.getItem("editor_inventory_code");
+        if(invtext)
+        document.getElementById('ddd').value =invtext;
     document.querySelectorAll(".vresize").forEach((e)=>{
         e.addEventListener("pointerdown",beginVResize);
     });
@@ -108,8 +116,16 @@ function InitEditor()
     };
     document.getElementById("mode_pointer").click();
     document.getElementById('bbb2').addEventListener("click",(e)=>{
-        document.getElementById('aaa').value=VisualEditor.fixedMap.toCode(0);
-        document.getElementById('ccc').value=VisualEditor.lineMap.toCode(0);
+        let maptext =VisualEditor.fixedMap.toCode(0);
+        document.getElementById('aaa').value=maptext;
+        let linetext=VisualEditor.lineMap.toCode(0);
+        document.getElementById('ccc').value=linetext;
+        // #TODO: saving inventory
+        let invtext = document.getElementById('ddd').value;
+
+        window.localStorage.setItem("editor_fixedmap_code", maptext);
+        window.localStorage.setItem("editor_linemap_code", linetext);
+        window.localStorage.setItem("editor_inventory_code", invtext);
 
     });
     document.getElementById('bbb').addEventListener("click",(e)=>{
