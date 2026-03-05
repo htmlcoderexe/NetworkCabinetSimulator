@@ -59,6 +59,7 @@ class VisualRack extends VisualItem {
 				if(item.slot === -1)
 				{
 					item.slot = this.getNextSlot();
+					item.isdynamic=true;
 				}
 			});
 		}

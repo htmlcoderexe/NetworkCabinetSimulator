@@ -1016,6 +1016,7 @@ class VisualEditor
 			newframe.commit(VisualEditor);
 			if(override)
 			{
+				newframe.name=String(rack.getNextSlot()+1);
 				rack.freeSlot(slot-1);
 			}
 			rack.addItem(newframe);

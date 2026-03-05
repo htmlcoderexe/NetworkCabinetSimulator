@@ -4,6 +4,7 @@
  */
 class VisualFrame extends VisualItem
 {
+	isdynamic = false;
 	constructor(rack, name)
 	{
 		super("frame", name, rack);
@@ -23,7 +24,8 @@ class VisualFrame extends VisualItem
 		let output ="";
 		output+=this._f("frame",indent_level,this.name);
 		//#TODO: only write this if a slot was specified in original file
-		output+=this._f("slot",indent_level+1, this.slot+1);
+		if(!this.isdynamic)
+			output+=this._f("slot",indent_level+1, this.slot+1);
 		output+=this._f("type",indent_level+1, this.frametype);
 		output+=this._f("label", indent_level+1, this.label);
 		// sockets aren't stored in the file
