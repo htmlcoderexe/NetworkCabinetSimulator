@@ -50,12 +50,13 @@
 	</dialog>
 	<dialog id="add_frame_dialog" onclose="VisualEditor.addFrameResult()">
 		<form method="dialog">
-		<label for="slot">Add to slot: </label><input id="slot" type="number" />
+		<label for="slot">Add to slot: </label><input id="slot" type="number" /> <input id="override" type="checkbox" /><label for="override">Force slot number and rearrange as needed</label>
 		<h2>Select frame:</h2>
 		<div class="framelistcontainer">
 		<ul id="framelist"></ul></div>
 		<input type="hidden" id="rackref" />
 		<button onclick="VisualEditor.addFrameDialogue.close('ok');">OK</button>
+		<button onclick="VisualEditor.addFrameDialogue.close('cancel');">Cancel</button>
 		</form>
 	</dialog>
 	<div id="main">

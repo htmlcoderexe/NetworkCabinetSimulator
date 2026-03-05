@@ -15,6 +15,21 @@ class VisualRack extends VisualItem {
 		this.slot = -1;
 		this.selectionOrder = 2;
 	}
+	freeSlot(slot)
+	{
+		if(!this.checkSlot(slot))
+			return;
+		this.bumpSlot(slot);
+	}
+	bumpSlot(slot)
+	{
+		if(this.checkSlot(slot+1))
+		{
+			this.bumpSlot(slot+1);
+		}
+		let frame = this.getAtSlot(slot);
+		frame.slot++;
+	}
 	toCode(indent_level)
 	{
 		let output ="";

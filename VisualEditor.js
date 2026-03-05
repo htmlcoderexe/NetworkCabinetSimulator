@@ -942,6 +942,20 @@ class VisualEditor
 		{
 			return;
 		}
+		VisualEditor.addFrameDialogue.querySelector('#override').checked=false;
+		VisualEditor.addFrameDialogue.querySelector('#override').addEventListener("change",function (e){
+			if(this.checked)
+			{
+				VisualEditor.addFrameDialogue.querySelector("#slot").min =1;
+				VisualEditor.addFrameDialogue.querySelector("#slot").max =999;
+			}
+			else
+			{
+				
+				VisualEditor.addFrameDialogue.querySelector("#slot").min =min;
+				VisualEditor.addFrameDialogue.querySelector("#slot").max =max;
+			}
+		});
 		console.log("will work");
 		VisualEditor.addFrameDialogue.querySelector('#rackref').value = rackID;
 		console.log(rackID);
@@ -988,6 +1002,7 @@ class VisualEditor
 			return;
 		}
 		let frame = VisualEditor.addFrameDialogue.querySelector('input[name=frameselector]:checked').value;
+		let override = VisualEditor.addFrameDialogue.querySelector('#override').checked;
 		let slot = VisualEditor.addFrameDialogue.querySelector('#slot').value;
 		let rackID = VisualEditor.addFrameDialogue.querySelector('#rackref').value.split(VisualEditor.ITEM_REF_SEPARATOR);
 		console.log(rackID);
@@ -999,6 +1014,10 @@ class VisualEditor
 			newframe.frametype = frame;
 			newframe.label=slot;
 			newframe.commit(VisualEditor);
+			if(override)
+			{
+				rack.freeSlot(slot-1);
+			}
 			rack.addItem(newframe);
 			rack.updateSize();
 			rack.updatePosition();

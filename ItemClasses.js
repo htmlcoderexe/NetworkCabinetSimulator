@@ -180,6 +180,10 @@ class VisualItem {
 		return !!collision;
 	}
 
+	getAtSlot(slot) {
+		return this.subItems.find((subItem) => { return subItem.slot === slot; });
+	}
+
 	/**
 	 * Retrieves this item's bounding box.
 	 * @param {boolean} useTexel - if set to true, will shift the box by 0.5 to properly
