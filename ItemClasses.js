@@ -78,6 +78,10 @@ class VisualItem {
 	 */
 	nextSlot = 0;
 	/**
+	Keeps track of the next free prefixed slot (unique integer identifier among sibling items, with a name prefix).
+	 */
+	prefixedSlots = [];
+	/**
 	Applies to diagonal testing on the item's hitbox.
 	 */
 	flip = false;
@@ -160,17 +164,36 @@ class VisualItem {
 		this.subItems.push(item);
 		return true;
 	}
+	removeItem(item)
+	{
+		this.subItems=this.subItems.filter((i)=>i!=item);
+	}
 
 	/**
 	 * Finds and returns the next unused numeric ID ("slot").
 	 * @returns {int} - a numeric ID guaranteed to be unused in this object.
 	 */
-	getNextSlot () {
+	getNextSlot() {
 		let current = this.nextSlot;
 		while (this.checkSlot(current)) {
 			current++;
 		}
 		this.nextSlot = current + 1;
+		return current;
+	}
+	/**
+	 * Finds and returns the next unused numeric ID ("slot").
+	 * @returns {int} - a numeric ID guaranteed to be unused in this object.
+	 */
+	getNextPrefixedSlot(prefix) {
+		if(!this.prefixedSlots[prefix])
+			this.prefixedSlots[prefix]=0;
+		let current = this.prefixedSlots[prefix];
+		console.log(this.prefixedSlots);
+		while (this.checkPrefixedSlot(current,prefix)) {
+			current++;
+		}
+		this.prefixedSlots[prefix] = current + 1;
 		return current;
 	}
 	/**
@@ -183,7 +206,18 @@ class VisualItem {
 		let collision = this.subItems.find((subItem) => { return subItem.slot === slot; });
 		return !!collision;
 	}
-
+	
+	/**
+	 * Checks if a given name with a numeric ID is in use.
+	 * @param {int} slot - the ID to check.
+	 * @param {string} prefix - prefix of the name 
+	 * @returns - true if name with ID is in use, false otherwise.
+	 */
+	checkPrefixedSlot (slot,prefix) {
+		console.log("checking slot <",prefix, slot, "> in ", this.subItems);
+		let collision = this.subItems.find((subItem) => { return subItem.name == prefix+slot; });
+		return !!collision;
+	}
 	getAtSlot(slot) {
 		return this.subItems.find((subItem) => { return subItem.slot === slot; });
 	}

@@ -590,7 +590,7 @@ class VisualEditor
 			{
 				let start_lbl = document.createElement("div");
 				let end_lbl = document.createElement("div");
-				if(target_object.name!="looseLinks")
+				if(target_object.doContinuity)
 				{
 					start_lbl.append(this.createHotLabel(target_object.start));
 					start_lbl.append(" @ [");
@@ -611,7 +611,7 @@ class VisualEditor
 					sheet.appendChild(flipper);
 
 				}
-				else
+				else if(target_object.name=="looselinks")
 				{
 					end_lbl.append("This contains any links not assigned to a line.")
 				}
@@ -690,7 +690,78 @@ class VisualEditor
             VisualEditor.propSheetContainer.appendChild(tpl.firstElementChild);
         }
 	}
-	
+	static checkIfCanCreateGroup()
+	{
+		const sel = VisualEditor.currentSelection.selection;
+		for(let i=0;i<sel.length;i++)
+		{
+			if(sel[i].type!="patch")
+				return false;
+			if(sel[i].parent.name!="looseLinks")
+				return false;
+		}
+		let sheet =  VisualEditor.propSheetContainer;
+		let addbutton = document.createElement("button");
+						addbutton.append("Create group");
+						addbutton.addEventListener("click",(e)=>{
+							let nn = VisualEditor.lineMap.getNextPrefixedSlot("g_");
+							let line = new VisualLine(VisualEditor.lineMap, "g_"+nn);
+							line.doContinuity=false;
+							line.label="Group "+nn;
+							line.subtype="linkgroup";
+							for(let i=0;i<sel.length;i++)
+							{
+								sel[i].name=line.getNextSlot();
+								sel[i].parent=line;
+								VisualEditor.lineMap.looseLinks.removeItem(sel[i]);
+								line.addItem(sel[i]);
+							}
+							VisualEditor.lineMap.addItem(line);
+							VisualEditor.reportUpdate(VisualEditor.lineMap);
+							VisualEditor.redrawSelection();
+						});
+						sheet.appendChild(addbutton);
+		return true;
+	}
+	static checkIfCanAddToGroup()
+	{
+		const sel = VisualEditor.currentSelection.selection;
+		let g0=null;
+		for(let i=0;i<sel.length;i++)
+		{
+			if(sel[i].type!="patch")
+				return false;
+			if(sel[i].parent.name=="looseLinks")
+				continue;
+			if(sel[i].parent.doContinuity)
+				return false;
+			if(!g0)
+				g0=sel[i].parent;
+			if(g0!=sel[i].parent)
+				return false;
+		}
+		if(!g0)
+			return false;
+		let sheet =  VisualEditor.propSheetContainer;
+		let addbutton = document.createElement("button");
+						addbutton.append("Add to "+g0.getLabel());
+						addbutton.addEventListener("click",(e)=>{
+							sel.forEach((l)=>{
+								if(l.parent == g0)
+									return;
+								l.name=g0.getNextSlot();
+								l.parent=g0;
+								VisualEditor.lineMap.looseLinks.removeItem(l);
+								g0.addItem(l);
+							});
+							VisualEditor.reportUpdate(VisualEditor.lineMap);
+							VisualEditor.redrawSelection();
+							VisualEditor.triggerSelectionChange();
+						});
+						sheet.appendChild(addbutton);
+		return true;
+
+	}
     /**
      * Called when an item has been changed.
      * @param {VisualItem} target_object - the item that has been changed.
