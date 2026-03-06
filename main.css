@@ -216,11 +216,11 @@ body
 {
     list-style-type:"╚🗄\00FE0F";
 }
-#object_tree li[data-itemtype="frame"]
+#object_tree li[data-itemtype="frame"], #object_tree li[data-itemtype="frame_tpl"]
 {
     list-style-type:"╠🚌\00FE0F";
 }
-#object_tree li[data-itemtype="frame"]:last-child
+#object_tree li[data-itemtype="frame"]:last-child, #object_tree li[data-itemtype="frame_tpl"]:last-child
 {
     list-style-type:"╚🚌\00FE0F";
 }
@@ -256,13 +256,21 @@ body
 {
     list-style-type:"╚🖥️\00FE0F";
 }
-#object_tree li[data-itemtype="socket"]
+#object_tree li[data-itemtype="socket"], #object_tree li[data-itemtype="socket_tpl"]
 {
     list-style-type:"╠🔌\00FE0F";
 }
-#object_tree li[data-itemtype="socket"]:last-child
+#object_tree li[data-itemtype="socket"]:last-child, #object_tree li[data-itemtype="socket_tpl"]:last-child
 {
     list-style-type:"╚🔌\00FE0F";
+}
+#object_tree li[data-itemtype="socket_bank"]
+{
+    list-style-type:"╠🧮\00FE0F";
+}
+#object_tree li[data-itemtype="socket_bank"]:last-child
+{
+    list-style-type:"╚🧮\00FE0F";
 }
 #object_tree li[data-itemtype="line"]
 {
@@ -303,6 +311,14 @@ body
 #object_tree li[data-itemtype="linemap"]:last-child
 {
     list-style-type:"╚🗺\00FE0F";
+}
+#object_tree li[data-itemtype="inventory"]
+{
+    list-style-type:"╠🧰\00FE0F";
+}
+#object_tree li[data-itemtype="inventory"]:last-child
+{
+    list-style-type:"╚🧰\00FE0F";
 }
 
 
