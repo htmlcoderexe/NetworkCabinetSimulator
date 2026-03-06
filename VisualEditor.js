@@ -693,6 +693,8 @@ class VisualEditor
 	static checkIfCanCreateGroup()
 	{
 		const sel = VisualEditor.currentSelection.selection;
+		if(sel.length==0)
+			return;
 		for(let i=0;i<sel.length;i++)
 		{
 			if(sel[i].type!="patch")
@@ -727,12 +729,16 @@ class VisualEditor
 	{
 		const sel = VisualEditor.currentSelection.selection;
 		let g0=null;
+		let adds = 0;
 		for(let i=0;i<sel.length;i++)
 		{
 			if(sel[i].type!="patch")
 				return false;
 			if(sel[i].parent.name=="looseLinks")
+			{
+				adds++;
 				continue;
+			}
 			if(sel[i].parent.doContinuity)
 				return false;
 			if(!g0)
@@ -741,6 +747,8 @@ class VisualEditor
 				return false;
 		}
 		if(!g0)
+			return false;
+		if(adds==0)
 			return false;
 		let sheet =  VisualEditor.propSheetContainer;
 		let addbutton = document.createElement("button");
