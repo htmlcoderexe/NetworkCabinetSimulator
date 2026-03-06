@@ -256,11 +256,11 @@ body
 {
     list-style-type:"╚🖥️\00FE0F";
 }
-#object_tree li[data-itemtype="socket"], #object_tree li[data-itemtype="socket_tpl"]
+#object_tree li[data-itemtype="socket"], #object_tree li[data-itemtype="socket_tpl"], #object_tree li[data-itemtype="connector"]
 {
     list-style-type:"╠🔌\00FE0F";
 }
-#object_tree li[data-itemtype="socket"]:last-child, #object_tree li[data-itemtype="socket_tpl"]:last-child
+#object_tree li[data-itemtype="socket"]:last-child, #object_tree li[data-itemtype="socket_tpl"]:last-child, #object_tree li[data-itemtype="connector"]:last-child
 {
     list-style-type:"╚🔌\00FE0F";
 }
@@ -269,6 +269,14 @@ body
     list-style-type:"╠🧮\00FE0F";
 }
 #object_tree li[data-itemtype="socket_bank"]:last-child
+{
+    list-style-type:"╚🧮\00FE0F";
+}
+#object_tree li[data-itemtype="bank"]
+{
+    list-style-type:"╠🧮\00FE0F";
+}
+#object_tree li[data-itemtype="bank"]:last-child
 {
     list-style-type:"╚🧮\00FE0F";
 }
