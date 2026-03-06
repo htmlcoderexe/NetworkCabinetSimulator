@@ -125,6 +125,9 @@ function VisualParser(code, fx, root)
 		this.offset = 0;
 		this.oldOffset = 0;
 		const word = this.getWord();
+		// skip the empty line
+		if(!word)
+			return true;
 		this.statevars['last_token'] = word;
 		const op = word.toUpperCase();
 		const current = this.getCurrent();
