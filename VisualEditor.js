@@ -231,13 +231,18 @@ class VisualEditor
     {
         return this.treeViewContainer ? this.treeViewContainer.querySelectorAll("span.tree_item_name") : [];
     }
-
+	/**
+	 * Loads hardware inventory (frame templates, connectors etc)
+	 * @param {*} inventory 
+	 */
 	static loadInventory(inventory)
 	{
 		VisualEditor.inventory = inventory;
-		console.log(VisualEditor.inventory.subItems);
+		//console.log(VisualEditor.inventory.subItems);
 		let frames = VisualEditor.inventory.subItems.filter(vi=>vi.type=="frame_tpl");
-		console.log(frames);
+		//console.log(frames);
+		// render all frame types into an image for dialog boxes
+		// #TODO use these prerenders in the interface
 		let framerenders = document.createElement("canvas");
 		framerenders.width = DIM_FRAME_WIDTH;
 		framerenders.height=DIM_FRAME_HEIGHT * (frames.length)
@@ -254,7 +259,7 @@ class VisualEditor
 			f.cX=(-1 * DIM_FRAME_SIDES);
 			f.subItems.forEach((sub)=>{sub.updatePosition()});
 			f.drawTop(ctx1);
-			console.log(f);
+			//console.log(f);
 			VisualEditor.frameTypeRegistry[frames[i].name] = {"index": i, "desc": frames[i].label};
 		}
 		VisualEditor.framePreRenderSrc = framerenders.toDataURL("png");
@@ -360,15 +365,15 @@ class VisualEditor
 		VisualEditor.drawCallCount=0;
         // draw the "fixed" items (locations, racks etc)
 		VisualEditor.fixedMap.draw(ctx);
-		console.log("Equipment draw calls: " + VisualEditor.drawCallCount);
+		//console.log("Equipment draw calls: " + VisualEditor.drawCallCount);
 		VisualEditor.drawCallCount=0;
         // draw the "movable" items (cabling)
 		VisualEditor.lineMap.draw(ctx);
-		console.log("Linemap draw calls: " + VisualEditor.drawCallCount);
+		//console.log("Linemap draw calls: " + VisualEditor.drawCallCount);
 		VisualEditor.drawCallCount=0;
         // draw collapsed items
 		VisualEditor.fixedMap.drawCollapsed(ctx);
-		console.log("Collapsed draw calls: " + VisualEditor.drawCallCount);
+		//console.log("Collapsed draw calls: " + VisualEditor.drawCallCount);
 		VisualEditor.drawCallCount=0;
 	}
     /**
@@ -415,13 +420,13 @@ class VisualEditor
 		// for contextual actions requiring a specific item type to be selected
 		if(VisualEditor.currentSelection.selection.length> 0)
 		{
-			console.log("non-empty selection made");
+			//console.log("non-empty selection made");
             // if exactly one item is selected, set the currentSingle* properties
 			if(VisualEditor.currentSelection.selection.length === 1)
 			{
 				VisualEditor.currentSingleItem = VisualEditor.currentSelection.selection[0];
 				VisualEditor.currentSingleType = VisualEditor.currentSingleItem.type;
-				console.log("exactly one item of type <" + VisualEditor.currentSingleType + "> picked");
+				//console.log("exactly one item of type <" + VisualEditor.currentSingleType + "> picked");
 				this.updateContextTools();
 			}
             // otherwise, clear the currentSingle* properties
@@ -434,7 +439,7 @@ class VisualEditor
         // also clear the currentSingle* properties
 		else
 		{
-			console.log("selection is empty now");
+			//console.log("selection is empty now");
 			VisualEditor.currentSingleItem = null;
 			VisualEditor.currentSingleType = "";
 		}
@@ -847,7 +852,7 @@ class VisualEditor
 	static find(address)
 	{
 		let domain = address.shift();
-		console.log(address);
+		//console.log(address);
 		let item = null;
 		// look in either of the current 2 types of items
 		switch(domain)
@@ -939,7 +944,7 @@ class VisualEditor
                 let address = e.target.dataset.itemref.split(VisualEditor.ITEM_REF_SEPARATOR);
                 // currently the "top" level gets special treatment as those are separate objects
                 let item = VisualEditor.find(address);
-                console.log(item);
+                //console.log(item);
                 // if found, do selection
                 // add on Ctrl else select the item as is
                 if(item)
@@ -964,7 +969,7 @@ class VisualEditor
             let identifier = e.target.dataset.itemref;
             let address = identifier.split(VisualEditor.ITEM_REF_SEPARATOR);
             let domain = address.shift();
-            console.log(address);
+            //console.log(address);
             let item = null;
             switch(domain)
             {
@@ -979,7 +984,7 @@ class VisualEditor
                         break;
                     }
             }
-            console.log(item);
+            //console.log(item);
             if(item)
             {
                 VisualEditor.currentHightlight = [item];
@@ -1036,9 +1041,8 @@ class VisualEditor
 				VisualEditor.addFrameDialogue.querySelector("#slot").max =max;
 			}
 		});
-		console.log("will work");
 		VisualEditor.addFrameDialogue.querySelector('#rackref').value = rackID;
-		console.log(rackID);
+		//console.log(rackID);
 		VisualEditor.addFrameDialogue.querySelector("#slot").value =min;
 		VisualEditor.addFrameDialogue.querySelector("#slot").min =min;
 		VisualEditor.addFrameDialogue.querySelector("#slot").max =max;
@@ -1085,7 +1089,7 @@ class VisualEditor
 		let override = VisualEditor.addFrameDialogue.querySelector('#override').checked;
 		let slot = VisualEditor.addFrameDialogue.querySelector('#slot').value;
 		let rackID = VisualEditor.addFrameDialogue.querySelector('#rackref').value.split(VisualEditor.ITEM_REF_SEPARATOR);
-		console.log(rackID);
+		//console.log(rackID);
 		let rack = VisualEditor.find(rackID);
 		if(rack)
 		{
@@ -1124,7 +1128,7 @@ class VisualEditor
 	static createLineResult(e)
 	{
 		console.log("after dlg");
-		console.log(VisualEditor.newLineDialogue.returnValue);
+		//console.log(VisualEditor.newLineDialogue.returnValue);
 		if(VisualEditor.newLineDialogue.returnValue)
 		{
             // make a fake socket to attach the wire to
@@ -1410,9 +1414,9 @@ class VisualEditor
 			return;
 		}
 
-		console.log( results[0]?.type);
+		//console.log( results[0]?.type);
 		
-		console.log(VisualEditor.currentSingleType, " +++ ", results[0]?.type);
+		//console.log(VisualEditor.currentSingleType, " +++ ", results[0]?.type);
 
 		// if a wire has been selected and a socket is clicked
 		// start moving the wire connected to that socket (and any matching)
@@ -1423,10 +1427,10 @@ class VisualEditor
             // make sure the selected socket actually is connected to the wire
 			if(!fromSocket.canMove(fromLine))
 			{
-				console.log("selected socket is not one of the ends");
+				console.warn("selected socket is not one of the ends");
 				return;
 			}
-			console.log("ready to wire!");
+			//console.log("ready to wire!");
             // make a fake socket to attach the wire to
 			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
 			// temp patch to make the fake socket match the mouse exactly
@@ -1437,7 +1441,7 @@ class VisualEditor
 			{
 				if(!fromSocket.canStart(fromLine))
 				{
-					console.log("can't add a new wire from here");
+					console.warn("can't add a new wire from here");
 					return;
 				}
                 // create a wire, attach it from the target socket to the fake socket
@@ -1570,9 +1574,9 @@ class VisualEditor
 		{
 			if(!VisualEditor.ctrl)
 			{
-				console.log("before clear", VisualEditor.currentSelection);
+				//console.log("before clear", VisualEditor.currentSelection);
 				VisualEditor.currentSelection.clear();
-				console.log("after clear", VisualEditor.currentSelection);
+				//console.log("after clear", VisualEditor.currentSelection);
 			}
 				
 			VisualEditor.redrawSelection()

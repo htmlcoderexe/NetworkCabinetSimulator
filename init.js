@@ -6,13 +6,13 @@ function beginVResize(e)
 }
 function doVResize(e)
 {
-    console.log(e.currentTarget);
+    //console.log(e.currentTarget);
     let h = e.y ;
-    console.log(h);
+    //console.log(h);
     let prev = e.currentTarget.firstElementChild;
     let next = e.currentTarget.firstElementChild.nextElementSibling.nextElementSibling;
     let parent_height = e.currentTarget.offsetHeight;
-    console.log(parent_height);
+    //console.log(parent_height);
     prev.style.height = ((h/ parent_height)*100-1) + "%";
     next.style.height = (99-(h / parent_height)*100) + "%";
 }
@@ -28,19 +28,19 @@ function beginHResize(e)
 }
 function doHResize(e)
 {
-    console.log(e.currentTarget);
+    //console.log(e.currentTarget);
     let w = e.x ;
-    console.log(w);
+    //console.log(w);
     let prev = e.currentTarget.firstElementChild;
     let next = e.currentTarget.firstElementChild.nextElementSibling.nextElementSibling;
     let parent_width = e.currentTarget.offsetWidth;
-    console.log(parent_width);
+    //console.log(parent_width);
     let p_w_pct =((w/ parent_width)*100);
     let n_w_pct =100-((w / parent_width)*100);
     let p_min = window.getComputedStyle(prev).getPropertyValue("min-width").slice(0,-1);
     let n_min = window.getComputedStyle(next).getPropertyValue("min-width").slice(0,-1);
-    console.log(prev.style,next.style);
-    console.log(p_w_pct, p_min, n_w_pct, n_min);
+    //console.log(prev.style,next.style);
+    //console.log(p_w_pct, p_min, n_w_pct, n_min);
     if(p_w_pct<p_min)
     {
         p_w_pct = p_min;
@@ -179,9 +179,9 @@ function InitEditor()
         VisualEditor.lineMap.commit(p);
         
 
-        console.log(p.terrain);
-        console.log(p.rootObject);
-        console.log(VisualItem.hitboxMapping);
+        //console.log(p.terrain);
+        //console.log(p.rootObject);
+        //console.log(VisualItem.hitboxMapping);
         
     VisualEditor.buildTree(document.getElementById("object_tree"), VisualEditor.fixedMap);
 

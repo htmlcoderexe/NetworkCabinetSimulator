@@ -47,7 +47,7 @@ function VisualParser(code, fx, root)
 		{
 			msg2 = msg2.replaceAll("%"+statevar+"%",this.statevars[statevar]);
 		}
-		console.log("Parser warning on line "+ this.index+": #" + code + ": " + msg2);
+		console.warn("Parser warning on line "+ this.index+": #" + code + ": " + msg2);
 		this.warnings.push({code: code, message: msg2, line: this.index, character: this.oldOffset});
 	};
 	this.error = function(code = 0)
@@ -59,10 +59,10 @@ function VisualParser(code, fx, root)
 		let msg2 = msg;
 		for(let statevar in this.statevars)
 		{
-			console.log(statevar);
+			//console.warn(statevar);
 			msg2 = msg2.replaceAll("%"+statevar+"%",this.statevars[statevar]);
 		}
-		console.log("Syntax error on line "+ this.index+": #" + code + ": " + msg2);
+		console.error("Syntax error on line "+ this.index+": #" + code + ": " + msg2);
 		this.errors.push({code: code, message: msg2, line: this.index, character: this.oldOffset});
 	};
 	this.saveOffset = function()
@@ -164,10 +164,10 @@ function VisualParser(code, fx, root)
 		while(this.objectStack.length > 0 && this.objectStack[0].type != type)
 		{
 			let cur = this.objectStack[0];
-			console.log("trying to commit a <", cur.type, ">...")
+			//console.log("trying to commit a <", cur.type, ">...")
 			if(cur.commit(this))
 			{
-				console.log("yes");
+				//console.log("yes");
 				let added = cur.parent.addItem(cur);
 				if(!added)
 				{

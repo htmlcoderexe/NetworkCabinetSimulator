@@ -84,7 +84,7 @@ class VisualSocket extends VisualItem
 	 */
 	connect(wire)
 	{
-		console.log("connected <", wire.getFullLabel(),"> to <", this.getFullLabel(), ">");
+		//console.log("connected <", wire.getFullLabel(),"> to <", this.getFullLabel(), ">");
 		this.connections.push(wire);
 	}
 	/**
@@ -93,7 +93,7 @@ class VisualSocket extends VisualItem
 	 */
 	disconnect(wire)
 	{
-		console.log("disconnected <", wire.getFullLabel(),"> from <", this.getFullLabel(), ">");
+		//console.log("disconnected <", wire.getFullLabel(),"> from <", this.getFullLabel(), ">");
 		this.connections = this.connections.filter(item=>item!==wire);
 	}
 	/**

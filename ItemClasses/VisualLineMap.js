@@ -17,14 +17,14 @@ class VisualLineMap extends VisualItem
 		if(existinglooselinks)
 		{
 			this.looseLinks=existinglooselinks;
-			console.log("Loaded existing loose links line");
+			//console.log("Loaded existing loose links line");
 		}
 		else
 		{
 			this.looseLinks= new VisualLine(this,"looseLinks");
 			this.looseLinks.label = "Loose links";
 			this.subItems.push(this.looseLinks);
-			console.log("Created loose links line");
+			//console.log("Created loose links line");
 		}
 	}
 }

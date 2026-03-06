@@ -189,7 +189,7 @@ class VisualItem {
 		if(!this.prefixedSlots[prefix])
 			this.prefixedSlots[prefix]=0;
 		let current = this.prefixedSlots[prefix];
-		console.log(this.prefixedSlots);
+		//console.log(this.prefixedSlots);
 		while (this.checkPrefixedSlot(current,prefix)) {
 			current++;
 		}
@@ -202,7 +202,7 @@ class VisualItem {
 	 * @returns - true if ID is in use, false otherwise.
 	 */
 	checkSlot (slot) {
-		console.log("checking slot ", slot, " in ", this.subItems);
+		//console.log("checking slot ", slot, " in ", this.subItems);
 		let collision = this.subItems.find((subItem) => { return subItem.slot === slot; });
 		return !!collision;
 	}
@@ -214,7 +214,7 @@ class VisualItem {
 	 * @returns - true if name with ID is in use, false otherwise.
 	 */
 	checkPrefixedSlot (slot,prefix) {
-		console.log("checking slot <",prefix, slot, "> in ", this.subItems);
+		//console.log("checking slot <",prefix, slot, "> in ", this.subItems);
 		let collision = this.subItems.find((subItem) => { return subItem.name == prefix+slot; });
 		return !!collision;
 	}
@@ -332,7 +332,7 @@ class VisualItem {
 	 * @returns {boolean} - true if the object is valid and may be committed, false otherwise.
 	 */
 	commit (parser) {
-		console.log("generic commit of type " + this.type);
+		//console.log("generic commit of type " + this.type);
 		return true;
 	}
 	/**
@@ -627,7 +627,7 @@ function GetRect(x, y, w, h) {
 	{
 		if(this.height == 0 || this.width == 0)
 		{
-			console.log("aargh");
+			//console.log("aargh");
 			return true;
 		}
 		oX = x-this.x;

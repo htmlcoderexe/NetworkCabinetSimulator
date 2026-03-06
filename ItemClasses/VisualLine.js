@@ -110,7 +110,7 @@ class VisualLine extends VisualItem {
 		});
 		// in a properly formed line, there should be exactly two endpoints that
 		// are each visited only by one link - the start and the end
-		console.log(seenConnections);
+		//console.log(seenConnections);
 		if(seenConnections.length !=2)
 		{
 			// malformed line
@@ -177,7 +177,7 @@ class VisualLine extends VisualItem {
 				availableLinks = availableLinks.filter((link)=>link!==currentLink);
 				// increment the link number
 				linkIdCounter++;
-				console.log("renumbered", currentLink, "to ", linkIdCounter-1);
+				//console.log("renumbered", currentLink, "to ", linkIdCounter-1);
 			}
 		// put the links in the new order inside the Line
 		this.subItems.sort((a,b)=>a.name - b.name);
