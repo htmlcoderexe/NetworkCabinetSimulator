@@ -204,62 +204,101 @@ body
 {
     list-style-type:"╠🏢\00FE0F";
 }
-#object_tree li[data-itemtype="rack"]
-{
-    list-style-type:"╠🗄\00FE0F";
-}
-#object_tree li[data-itemtype="frame"]
-{
-    list-style-type:"╠🖥️\00FE0F";
-}
-#object_tree li[data-itemtype="socket"]
-{
-    list-style-type:"╠🔌\00FE0F";
-}
-#object_tree li[data-itemtype="line"]
-{
-    list-style-type:"╠🚇\00FE0F";
-}
-#object_tree li[data-itemtype="patch"]
-{
-    list-style-type:"╠🔗\00FE0F";
-}
-#object_tree li[data-itemtype="map"]
-{
-    list-style-type:"╠🏙\00FE0F";
-}
-#object_tree li[data-itemtype="linemap"]
-{
-    list-style-type:"╠🗺\00FE0F";
-}
-
 #object_tree li[data-itemtype="location"]:last-child
 {
     list-style-type:"╚🏢\00FE0F";
+}
+#object_tree li[data-itemtype="rack"]
+{
+    list-style-type:"╠🗄\00FE0F";
 }
 #object_tree li[data-itemtype="rack"]:last-child
 {
     list-style-type:"╚🗄\00FE0F";
 }
+#object_tree li[data-itemtype="frame"]
+{
+    list-style-type:"╠🚌\00FE0F";
+}
 #object_tree li[data-itemtype="frame"]:last-child
 {
+    list-style-type:"╚🚌\00FE0F";
+}
+#object_tree li[data-itemsubtype="network"]
+{
+    list-style-type:"╠🔀\00FE0F";
+}
+#object_tree li[data-itemsubtype="network"]:last-child
+{
+    list-style-type:"╚🔀\00FE0F";
+}
+#object_tree li[data-itemsubtype="firewall"]
+{
+    list-style-type:"╠🧱\00FE0F";
+}
+#object_tree li[data-itemsubtype="firewall"]:last-child
+{
+    list-style-type:"╚🧱\00FE0F";
+}
+#object_tree li[data-itemsubtype="cloud"]
+{
+    list-style-type:"╠☁️\00FE0F";
+}
+#object_tree li[data-itemsubtype="cloud"]:last-child
+{
+    list-style-type:"╚☁️\00FE0F";
+}
+#object_tree li[data-itemsubtype="server"]
+{
+    list-style-type:"╠🖥️\00FE0F";
+}
+#object_tree li[data-itemsubtype="server"]:last-child
+{
     list-style-type:"╚🖥️\00FE0F";
+}
+#object_tree li[data-itemtype="socket"]
+{
+    list-style-type:"╠🔌\00FE0F";
 }
 #object_tree li[data-itemtype="socket"]:last-child
 {
     list-style-type:"╚🔌\00FE0F";
 }
+#object_tree li[data-itemtype="line"]
+{
+    list-style-type:"╠🚇\00FE0F";
+}
 #object_tree li[data-itemtype="line"]:last-child
 {
     list-style-type:"╚🚇\00FE0F";
+}
+#object_tree li[data-itemsubtype="linkgroup"]
+{
+    list-style-type:"╠⛓️\00FE0F";
+}
+#object_tree li[data-itemsubtype="linkgroup"]:last-child
+{
+    list-style-type:"╚⛓️\00FE0F";
+}
+#object_tree li[data-itemtype="patch"]
+{
+    list-style-type:"╠🔗\00FE0F";
 }
 #object_tree li[data-itemtype="patch"]:last-child
 {
     list-style-type:"╚🔗\00FE0F";
 }
+#object_tree li[data-itemtype="map"]
+{
+    list-style-type:"╠🏙\00FE0F";
+}
 #object_tree li[data-itemtype="map"]:last-child
 {
     list-style-type:"╚🏙\00FE0F";
+}
+#object_tree li[data-itemtype="linemap"]
+{
+    list-style-type:"╠🗺\00FE0F";
 }
 #object_tree li[data-itemtype="linemap"]:last-child
 {

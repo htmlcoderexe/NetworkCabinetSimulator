@@ -70,6 +70,10 @@ class VisualItem {
 	 */
 	type = "";
 	/**
+	Represents the item's subtype, if applicable.
+	 */
+	subtype = "";
+	/**
 	Keeps track of the next free slot (unique integer identifier among sibling items).
 	 */
 	nextSlot = 0;

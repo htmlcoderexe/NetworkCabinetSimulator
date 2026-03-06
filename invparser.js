@@ -119,6 +119,21 @@ invparser = {
 		current.label = text;
 		return true;
 	},
+	"TYPE": function(current)
+	{
+		if(!current)
+		{
+			this.warn(this.WARN_UNEXPECTED_TOKEN);
+			return true;
+		}
+		let text = this.getWord();
+		if(!text)
+		{
+			this.warn(WARN_EMPTY_LABEL);
+		}
+		current.subtype = text;
+		return true;
+	},
 	"DIM": function(current)
 	{
 		if(!current || current.type != "socket_tpl")

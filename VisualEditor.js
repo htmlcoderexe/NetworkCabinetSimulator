@@ -832,6 +832,7 @@ class VisualEditor
         // this is the <li> containing this item
 		let li = tpl.querySelector(".tree_item");
 		li.dataset.itemtype = target_object.type;
+		li.dataset.itemsubtype = target_object.subtype;
 		li.dataset.itemref = safelbl;
         // the following implements collapsible tree view that behaves more or less like one expects it to
         // black magic fuckery begins here

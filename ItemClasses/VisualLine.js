@@ -59,6 +59,7 @@ class VisualLine extends VisualItem {
 		if(this.name == "looseLinks" || !this.doContinuity)
 		{
 			this.doContinuity=false;
+			this.subtype = "linkgroup";
 			return true;
 		}
 		// walk thorough the entire line, ensuring all links

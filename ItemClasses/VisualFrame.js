@@ -58,6 +58,7 @@ class VisualFrame extends VisualItem
 			parser.warn(WARN_BAD_FRAME_TPL);
 			return false;
 		}
+		this.subtype=ftpl.subtype;
 		// add sockets from the template
 		ftpl.elements.forEach((el)=>{
 			switch(el.type)
