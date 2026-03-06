@@ -136,7 +136,7 @@ function InitEditor()
         
 
         let txt3 = document.getElementById('ddd').value;
-        p = new VisualParser(txt3, invparser, new VisualInventory("test"));
+        p = new VisualParser(txt3, invparser, new VisualInventory("Inventory"));
         let warns = {...p.warncodes, ...inv_warns};
         p.warncodes = warns;
         p.init();

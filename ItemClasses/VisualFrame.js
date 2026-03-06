@@ -59,14 +59,17 @@ class VisualFrame extends VisualItem
 			return false;
 		}
 		this.subtype=ftpl.subtype;
+		//console.log(ftpl);
 		// add sockets from the template
-		ftpl.elements.forEach((el)=>{
+		ftpl.subItems.forEach((el)=>{
 			switch(el.type)
 			{
 				// connectors are added directly
 				case "connector":
 				{
-					let connref = parser.inventory.find(el.name);
+					//console.error(el);
+					let connref = parser.inventory.find(el.ref);
+					//console.warn(connref);
 					// make sure connector is valid
 					if(!connref)
 					{
@@ -80,7 +83,7 @@ class VisualFrame extends VisualItem
 					let conn = new VisualSocket(this, (slot+1).toString());
 					conn.slot = slot;
 					// the renderer is a subItem named "main"
-					conn.renderer = connref.find("main");
+					conn.renderer = connref.renderer;
 					conn.width = connref.width;
 					conn.height = connref.height;
 					conn.x = el.x;
@@ -91,15 +94,20 @@ class VisualFrame extends VisualItem
 				// banks are collections of connectors
 				case "bank":
 				{
-					let bankref = parser.inventory.find(el.name);
+					//console.error(el);
+					let bankref = parser.inventory.find(el.ref);
+					//console.info(bankref);
 					// validate the bank reference
 					if(!bankref)
 					{
 						return false;
 					}
 					// same as the parent loop, go through each connector
-					bankref.elements.forEach((el2)=>{
-						let connref = parser.inventory.find(el2.name);
+					bankref.subItems.forEach((el2)=>{
+						
+						//console.info(el2);
+						let connref = parser.inventory.find(el2.ref);
+						//console.warn(connref);
 						if(!connref)
 						{
 							return false;
@@ -107,7 +115,7 @@ class VisualFrame extends VisualItem
 						let slot = this.getNextSlot();
 						let conn = new VisualSocket(this, (slot+1).toString());
 						conn.slot = slot;
-						conn.renderer = connref.find("main");
+						conn.renderer = connref.renderer;
 						conn.width = connref.width;
 						conn.height = connref.height;
 						conn.x = el2.x + el.x;
@@ -129,6 +137,7 @@ class VisualFrame extends VisualItem
 				socket.label = this.socketlabels[socket.name];
 			}
 		});
+		//console.log(this);
 		return true;
 	}
 

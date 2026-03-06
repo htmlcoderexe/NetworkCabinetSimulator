@@ -60,7 +60,13 @@ invparser = {
 				this.warn(WARN_CONNECTOR_MISSING);
 				return true;
 			}
-			current.elements.push({name: name, type: "connector", x: x, y: y});
+			let connref = new VisualConnectorPlacement(current,"c_"+current.getNextPrefixedSlot("c_"));
+			connref.ref=name;
+			connref.x=x;
+			connref.y=y;
+			connref.label=name;
+			current.addItem(connref);
+			//current.subItems.push({name: name, type: "connector", x: x, y: y});
 			return true;
 		}
 		this.commit("");
@@ -90,7 +96,13 @@ invparser = {
 				this.warn(WARN_CONNECTOR_MISSING);
 				return true;
 			}
-			current.elements.push({name: name, type: "bank", x: x, y: y});
+			let bankref = new VisualBankPlacement(current,"c_"+current.getNextPrefixedSlot("c_"));
+			bankref.ref=name;
+			bankref.x=x;
+			bankref.y=y;
+			bankref.label=name;
+			current.addItem(bankref);
+			//current.subItems.push({name: name, type: "bank", x: x, y: y});
 			return true;
         }
 		this.commit("");
@@ -159,7 +171,7 @@ invparser = {
 		//let name = this.getRest();
 		if(parent)
 		{
-			let newracc = new VisualRenderer(parent, "main");
+			let newracc = new VisualRenderer(parent, "renderer");
 			this.objectStack.unshift(newracc);	
 		    return true;
 		}

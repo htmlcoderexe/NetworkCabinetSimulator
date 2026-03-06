@@ -983,8 +983,13 @@ class VisualEditor
                         item = VisualEditor.lineMap.find(...address);
                         break;
                     }
+                case "Inventory":
+                    {
+                        item = VisualEditor.inventory.find(...address);
+                        break;
+                    }
             }
-            //console.log(item);
+            console.log(item);
             if(item)
             {
                 VisualEditor.currentHightlight = [item];
