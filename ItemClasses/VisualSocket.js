@@ -113,6 +113,10 @@ class VisualSocket extends VisualItem
 	 */
 	canAdd(wire)
 	{
+		if(!wire.parent.doContinuity)
+		{
+			return true;
+		}
 		const results = this.connections.filter(item=>item.parent == wire.parent);
 		return results.length == 0;
 	}
@@ -123,6 +127,10 @@ class VisualSocket extends VisualItem
 	 */
 	canStart(wire)
 	{
+		if(!wire.parent.doContinuity)
+		{
+			return true;
+		}
 		const results = this.connections.filter(item=>item.parent == wire.parent);
 		return results.length ==1;
 	}

@@ -21,6 +21,8 @@ class VisualLine extends VisualItem {
     Computed starting point of the line
      */
     end = null;
+
+	doContinuity = true;
 	
 	constructor(map, name) {
 		super("line", name, map);
@@ -29,7 +31,7 @@ class VisualLine extends VisualItem {
 	toCode(indent_level)
 	{
 		let output ="";
-		output+=this._f("line",indent_level,this.name);
+		output+=this._f(this.doContinuity ? "line" : "group",indent_level,this.name);
 		output+=this._f("colour1",indent_level+1, this.colour1);
 		output+=this._f("colour2",indent_level+1, this.colour2);
 		// only write the label if actually set
@@ -54,8 +56,9 @@ class VisualLine extends VisualItem {
 
 	commit(parser)
 	{
-		if(this.name == "looseLinks")
+		if(this.name == "looseLinks" || !this.doContinuity)
 		{
+			this.doContinuity=false;
 			return true;
 		}
 		// walk thorough the entire line, ensuring all links

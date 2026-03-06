@@ -62,6 +62,21 @@ routeparser = {
 		this.objectStack.unshift(newline);
 		return true;
 	},
+	"GROUP": function(current)
+	{
+		//console.log(this.objectStack);
+		this.commit("");
+		let name = this.getRest();
+		if(this.rootObject.checkName(name))
+		{
+			this.err(this.ERR_NAME_COLLISION);
+			return false;
+		}
+		let newline = new VisualLine(this.rootObject, name);
+		newline.doContinuity=false;
+		this.objectStack.unshift(newline);
+		return true;
+	},
 	"LABEL": function(current)
 	{
 		if(!current)
