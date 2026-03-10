@@ -724,6 +724,7 @@ class VisualEditor
 								line.addItem(sel[i]);
 							}
 							VisualEditor.lineMap.addItem(line);
+							VisualEditor.currentSelection.set([line]);
 							VisualEditor.reportUpdate(VisualEditor.lineMap);
 							VisualEditor.redrawSelection();
 						});
