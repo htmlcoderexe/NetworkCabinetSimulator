@@ -213,7 +213,7 @@ class VisualEditor
 	static getMouseHits(x, y, onlyTopLevel = false)
 	{
 		let results = VisualItem.hitboxMapping.filter(box=>{return box.hitbox.contains(x, y)});
-		results = results.filter(box=>box.item.testHit(x, y));
+		results = results.filter(box=>box.item.testHit(x, y) && !box.item.collapseView);
 		results.sort((a, b)=>b.level-a.level);
 		if(results && onlyTopLevel)
 		{
