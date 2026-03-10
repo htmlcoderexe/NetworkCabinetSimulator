@@ -840,6 +840,7 @@ class VisualEditor
 			badge.style.borderTopColor = line.colour1;
 			badge.style.borderBottomColor = line.colour2;
 			badge.dataset.lineName = line.name;
+			badge.title=line.getLabel();
             // wire it up unless asked not to
 			if(!passive)
 			{
