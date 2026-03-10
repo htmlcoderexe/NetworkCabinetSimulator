@@ -122,7 +122,20 @@ class VisualEditor
     /**
      * Keeps track of currently highlighted (for example, by hovering) objects in the editor.
      */
-	static currentHightlight = [];
+	static #highligthed = [];
+	static get currentHightlight()
+	{
+		return this.#highligthed;
+	}
+	static set currentHightlight(value)
+	{
+		this.#highligthed=value;
+		this.highlightLayer.canvas.title="";
+		if(value.length!=0)
+		{
+			this.highlightLayer.canvas.title=value.length>1?"Multiple items":value[0].getLabel();
+		}
+	}
     /**
      * If exactly one item is selected, contains the item.
      */
