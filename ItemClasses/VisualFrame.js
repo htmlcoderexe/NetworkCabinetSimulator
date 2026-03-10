@@ -80,7 +80,8 @@ class VisualFrame extends VisualItem
 					// #TODO: more clear numbering system
 					// currently slots are 0-indexed internally but 1-indexed
 					// for naming and display
-					let conn = new VisualSocket(this, (slot+1).toString());
+					let label =(slot+1).toString();
+					let conn = new VisualSocket(this, label);
 					conn.slot = slot;
 					// the renderer is a subItem named "main"
 					conn.renderer = connref.renderer;
@@ -88,6 +89,11 @@ class VisualFrame extends VisualItem
 					conn.height = connref.height;
 					conn.x = el.x;
 					conn.y = el.y;
+					if(el.factoryLabel)
+					{
+						console.log(el.factoryLabel);
+						conn.label=el.factoryLabel;
+					}
 					this.addItem(conn);
 					break;
 				}
@@ -113,7 +119,8 @@ class VisualFrame extends VisualItem
 							return false;
 						}
 						let slot = this.getNextSlot();
-						let conn = new VisualSocket(this, (slot+1).toString());
+						let label =(slot+1).toString();
+						let conn = new VisualSocket(this, label);
 						conn.slot = slot;
 						conn.renderer = connref.renderer;
 						conn.width = connref.width;

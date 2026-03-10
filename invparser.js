@@ -51,6 +51,7 @@ invparser = {
 			let name = this.getWord();
 			let x = this.getInt();
 			let y = this.getInt();
+			let factoryLabel = this.getRest().trim();
 			let conn = this.rootObject.find(name);
 			if(!conn)
 			{
@@ -65,6 +66,7 @@ invparser = {
 			connref.x=x;
 			connref.y=y;
 			connref.label=name;
+			connref.factoryLabel=factoryLabel;
 			current.addItem(connref);
 			//current.subItems.push({name: name, type: "connector", x: x, y: y});
 			return true;

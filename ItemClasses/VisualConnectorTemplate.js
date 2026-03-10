@@ -19,6 +19,7 @@ class VisualConnectorTemplate extends VisualItem {
 
 class VisualConnectorPlacement extends VisualItem {
 	ref="";
+	factoryLabel="";
 	constructor(parent,name)
 	{
 		super("connector",name,parent);
