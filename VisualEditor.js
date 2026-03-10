@@ -671,6 +671,40 @@ class VisualEditor
 								let badge = this.createLineBadge(conn.parent);
 								badge.dataset.itemref = itemref;
 								socketLine.appendChild(badge);
+								if(conn.parent.doContinuity)
+								{
+									if(socket!=conn.parent.start)
+									{
+										if(socket==conn.parent.end)
+										{
+											socketLine.append(" <-- ");
+										}
+										let s=conn.parent.start;
+										socketLine.append(s.getLabel() + " @ [" + s.parent.getLabel()+"]");		
+									}
+									else
+									{
+										socketLine.append(" --> ");
+									}
+									if(socket!=conn.parent.end)
+									{
+										if(socket!=conn.parent.start)
+										{
+											socketLine.append(" --> ");
+										}
+										let s=conn.parent.end;
+										socketLine.append(s.getLabel() + " @ [" + s.parent.getLabel()+"]");
+									}
+								}
+								else
+								{
+									let isfrom=conn.from==socket;
+									let otherend = isfrom?conn.to:conn.from;
+									if(otherend)
+									{
+										socketLine.append(" "+(isfrom?"-->":"<--")+" "+otherend.getLabel() + " @ [" + otherend.parent.getLabel()+"]");
+									}
+								}
 							}
 						});
 						sheet.appendChild(socketLine);
