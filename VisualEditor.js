@@ -76,7 +76,7 @@ class VisualEditor
     /**
      * Main edit modes.
      */
-	static EDIT_MODES = {POINTER: 0, WIRE: 1, LINK: 2};
+	static EDIT_MODES = {POINTER: 0, WIRE: 1, LINK: 2, CODE: 3};
     /**
      * Submodes applicable to main edit modes.
      */
@@ -1252,6 +1252,18 @@ class VisualEditor
 	static setEditorModeHandler(e)
 	{
 		let mode = e.currentTarget.dataset.mode ?? "";
+		if(mode=="code")
+		{
+			VisualEditor.toolBar.parentElement.querySelector("#controls").style.display="block";
+			VisualEditor.highlightLayer.canvas.style.display="none";
+			VisualEditor.mapLayer.canvas.style.display="none";
+		}
+		else
+		{
+			VisualEditor.toolBar.parentElement.querySelector("#controls").style.display="none";
+			VisualEditor.highlightLayer.canvas.style.display="block";
+			VisualEditor.mapLayer.canvas.style.display="block";
+		}
 		let editMode = this.EDIT_MODES.POINTER;
 		switch(mode)
 		{
@@ -1263,6 +1275,11 @@ class VisualEditor
 			case "link":
 			{
 				editMode = this.EDIT_MODES.LINK;
+				break;
+			}
+			case "code":
+			{
+				editMode = this.EDIT_MODES.CODE;
 				break;
 			}
 		}

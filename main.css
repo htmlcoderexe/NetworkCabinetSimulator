@@ -2,7 +2,11 @@
 *, *::before, *::after {
     box-sizing: border-box;
   }
-body
+  html
+  {
+    overflow: hidden;
+  }
+body,html
 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding:0;
@@ -13,6 +17,8 @@ body
     width: 100vw;
     height:100vh;
     position:absolute;
+    top:0;
+    left:0;
 }
 .vresize
 {
@@ -80,7 +86,7 @@ body
 {
     position:relative;
     z-index: 3;
-    height:80%;
+    height:calc(100% - 4rem - 3px);
     overflow:scroll;
 }
 #rightpane
@@ -120,12 +126,24 @@ body
     margin:0;
 }
 
+#controls 
+{
+    width: 100%;
+    height:100%;
+    position: relative;
+    left:0;
+    top:0;
+    margin:0;
+    padding:0;
+    z-index: 3;
+}
+
 #aaa, #ccc, #ddd
 {
     box-sizing: border-box;
     width: 30%;
     display: inline-block;
-    height: 3rem;
+    height: 100%;
 }
 
 .infoblock
