@@ -10,6 +10,7 @@ const WARN_RACK_COLLISION = 107;
 const WARN_FRAME_COLLISION = 108;
 const WARN_LOCATION_OVERLAP = 109;
 const WARN_BAD_FRAME_TPL = 110;
+const WARN_INVALID_CABLE = 111;
 
 hw_warns = {
 	100: "No object to attach LABEL to",
@@ -22,7 +23,8 @@ hw_warns = {
 	107: "Rack slot already occupied",
 	108: "Frame slot already occupied",
 	109: "Locations %location1% and %location2% overlap",
-	110: "Unknown frame template %frame_tpl_name%"
+	110: "Unknown frame template %frame_tpl_name%",
+	111: "Cable %cable_name% invalid: %frame_ref% doesn't exist"
 };
 hwparser = {
 	"LABEL": function(current)
@@ -199,6 +201,42 @@ hwparser = {
 			let newframe = new VisualFrame(parent, name);
 			this.objectStack.unshift(newframe);	
 		}
+		return true;
+	},
+	"CABLE": function(current)
+	{
+		this.commit("");
+		let cablename = this.getWord();
+		let L1 = this.getWord();
+		let R1 = this.getWord();
+		let F1 = this.getWord();
+		let L2 = this.getWord();
+		let R2 = this.getWord();
+		let F2 = this.getWord();
+		if(false && this.terrain.checkName(name))
+		{
+			this.err(this.ERR_NAME_COLLISION);
+			return false;
+		}
+		let newcable = new VisualCable(this.rootObject, cablename);
+		let from = this.rootObject.find(L1,R1,F1);
+		let to = this.rootObject.find(L2,R2,F2);
+		this.statevars['cable_name'] = cablename;
+		this.statevars['frame_ref'] = L1+"/"+R1+"/"+F1;
+		if(!from)
+		{
+			this.warn(WARN_INVALID_CABLE);
+			return true;
+		}
+		this.statevars['frame_ref'] = L2+"/"+R2+"/"+F2;
+		if(!to)
+		{
+			this.warn(WARN_INVALID_CABLE);
+			return true;
+		}
+		newcable.from=from;
+		newcable.to=to;
+		this.objectStack.unshift(newcable);
 		return true;
 	}
 };
