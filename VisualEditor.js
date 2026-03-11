@@ -1147,15 +1147,18 @@ class VisualEditor
 		let rack = VisualEditor.find(rackID);
 		if(rack)
 		{
-			let newframe = new VisualFrame(rack, slot);
+			console.log(rack);
+			let newname =String(rack.getNextPrefixedSlot(""));
+			let newframe = new VisualFrame(rack, newname);
+			rack.freeSlot(slot-1);
 			newframe.slot = slot-1;
 			newframe.frametype = frame;
 			newframe.label=slot;
 			newframe.commit(VisualEditor);
 			if(override)
 			{
-				newframe.name=String(rack.getNextSlot()+1);
-				rack.freeSlot(slot-1);
+				//newframe.name=String(rack.getNextSlot()+1);
+				//rack.freeSlot(slot-1);
 			}
 			rack.addItem(newframe);
 			rack.updateSize();
