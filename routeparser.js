@@ -2,6 +2,7 @@ const WARN_BAD_LINK = 201;
 const WARN_ORPHAN_LINK = 202;
 const WARN_LOOP = 203;
 const WARN_DISJOINT_LINK = 204;
+const WARN_UNKNOWN_CABLE = 205;
 
 route_warns = {
 	100: "No object to attach LABEL to",
@@ -9,7 +10,8 @@ route_warns = {
 	201: "Invalid link - one or more endpoints not defined or missing.",
 	202: "Link not associated with a line",
 	203: "Loop detected.",
-	204: "Link not contiguous with the rest of the line."
+	204: "Link not contiguous with the rest of the line.",
+	205: "Cable %cable_name% does not exist."
 };
 routeparser = {
 	"COLOUR1": function(current)
@@ -164,7 +166,21 @@ routeparser = {
 			return true;
 		}
 		let cablename = this.getWord();
-		current.cable = cablename;
+		let cable = this.terrain.find(cablename);
+		if(!cable)
+		{
+			if(cablename!="PATCH" && cablename!="")
+			{
+				this.statevars["cable_name"]=cablename;
+				this.warn(WARN_UNKNOWN_CABLE);
+			}
+		}
+		else
+		{
+			current.cable = cable;
+			cable.addItem(current);
+		}
+		current.cableName = cablename;
 		return true;
 	}
 

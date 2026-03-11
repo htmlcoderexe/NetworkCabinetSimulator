@@ -15,8 +15,8 @@ class VisualPatch extends VisualItem {
 	/**
 	 * An optional name of a bundle, cable or other group associated with this link.
 	 */
-	cable ="";
-
+	cable =null;
+	cableName="";
 	constructor(line, name)	{
 		super("patch", name, line);
 		this.selectionOrder = 4;
@@ -33,7 +33,7 @@ class VisualPatch extends VisualItem {
 		}
 		output+=this._f("from",indent_level+1, this.from.getFullName(" ").substring(10));
 		output+=this._f("to",indent_level+1, this.to.getFullName(" ").substring(10));
-		output+=this._f("cable", indent_level+1, this.cable)
+		output+=this._f("cable", indent_level+1, this.cable?this.cable.name:this.cableName)
 		return output;
 	}
 	getLabel()
@@ -131,6 +131,8 @@ class VisualPatch extends VisualItem {
 	}
 	draw(ctx)
 	{
+		if(this.cable)
+			return;
 		VisualEditor.drawCallCount++;
 		// save the drawing settings to restore later
 		ctx.save();
