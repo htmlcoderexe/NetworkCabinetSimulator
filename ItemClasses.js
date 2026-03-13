@@ -643,6 +643,25 @@ function GetRect(x, y, w, h) {
 		//console.log(oX + "-"+expectedX+"="+deviation2 + " >< " + oY + "-"+expectedY+"="+deviation1);
 		return deviation1 < tolerance || deviation2 < tolerance;
 	};
+	this.half = function(x,y,which,flip)
+	{
+		if(this.height == 0 || this.width == 0)
+		{
+			//console.log("aargh");
+			return true;
+		}
+		oX = x-this.x;
+		if(flip)
+			oX = this.width-oX;
+		oY = y-this.y;
+		ratio = this.height/this.width;
+		expectedY = oX*ratio;
+		expectedX = oY / ratio;
+		let devY = expectedY-oY;
+		let devX = expectedX-oX;
+		return (devY<0)^which;
+
+	};
 
     this.draw = function (ctx) {
         ctx.rect(this.x, this.y, this.width, this.height)

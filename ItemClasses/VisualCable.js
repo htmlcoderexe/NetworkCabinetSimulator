@@ -53,6 +53,11 @@ class VisualCable extends VisualItem
 		const y1 = Math.max(startY+offset2*rAY,endY+offset2*rAY,startY+w*rAY,endY+w*rAY);
 		this.cX = x0;this.cY=y0;
 		this.width=x1-x0;this.height=y1-y0;
+		const dX = endX - startX;
+		const dY = endY - startY;
+		this.flip = (dX*dY) < 0;
+
+		
 		
 	}
 	getDrawingGroup()
