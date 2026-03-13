@@ -2,6 +2,10 @@ class VisualCable extends VisualItem
 {
     from = null;
     to = null;
+	fromBld=null;
+	toBld=null;
+	endPoint={x:0,y:0};
+	startPoint={x:0,y:0};
 	constructor(map, name)	{
 		super("cable", name, map);
 		this.selectionOrder = 3;
@@ -11,6 +15,23 @@ class VisualCable extends VisualItem
         this.subItems.push(item);
         return true;
     }
+	toCode(indent_level)
+	{
+		let output ="";
+		output+=this._f("cable",indent_level,this.name, this.from.parent.parent.name, this.from.parent.name, this.from.name,this.to.parent.parent.name,this.to.parent.name,this.to.name);
+		return output;
+	}
+	commit(parser)
+	{
+		this.fromBld=this.from.parent.parent;
+		this.toBld=this.to.parent.parent;
+		return true;
+	}
+	get cableWidth()
+	{
+		// 1px edge + 2 px space    1px edge + 2px cable colours + 1px edge + 2px space   
+		return 1+2+this.subItems.length * (1+2+2+1+2);
+	}
 	draw(ctx)
 	{
 		VisualEditor.drawCallCount++;
@@ -19,7 +40,7 @@ class VisualCable extends VisualItem
 
 		ctx.lineWidth = 1;
 		// this controls how far the 2 lines will "spread" from the centreline
-		let offset = (this.subItems.length * (1+2+2+1+2) +2+1)/2;
+		let offset = this.cableWidth/2;
 		let vertical_margin = 3
 		// determine the starting and ending points for the centreline
 		// aim for the centreline of the sockets
@@ -32,9 +53,8 @@ class VisualCable extends VisualItem
 		// ends at the bottom with the same margin
 		let endY = tobldg.cY + (tobldg.height/2);
 		// determine the angle (respective to the X axis)
-		let angle = Math.atan2(endY-startY, endX-startX);
 
-
+/*
 
 		if(Math.abs(angle)<Math.PI/4)
 		{
@@ -60,6 +80,12 @@ class VisualCable extends VisualItem
 				startY+=frombldg.height/2;
 
 		}
+		//*/
+		startX=this.startPoint.x;
+		startY=this.startPoint.y;
+		endX=this.endPoint.x;
+		endY=this.endPoint.y;
+		let angle = Math.atan2(endY-startY, endX-startX);
 /*
 		if(angle<0)
 		{

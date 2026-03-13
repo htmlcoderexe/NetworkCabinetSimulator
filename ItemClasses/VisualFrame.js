@@ -91,7 +91,7 @@ class VisualFrame extends VisualItem
 					conn.y = el.y;
 					if(el.factoryLabel)
 					{
-						console.log(el.factoryLabel);
+						// console.log(el.factoryLabel);
 						conn.label=el.factoryLabel;
 					}
 					this.addItem(conn);
