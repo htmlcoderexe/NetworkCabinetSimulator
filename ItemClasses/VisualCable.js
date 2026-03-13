@@ -33,6 +33,64 @@ class VisualCable extends VisualItem
 		let endY = tobldg.cY + (tobldg.height/2);
 		// determine the angle (respective to the X axis)
 		let angle = Math.atan2(endY-startY, endX-startX);
+
+
+
+		if(Math.abs(angle)<Math.PI/4)
+		{
+				endX-=tobldg.width/2;
+				startX+=frombldg.width/2;
+
+		}
+		else if(Math.abs(angle)>Math.PI*0.75)
+		{
+				endX+=tobldg.width/2;
+				startX-=frombldg.width/2;
+
+		}
+		else if(angle<0)
+		{
+				endY+=tobldg.height/2;
+				startY-=frombldg.height/2;
+
+		}
+		else
+		{
+				endY-=tobldg.height/2;
+				startY+=frombldg.height/2;
+
+		}
+/*
+		if(angle<0)
+		{
+			if(angle>-Math.PI/2)
+			{
+				endY+=tobldg.height/2;
+				startY-=frombldg.height/2;
+			}
+			else
+			{
+				endX-=tobldg.width/2;
+				startX+=frombldg.width/2;
+			}
+		}
+		else
+		{
+			if(angle<Math.PI/2)
+			{
+				endY-=tobldg.height/2;
+				startY+=frombldg.height/2;
+				}
+			else
+			{
+				endX+=tobldg.width/2;
+				startX-=frombldg.width/2;
+			}
+
+		}
+//*/
+		
+		angle = Math.atan2(endY-startY, endX-startX);
 		// technically we are rotating the vector [0, offset] by the rotation matrix from the angle
 		//
 		//     [cos(θ) -sin(θ)]  [x]  =>    [x * cos(θ) - y * sin(θ)]
