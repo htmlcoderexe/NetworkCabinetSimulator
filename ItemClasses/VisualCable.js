@@ -32,6 +32,57 @@ class VisualCable extends VisualItem
 		// 1px edge + 2 px space    1px edge + 2px cable colours + 1px edge + 2px space   
 		return 1+2+this.subItems.length * (1+2+2+1+2);
 	}
+	updatePosition()
+	{
+		let w = this.cableWidth/2;
+		let startX=this.startPoint.x;
+		let startY=this.startPoint.y;
+		let endX=this.endPoint.x;
+		let endY=this.endPoint.y;
+		this.cX = startX > endX ? endX : startX;
+		this.cY = startY > endY ? endY : startY;
+		let angle = Math.atan2(endY-startY, endX-startX);
+        let rAX = -1 * (Math.sin(angle));
+        let rAY = Math.cos(angle);
+
+        let offset2=-w;
+
+		const x0 = Math.min(startX+offset2*rAX,endX+offset2*rAX,startX+w*rAX,endX+w*rAX);
+		const y0 = Math.min(startY+offset2*rAY,endY+offset2*rAY,startY+w*rAY,endY+w*rAY);
+		const x1 = Math.max(startX+offset2*rAX,endX+offset2*rAX,startX+w*rAX,endX+w*rAX);
+		const y1 = Math.max(startY+offset2*rAY,endY+offset2*rAY,startY+w*rAY,endY+w*rAY);
+		this.cX = x0;this.cY=y0;
+		this.width=x1-x0;this.height=y1-y0;
+		
+	}
+	getDrawingGroup()
+	{
+		return [this.from, this.fromBld,this.to,this.toBld,this];
+	}
+	drawOutlineFunc(ctx)
+	{
+		// save the drawing settings to restore later
+		ctx.save();
+
+		let offset = this.cableWidth/2;
+		let startX=this.startPoint.x;
+		let startY=this.startPoint.y;
+		let endX=this.endPoint.x;
+		let endY=this.endPoint.y;
+		let angle = Math.atan2(endY-startY, endX-startX);
+        let rAX = -1 * (Math.sin(angle));
+        let rAY = Math.cos(angle);
+
+        let offset2=-offset;
+
+		ctx.beginPath();
+        ctx.moveTo(startX+offset2*rAX, startY+offset2*rAY);
+        ctx.lineTo(endX+offset2*rAX, endY+offset2*rAY);
+        ctx.moveTo(startX+offset*rAX, startY+offset*rAY);
+        ctx.lineTo(endX+offset*rAX, endY+offset*rAY);
+		ctx.stroke();
+		
+	}
 	draw(ctx)
 	{
 		VisualEditor.drawCallCount++;
@@ -39,84 +90,12 @@ class VisualCable extends VisualItem
 		ctx.save();
 
 		ctx.lineWidth = 1;
-		// this controls how far the 2 lines will "spread" from the centreline
 		let offset = this.cableWidth/2;
-		let vertical_margin = 3
-		// determine the starting and ending points for the centreline
-		// aim for the centreline of the sockets
-        let frombldg=this.from.parent.parent;
-        let tobldg=this.to.parent.parent;
-		let startX = frombldg.cX + (frombldg.width/2);
-		let endX = tobldg.cX + (tobldg.width/2);
-		// starts at the top of the sockets, with a small hardcoded margin
-		let startY = frombldg.cY + (frombldg.height/2);
-		// ends at the bottom with the same margin
-		let endY = tobldg.cY + (tobldg.height/2);
-		// determine the angle (respective to the X axis)
-
-/*
-
-		if(Math.abs(angle)<Math.PI/4)
-		{
-				endX-=tobldg.width/2;
-				startX+=frombldg.width/2;
-
-		}
-		else if(Math.abs(angle)>Math.PI*0.75)
-		{
-				endX+=tobldg.width/2;
-				startX-=frombldg.width/2;
-
-		}
-		else if(angle<0)
-		{
-				endY+=tobldg.height/2;
-				startY-=frombldg.height/2;
-
-		}
-		else
-		{
-				endY-=tobldg.height/2;
-				startY+=frombldg.height/2;
-
-		}
-		//*/
-		startX=this.startPoint.x;
-		startY=this.startPoint.y;
-		endX=this.endPoint.x;
-		endY=this.endPoint.y;
+		let startX=this.startPoint.x;
+		let startY=this.startPoint.y;
+		let endX=this.endPoint.x;
+		let endY=this.endPoint.y;
 		let angle = Math.atan2(endY-startY, endX-startX);
-/*
-		if(angle<0)
-		{
-			if(angle>-Math.PI/2)
-			{
-				endY+=tobldg.height/2;
-				startY-=frombldg.height/2;
-			}
-			else
-			{
-				endX-=tobldg.width/2;
-				startX+=frombldg.width/2;
-			}
-		}
-		else
-		{
-			if(angle<Math.PI/2)
-			{
-				endY-=tobldg.height/2;
-				startY+=frombldg.height/2;
-				}
-			else
-			{
-				endX+=tobldg.width/2;
-				startX-=frombldg.width/2;
-			}
-
-		}
-//*/
-		
-		angle = Math.atan2(endY-startY, endX-startX);
 		// technically we are rotating the vector [0, offset] by the rotation matrix from the angle
 		//
 		//     [cos(θ) -sin(θ)]  [x]  =>    [x * cos(θ) - y * sin(θ)]
@@ -127,10 +106,8 @@ class VisualCable extends VisualItem
 		// 
 		//   [x] => [-y * sin(θ)]
 		//   [y] => [ y * cos(θ)]
-		let rotX = -1 * (Math.sin(angle)) * offset;
-		let rotY = Math.cos(angle) * offset;
         
-        let rAX = rotX = -1 * (Math.sin(angle));
+        let rAX = -1 * (Math.sin(angle));
         let rAY = Math.cos(angle);
 
         let offset2=-offset;
