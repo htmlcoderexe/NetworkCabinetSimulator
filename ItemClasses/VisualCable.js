@@ -57,8 +57,27 @@ class VisualCable extends VisualItem
 		const dY = endY - startY;
 		this.flip = (dX*dY) < 0;
 
+
 		
+	}
+	testHit(x, y)
+	{
+		// as a link is a line between two corners of its bounding rectangle,
+		// test for the diagonal collision (selecting the "flipped" diagonal 
+		// if determined by the code in the updatePosition method)
 		
+		let w = this.cableWidth/2;
+		let startX=this.startPoint.x;
+		let startY=this.startPoint.y;
+		let endX=this.endPoint.x;
+		let endY=this.endPoint.y;
+		let rX = startX > endX ? endX : startX;
+		let rY = startY > endY ? endY : startY;
+		const dX = endX - startX;
+		const dY = endY - startY;
+		this.flip = (dX*dY) < 0;
+		const testRekt = new GetRect(rX-w,rY-w,dX+w+w,dY+w+w);
+		return testRekt.diagonal(x, y, this.cableWidth, this.flip);
 	}
 	getDrawingGroup()
 	{
