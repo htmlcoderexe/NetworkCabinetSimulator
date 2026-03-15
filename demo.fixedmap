@@ -1,33 +1,34 @@
-LOCATION office_1
-    POSITION 50 50
-    LABEL Office F1
-    RACK R1
-        SLOT 1
-        LABEL Main office uplink
+    LOCATION office_1
+        POSITION 53 50
+        LABEL Office F1
+        RACK R1
+            SLOT 1
+            LABEL Main office uplink
             FRAME interchange
+                TYPE SM_LC_PAIR_24
                 LABEL Optical to interchange
-                TYPE SM_LC_PAIR_24
             FRAME floors
+                TYPE SM_LC_PAIR_24
                 LABEL Optical to floors
-                TYPE SM_LC_PAIR_24
             FRAME office_isp_backup
+                TYPE SM_LC_PAIR_24
                 LABEL Backup uplink
-                TYPE SM_LC_PAIR_24
             FRAME office_dist_sw1
-                LABEL Main distribution switch
                 TYPE SWITCH_48_BANK_TEST
-LOCATION office_2
-    POSITION 550 50
-    LABEL Office F2
-    RACK R1
-        SLOT 1
-        LABEL 
+                LABEL Main distribution switch
+    LOCATION office_2
+        POSITION 770 81
+        LABEL Office F2
+        RACK R1
+            SLOT 1
+            LABEL 
             FRAME to_main
+                TYPE SM_LC_PAIR_24
                 LABEL To F1
-                TYPE SM_LC_PAIR_24
             FRAME to_infra
+                TYPE SM_LC_PAIR_24
                 LABEL To floor 2 infra
-                TYPE SM_LC_PAIR_24
             FRAME to_users
-                LABEL to_users
                 TYPE SM_LC_PAIR_24
+                LABEL to_users
+    CABLE Off_F1_F2 office_1 R1 floors office_2 R1 to_main
