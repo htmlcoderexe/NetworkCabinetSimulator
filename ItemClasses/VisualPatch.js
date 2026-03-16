@@ -131,8 +131,8 @@ class VisualPatch extends VisualItem {
 		// meaning the product of these difference is negative
 		this.flip = (dX*dY) < 0;
 		// set the resulting rectangle's size to the absolute value of the differences.
-		this.width = Math.abs(dX);
-		this.height = Math.abs(dY);
+		this.width = Math.max(4,Math.abs(dX));
+		this.height = Math.max(4,Math.abs(dY));
 		super.updatePosition();
 	}
 
