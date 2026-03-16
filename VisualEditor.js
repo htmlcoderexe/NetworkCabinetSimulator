@@ -222,6 +222,10 @@ class VisualEditor
 
 	static frameTypeRegistry = {};
 
+	static screenToCanvas(x,y)
+	{
+		return [(x-this.offsetX)/this.zoom,(y-this.offsetY)/this.zoom];
+	}
 	/**
 	 * Checks if any registered component hitboxes intersect a given coordinate.
 	 * @param {number} x - X coordinate
@@ -231,8 +235,8 @@ class VisualEditor
 	 */
 	static getMouseHits(x, y, onlyTopLevel = false)
 	{
-		x-=this.offsetX;
-		y-=this.offsetY;
+		//[x,y] = this.screenToCanvas(x,y);
+		console.log(x,y);
 		let results = VisualItem.hitboxMapping.filter(box=>{return box.hitbox.contains(x, y)});
 		results = results.filter(box=>box.item.testHit(x, y) && !box.item.collapseView);
 		results.sort((a, b)=>b.level-a.level);
@@ -306,9 +310,10 @@ class VisualEditor
 	{
         // draw on the layer used for selections
 		const ctx = VisualEditor.highlightLayer;
-		ctx.clearRect(0,0,5000,5000);
 		ctx.resetTransform();
+		ctx.clearRect(0,0,5000,5000);
 		ctx.translate(VisualEditor.offsetX,VisualEditor.offsetY);
+		ctx.scale(VisualEditor.zoom,VisualEditor.zoom);
         // line styles for highlights
 		let selectionOutline = {
 			strokeStyle : "rgb(255 0 0 / 80%)",
@@ -384,9 +389,10 @@ class VisualEditor
 	{
         // use the object/item layer
 		const ctx = VisualEditor.mapLayer;
-		ctx.clearRect(0,0,5000,5000);
 		ctx.resetTransform();
+		ctx.clearRect(0,0,5000,5000);
 		ctx.translate(VisualEditor.offsetX,VisualEditor.offsetY);
+		ctx.scale(VisualEditor.zoom,VisualEditor.zoom);
 		VisualEditor.drawCallCount=0;
         // draw the "fixed" items (locations, racks etc)
 		VisualEditor.fixedMap.draw(ctx);

@@ -5,10 +5,11 @@ window.fiber = {};
 
 function canvasHover(e)
 {
-		let x = e.offsetX;
-		let y = e.offsetY;
+		//let x = e.offsetX;
+		//let y = e.offsetY;
 		VisualEditor.ctrl = e.ctrlKey;
 		VisualEditor.shift = e.shiftKey;
+		let [x,y] = VisualEditor.screenToCanvas(e.offsetX,e.offsetY);
 		if(VisualEditor.currentMoving)
 		{
 			VisualEditor.currentMoving.x = x + VisualEditor.currentMovingX;
@@ -19,8 +20,8 @@ function canvasHover(e)
 		}
 		if(VisualEditor.draggingView)
 		{
-			VisualEditor.offsetX=VisualEditor.dragX+x;
-			VisualEditor.offsetY=VisualEditor.dragY+y;
+			VisualEditor.offsetX=VisualEditor.dragX+e.offsetX;//VisualEditor.zoom;
+			VisualEditor.offsetY=VisualEditor.dragY+e.offsetY;//VisualEditor.zoom;
 			VisualEditor.refreshView();
 		}
 		switch(VisualEditor.editMode)
@@ -47,11 +48,10 @@ function canvasHover(e)
 
 function canvasMDown(e)
 {
-	let x = e.offsetX;
-	let y = e.offsetY;
+	let [x,y] = VisualEditor.screenToCanvas(e.offsetX,e.offsetY);
 	VisualEditor.mouseDownNow = true;
-	VisualEditor.dragX=-x+VisualEditor.offsetX;
-	VisualEditor.dragY=-y+VisualEditor.offsetY;
+	VisualEditor.dragX=-(e.offsetX)+VisualEditor.offsetX;
+	VisualEditor.dragY=-(e.offsetY)+VisualEditor.offsetY;
 	switch(VisualEditor.editMode)
 	{
 		case VisualEditor.EDIT_MODES.POINTER:
@@ -75,8 +75,7 @@ function canvasMDown(e)
 
 function canvasMUp(e)
 {
-	let x = e.offsetX;
-	let y = e.offsetY;
+	let [x,y] = VisualEditor.screenToCanvas(e.offsetX,e.offsetY);
 	VisualEditor.mouseDownNow = false;
 	VisualEditor.draggingView=false;
 	switch(VisualEditor.editMode)
