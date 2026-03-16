@@ -188,7 +188,8 @@ function InitEditor()
     VisualEditor.buildTree(document.getElementById("object_tree"), VisualEditor.lineMap);
 
     VisualEditor.buildTree(document.getElementById("object_tree"), VisualEditor.inventory);
-
+    VisualEditor.fixedMap.updatePosition();
+    VisualEditor.refreshView();
         
     });
 
