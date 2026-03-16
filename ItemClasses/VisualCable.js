@@ -67,6 +67,7 @@ class VisualCable extends VisualItem
 		// if determined by the code in the updatePosition method)
 		
 		let w = this.cableWidth/2;
+		/*
 		let startX=this.startPoint.x;
 		let startY=this.startPoint.y;
 		let endX=this.endPoint.x;
@@ -77,6 +78,8 @@ class VisualCable extends VisualItem
 		const dY = endY - startY;
 		this.flip = (dX*dY) < 0;
 		const testRekt = new GetRect(rX-w,rY-w,dX+w+w,dY+w+w);
+		//*/
+		return this.getRect().diagonal(x, y, w, this.flip);
 		return testRekt.diagonal(x, y, this.cableWidth, this.flip);
 	}
 	getDrawingGroup()
@@ -105,6 +108,7 @@ class VisualCable extends VisualItem
         ctx.moveTo(startX+offset*rAX, startY+offset*rAY);
         ctx.lineTo(endX+offset*rAX, endY+offset*rAY);
 		ctx.stroke();
+		super.drawOutlineFunc(ctx);
 		
 	}
 	draw(ctx)
