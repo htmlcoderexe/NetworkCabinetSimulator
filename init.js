@@ -103,6 +103,13 @@ function InitEditor()
     document.getElementById('selection_display').addEventListener("mouseup", (e)=>{
         canvasMUp(e);
     });
+    let zs=document.getElementById('zoom_slider');
+    let zl=document.getElementById("zoom_lvl");
+    zs.value=100;
+    zs.addEventListener("change",(e)=>{
+        VisualEditor.zoom=zs.value/100;VisualEditor.refreshView();
+        zl.innerHTML=zs.value+"%";
+    });
 
     VisualEditor.selectionChange = ()=>{
         console.log(VisualEditor.currentSelection);
