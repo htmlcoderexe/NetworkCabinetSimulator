@@ -101,8 +101,8 @@ function canvasMUp(e)
 
 function canvasClick(e)
 {
-	let x = e.offsetX;
-	let y = e.offsetY;
+	
+	let [x,y] = VisualEditor.screenToCanvas(e.offsetX,e.offsetY);
 	let dbl = e.detail > 1;
 
 	switch(VisualEditor.editMode)

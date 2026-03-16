@@ -236,7 +236,7 @@ class VisualEditor
 	static getMouseHits(x, y, onlyTopLevel = false)
 	{
 		//[x,y] = this.screenToCanvas(x,y);
-		console.log(x,y);
+		//console.log(x,y);
 		let results = VisualItem.hitboxMapping.filter(box=>{return box.hitbox.contains(x, y)});
 		results = results.filter(box=>box.item.testHit(x, y) && !box.item.collapseView);
 		results.sort((a, b)=>b.level-a.level);
