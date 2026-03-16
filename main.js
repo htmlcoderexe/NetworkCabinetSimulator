@@ -13,6 +13,7 @@ function canvasHover(e)
 		{
 			VisualEditor.currentMoving.x = x + VisualEditor.currentMovingX;
 			VisualEditor.currentMoving.y = y + VisualEditor.currentMovingY;
+			VisualEditor.currentMoving.updatePosition();
 			VisualEditor.refreshView();
 			//console.log(VisualEditor.currentMoving);
 		}
