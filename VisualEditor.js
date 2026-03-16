@@ -572,6 +572,41 @@ class VisualEditor
 					VisualEditor.selectLine(e.target.dataset.lineName);
 				});
 				sheet.appendChild(badge);
+				let cables = VisualEditor.fixedMap.cablesBetween(target_object.from.parent,target_object.to.parent);
+				if(cables.length>0)
+				{
+					let cableselect = document.createElement("select");
+					let opt_none = document.createElement("option");
+					opt_none.value="";
+					opt_none.append("(none)");
+					cableselect.appendChild(opt_none);
+					cables.forEach((c)=>{
+						let opt_cable = document.createElement("option");
+						opt_cable.append(c.getLabel());
+						opt_cable.value=c.name;
+						if(target_object.cable == c)
+							opt_cable.selected="selected";
+						cableselect.appendChild(opt_cable);
+					});
+					cableselect.addEventListener("change",(e)=>{
+						if(cableselect.value=="")
+						{
+							target_object.cable?.removeItem(target_object);
+							target_object.cable=null;
+							target_object.cableName="";
+						}
+						else
+						{
+							target_object.cable?.removeItem(target_object);
+							target_object.cable=VisualEditor.fixedMap.find(cableselect.value);
+							target_object.cableName=cableselect.value;
+							target_object.cable.addItem(target_object);
+						}
+						VisualEditor.fixedMap.updatePosition();
+						VisualEditor.refreshView();
+					});
+					sheet.appendChild(cableselect);
+				}
 				break;
 			}
 			case "rack":

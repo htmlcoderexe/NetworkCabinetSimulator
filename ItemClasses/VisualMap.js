@@ -22,15 +22,24 @@ class VisualMap extends VisualItem {
 			}
 			
 		});
-		this.subItems.forEach((e)=>{
-			if(e.type=="location")
-				console.log(e.cables);
-			
-		});
 	}
 	updatePosition()
 	{
 		this.doCables();
 		super.updatePosition();
+	}
+	cablesBetween(from,to)
+	{
+		const cables = [];
+		this.subItems.forEach((e)=>{
+			if(e.type=="cable")
+			{
+				if((e.from == from && e.to == to)||(e.from == to && e.to == from))
+					cables.push(e);
+			}
+			
+		});
+		// console.log(cables);
+		return cables;
 	}
 }

@@ -90,7 +90,7 @@ class VisualPatch extends VisualItem {
 			startY=points.startY;
 			endX=points.endX;
 			endY=points.endY;
-			console.log(points);
+			// console.log(points);
 		}
 		else
 		{
@@ -205,7 +205,7 @@ class VisualPatch extends VisualItem {
 			let points = this.cable.getLinkEndPoints(index);
 			ctx.moveTo(points.startX,points.startY);
 			ctx.lineTo(points.endX,points.endY);
-			console.log(points);
+			// console.log(points);
 		}
 		else
 		{

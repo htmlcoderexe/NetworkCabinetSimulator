@@ -185,7 +185,7 @@ class VisualLocation extends VisualItem {
 
 		});
 
-		console.log(ls,rs,ts,bs,this.name);
+		//console.log(ls,rs,ts,bs,this.name);
 
 
 
