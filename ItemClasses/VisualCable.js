@@ -111,6 +111,30 @@ class VisualCable extends VisualItem
 		super.drawOutlineFunc(ctx);
 		
 	}
+	indexOf(link)
+	{
+		let index = -1;
+		this.subItems.forEach((l,i)=>{
+			if(l===link)
+				index = i;
+		});
+		return index;
+	}
+	getLinkEndPoints(index)
+	{
+		let start = this.cableWidth/-2;
+		let startX=this.startPoint.x;
+		let startY=this.startPoint.y;
+		let endX=this.endPoint.x;
+		let endY=this.endPoint.y;
+		let angle = Math.atan2(endY-startY, endX-startX);
+        let rAX = -1 * (Math.sin(angle));
+        let rAY = Math.cos(angle);
+		start++;
+		start+=8*index;
+		start+=4;
+		return {startX:startX+start*rAX,startY:startY+start*rAY,endX:endX+start*rAX,endY:endY+start*rAY};
+	}
 	draw(ctx)
 	{
 		VisualEditor.drawCallCount++;

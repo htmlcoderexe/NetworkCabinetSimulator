@@ -80,11 +80,25 @@ class VisualPatch extends VisualItem {
 	}
 	updatePosition()
 	{
+		let startX,startY,endX,endY;
 		// define a rectangle from the endpoints
-		const startX = this.from.cX;
-		const startY = this.from.cY;
-		const endX = this.to.cX + this.to.width;
-		const endY = this.to.cY + this.to.height;
+		if(this.cable)
+		{
+			let index = this.cable.indexOf(this);
+			let points = this.cable.getLinkEndPoints(index);
+			startX=points.startX;
+			startY=points.startY;
+			endX=points.endX;
+			endY=points.endY;
+			console.log(points);
+		}
+		else
+		{
+			startX = this.from.cX;
+			startY = this.from.cY;
+			endX = this.to.cX + this.to.width;
+			endY = this.to.cY + this.to.height;
+		}
 		// normalise the rectangle, making it have strictly positive width and height
 		// this is done by picking the smallest of each coordinate
 		this.cX = startX > endX ? endX : startX;
@@ -184,8 +198,20 @@ class VisualPatch extends VisualItem {
 	{
 		// draw a single line right in the middle
 		ctx.beginPath();
-		ctx.moveTo(this.from.cX+(this.to.width/2), this.from.cY+3);
-		ctx.lineTo(this.to.cX+(this.to.width/2),this.to.cY+this.to.height-3);
+		
+		if(this.cable)
+		{
+			let index = this.cable.indexOf(this);
+			let points = this.cable.getLinkEndPoints(index);
+			ctx.moveTo(points.startX,points.startY);
+			ctx.lineTo(points.endX,points.endY);
+			console.log(points);
+		}
+		else
+		{
+			ctx.moveTo(this.from.cX+(this.to.width/2), this.from.cY+3);
+			ctx.lineTo(this.to.cX+(this.to.width/2),this.to.cY+this.to.height-3);
+		}
 		ctx.stroke();
 
 	}
