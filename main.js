@@ -17,6 +17,12 @@ function canvasHover(e)
 			VisualEditor.refreshView();
 			//console.log(VisualEditor.currentMoving);
 		}
+		if(VisualEditor.draggingView)
+		{
+			VisualEditor.offsetX=VisualEditor.dragX+x;
+			VisualEditor.offsetY=VisualEditor.dragY+y;
+			VisualEditor.refreshView();
+		}
 		switch(VisualEditor.editMode)
 		{
 			case VisualEditor.EDIT_MODES.POINTER:
@@ -44,7 +50,8 @@ function canvasMDown(e)
 	let x = e.offsetX;
 	let y = e.offsetY;
 	VisualEditor.mouseDownNow = true;
-	
+	VisualEditor.dragX=-x+VisualEditor.offsetX;
+	VisualEditor.dragY=-y+VisualEditor.offsetY;
 	switch(VisualEditor.editMode)
 	{
 		case VisualEditor.EDIT_MODES.POINTER:
@@ -71,6 +78,7 @@ function canvasMUp(e)
 	let x = e.offsetX;
 	let y = e.offsetY;
 	VisualEditor.mouseDownNow = false;
+	VisualEditor.draggingView=false;
 	switch(VisualEditor.editMode)
 	{
 		case VisualEditor.EDIT_MODES.POINTER:

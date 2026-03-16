@@ -84,6 +84,12 @@ class VisualEditor
 		WIRE_MOVE: 1, WIRE_ADD: 2, WIRE_REMOVE: 3, WIRE_SELECTED: 4, WIRE_LINE_SELECT: 5,
 		LINK_END: 6
 	};
+	static offsetX=0;
+	static offsetY=0;
+	static draggingView = false;
+	static dragX=0;
+	static dragY=0;
+	static zoom = 1;
 	/**
      * Default separator for full item references.
      */
@@ -225,6 +231,8 @@ class VisualEditor
 	 */
 	static getMouseHits(x, y, onlyTopLevel = false)
 	{
+		x-=this.offsetX;
+		y-=this.offsetY;
 		let results = VisualItem.hitboxMapping.filter(box=>{return box.hitbox.contains(x, y)});
 		results = results.filter(box=>box.item.testHit(x, y) && !box.item.collapseView);
 		results.sort((a, b)=>b.level-a.level);
@@ -299,6 +307,8 @@ class VisualEditor
         // draw on the layer used for selections
 		const ctx = VisualEditor.highlightLayer;
 		ctx.clearRect(0,0,5000,5000);
+		ctx.resetTransform();
+		ctx.translate(VisualEditor.offsetX,VisualEditor.offsetY);
         // line styles for highlights
 		let selectionOutline = {
 			strokeStyle : "rgb(255 0 0 / 80%)",
@@ -375,6 +385,8 @@ class VisualEditor
         // use the object/item layer
 		const ctx = VisualEditor.mapLayer;
 		ctx.clearRect(0,0,5000,5000);
+		ctx.resetTransform();
+		ctx.translate(VisualEditor.offsetX,VisualEditor.offsetY);
 		VisualEditor.drawCallCount=0;
         // draw the "fixed" items (locations, racks etc)
 		VisualEditor.fixedMap.draw(ctx);
@@ -1735,6 +1747,10 @@ class VisualEditor
             // set offsets so it aligns with where exactly the mouse grabbed it
 			VisualEditor.currentMovingX = VisualEditor.currentMoving.x - x;
 			VisualEditor.currentMovingY = VisualEditor.currentMoving.y - y;
+		}
+		if(VisualEditor.currentHightlight.length<1)
+		{
+			VisualEditor.draggingView=true;
 		}
 		VisualEditor.updateCursor();
 	}
