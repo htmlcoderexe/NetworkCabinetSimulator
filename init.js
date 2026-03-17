@@ -104,11 +104,61 @@ function InitEditor()
         canvasMUp(e);
     });
     let zs=document.getElementById('zoom_slider');
+    document.getElementById('selection_display').addEventListener("wheel", (e)=>{
+        let isup=e.deltaY<1;
+        let values = [25,50,75,100,200,300,400,500];
+        
+        let nextval=50;
+        if(isup)
+        {
+            if(VisualEditor.zoom>=5)
+                return;
+            nextval=Math.min(...values.filter((v)=>v>VisualEditor.zoom*100));
+        }
+        else
+        {
+            if(VisualEditor.zoom<=0.25)
+                return;
+            nextval=Math.max(...values.filter((v)=>v<VisualEditor.zoom*100));
+            
+        }
+        //console.warn(nextval);
+        zs.value=nextval;
+        zs.dispatchEvent(new Event("input"));
+    });
+
     let zl=document.getElementById("zoom_lvl");
     zs.value=100;
     zs.addEventListener("input",(e)=>{
-        VisualEditor.zoom=zs.value/100;VisualEditor.refreshView();
+        // zoom relative to middle of screen
+        let w= document.getElementById("graphdisplay").width/2;
+        let h= document.getElementById("graphdisplay").height/2;
+        let [zoomX,zoomY]=VisualEditor.screenToCanvas(w,h);
+        //console.warn(zoomX,zoomY);
+        let offsetX = VisualEditor.offsetX-(w/VisualEditor.zoom);
+        let offsetY = VisualEditor.offsetY-(h/VisualEditor.zoom);
+        //console.log("W+H",w,h,"realOffset",offsetX,offsetY,"currentOffset",VisualEditor.offsetX,VisualEditor.offsetY,"zoom",VisualEditor.zoom);
+        VisualEditor.zoom=zs.value/100;
+        let newX=offsetX+(w/VisualEditor.zoom);
+        let newY=offsetY+(h/VisualEditor.zoom);
+        VisualEditor.offsetX=newX;
+        VisualEditor.offsetY=newY;
+        // no fucking clue. we literally check the difference where the new "screen centre" is projected and then shift by that amount
+        // it works. whatever...
+        let [zoomX2,zoomY2]=VisualEditor.screenToCanvas(w,h);
+        VisualEditor.offsetX-=(zoomX-zoomX2)*VisualEditor.zoom;
+        VisualEditor.offsetY-=(zoomY-zoomY2)*VisualEditor.zoom;
+        //VisualEditor.offsetY=newY;
+
+        
+        //console.warn(zoomX2,zoomY2);
+
+
+
+        //console.log("newOffset",newX,newY);
+        VisualEditor.refreshView();
         zl.innerHTML=zs.value+"%";
+        //console.log("W+H",w,h,"realOffset",offsetX,offsetY,"currentOffset",VisualEditor.offsetX,VisualEditor.offsetY,"zoom",VisualEditor.zoom);
     });
     let rs = new ResizeObserver((entries)=>{
         if(entries[0])

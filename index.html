@@ -70,7 +70,15 @@
 				<button title="Add a new rack unit" disabled id="add_frame" onclick="VisualEditor.showAddFrameDlg();">F</button>
 				<button title="Create a new location" disabled id="add_location" onclick="">🏢</button>
 				<button title="Display and modify source code" class="mode_button" data-mode="code" id="mode_code" onclick="VisualEditor.setEditorModeHandler(event)">🧑‍💻</button>
-				<input type="range" value="100" max="1000" min="20" id="zoom_slider"/><span id="zoom_lvl">100%</span>
+				<datalist id="zoom_markers">
+  <option value="25"></option>
+  <option value="50"></option>
+  <option value="100"></option>
+  <option value="200"></option>
+  <option value="300"></option>
+  <option value="400"></option>
+  <option value="500"></option>
+</datalist><input type="range" list="zoom_markers" value="100" max="500" min="25" id="zoom_slider"/><span id="zoom_lvl">100%</span>
 			</div>
 			<div class="displayer">
 				<canvas id="graphdisplay" width = "2024" height="2024" style="width:100%;height:100%;border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
