@@ -106,11 +106,20 @@ function InitEditor()
     let zs=document.getElementById('zoom_slider');
     let zl=document.getElementById("zoom_lvl");
     zs.value=100;
-    zs.addEventListener("change",(e)=>{
+    zs.addEventListener("input",(e)=>{
         VisualEditor.zoom=zs.value/100;VisualEditor.refreshView();
         zl.innerHTML=zs.value+"%";
     });
-
+    let rs = new ResizeObserver((entries)=>{
+        if(entries[0])
+        {
+            document.getElementById("graphdisplay").width=document.getElementById("graphdisplay").clientWidth;
+            document.getElementById("graphdisplay").height=document.getElementById("graphdisplay").clientHeight;
+            document.getElementById("selection_display").width=document.getElementById("graphdisplay").clientWidth;
+            document.getElementById("selection_display").height=document.getElementById("graphdisplay").clientHeight;
+            VisualEditor.refreshView();
+        }
+    });
     VisualEditor.selectionChange = ()=>{
         console.log(VisualEditor.currentSelection);
         if(VisualEditor.currentSelection.selection.length > 0)
@@ -197,6 +206,7 @@ function InitEditor()
     VisualEditor.buildTree(document.getElementById("object_tree"), VisualEditor.inventory);
     VisualEditor.fixedMap.updatePosition();
     VisualEditor.refreshView();
+    rs.observe(document.getElementById("graphdisplay"));
         
     });
 
