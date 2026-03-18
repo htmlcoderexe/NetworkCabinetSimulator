@@ -92,10 +92,6 @@ class VisualLocation extends VisualItem {
 		}
 		// offsets.push(tally);
 		return offsets.map((x)=>x+offset+0.5);
-		for(let i=0;i<ends.length;i++)
-		{
-
-		}
 	}
 	updatePosition()
 	{

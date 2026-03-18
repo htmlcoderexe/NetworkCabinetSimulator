@@ -80,7 +80,6 @@ class VisualCable extends VisualItem
 		const testRekt = new GetRect(rX-w,rY-w,dX+w+w,dY+w+w);
 		//*/
 		return this.getRect().diagonal(x, y, w, this.flip);
-		return testRekt.diagonal(x, y, this.cableWidth, this.flip);
 	}
 	getDrawingGroup()
 	{

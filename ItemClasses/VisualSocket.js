@@ -23,9 +23,7 @@ class VisualSocket extends VisualItem
 	}
 	getLabel()
 	{
-		// if no label, shows as "5", if label is applied, shows as "(5) label"
 		return this.label==""?this.name : this.label;
-		return this.label==""?this.name : "(" + this.name + ") " + this.label;
 	}
 	updateSize()
 	{
