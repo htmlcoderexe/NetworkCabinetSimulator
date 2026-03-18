@@ -205,4 +205,13 @@ class VisualFrame extends VisualItem
 		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH-1, DIM_FRAME_HEIGHT-1);
 		super.drawTop(ctx);
 	}
+	getDrawingGroup()
+	{
+		let result = [this];
+		this.root.allOfType("cable")?.forEach((c)=>{
+			if(c.from==this||c.to==this)
+				result.push(c);
+			});
+		return result;
+	}
 }

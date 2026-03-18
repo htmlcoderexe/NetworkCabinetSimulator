@@ -221,6 +221,24 @@ class VisualItem {
 	getAtSlot(slot) {
 		return this.subItems.find((subItem) => { return subItem.slot === slot; });
 	}
+	/**
+	The top-level parent of this item.
+	 */
+	get root()
+	{
+		if(this.parent)
+			return this.parent.root;
+		return this;
+	}
+	/**
+	 * Gets an array of subitems matching given type
+	 * @param {string} type 
+	 * @returns {VisualItem[]} matching items, if any
+	 */
+	allOfType(type)
+	{
+		return this.subItems.filter((e)=>e.type==type);
+	}
 
 	/**
 	 * Retrieves this item's bounding box.
