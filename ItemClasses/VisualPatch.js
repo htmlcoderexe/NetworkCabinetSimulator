@@ -21,7 +21,15 @@ class VisualPatch extends VisualItem {
 		super("patch", name, line);
 		this.selectionOrder = 4;
 	}
-	
+	/**
+	The top-level parent of this item.
+	 */
+	get root()
+	{
+		if(this.parent)
+			return this.parent.root;
+		return this;
+	}
 	toCode(indent_level)
 	{
 		let output ="";
