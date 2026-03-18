@@ -11,7 +11,7 @@ class VisualLocation extends VisualItem {
 	{
 		super("location", name, map);
 		this.selectionOrder = 1;
-
+		this.nextSlot=0;
 	}
 	
 	toCode(indent_level)
@@ -273,6 +273,19 @@ class VisualLocation extends VisualItem {
 		lbl.htmlFor = itemref;
 		items.push(lbl);
 
+		// "add rack" button
+		let add_btn = document.createElement("button");
+		add_btn.innerText="Add Rack";
+		add_btn.addEventListener("click",(e)=>{
+			let sn=this.getNextSlot();
+			let r=new VisualRack(this,sn+1);
+			r.slot=sn;
+			this.addItem(r);
+			VisualEditor.reportUpdate(this);
+			VisualEditor.refreshView();
+		});
+		items.push(document.createElement("br"));
+		items.push(add_btn);
 		return items;
 	}
 }

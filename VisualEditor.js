@@ -1159,20 +1159,24 @@ class VisualEditor
 			VisualEditor.mapLayer.canvas.style.display="block";
 		}
 		let editMode = this.EDIT_MODES.POINTER;
+		document.getElementById("add_location").disabled=false;
 		switch(mode)
 		{
 			case "wire":
 			{
 				editMode = this.EDIT_MODES.WIRE;
+				document.getElementById("add_location").disabled=true;
 				break;
 			}
 			case "link":
 			{
+				document.getElementById("add_location").disabled=true;
 				editMode = this.EDIT_MODES.LINK;
 				break;
 			}
 			case "code":
 			{
+				document.getElementById("add_location").disabled=true;
 				editMode = this.EDIT_MODES.CODE;
 				break;
 			}

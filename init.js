@@ -103,6 +103,7 @@ function InitEditor()
     });
     document.getElementById('selection_display').addEventListener("mouseup", (e)=>{
         canvasMUp(e);
+        console.log("up, up, up");
     });
     let zs=document.getElementById('zoom_slider');
     document.getElementById('selection_display').addEventListener("wheel", (e)=>{
@@ -182,6 +183,21 @@ function InitEditor()
         }
         VisualEditor.addContextButtons();
     };
+    document.getElementById("add_location").addEventListener("click",(e)=>{
+        VisualEditor.promptName((e)=>{
+				let cname = VisualEditor.newItemDialogue.returnValue;
+				if(!cname)
+					return;
+				let c = new VisualLocation(VisualEditor.fixedMap,cname);
+                c.label=cname;
+                VisualEditor.currentSelection.set([c]);
+                VisualEditor.currentMoving=c;
+				VisualEditor.fixedMap.addItem(c);
+				VisualEditor.fixedMap.updatePosition();
+                VisualEditor.reportUpdate(c.root);
+				VisualEditor.refreshView();
+			},"Location name","OK");
+    });
     document.getElementById("mode_pointer").click();
     document.getElementById('bbb2').addEventListener("click",(e)=>{
         let maptext =VisualEditor.fixedMap.toCode(0);
