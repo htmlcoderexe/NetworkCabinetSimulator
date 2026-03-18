@@ -84,8 +84,36 @@ class VisualEditor
 		WIRE_MOVE: 1, WIRE_ADD: 2, WIRE_REMOVE: 3, WIRE_SELECTED: 4, WIRE_LINE_SELECT: 5,
 		LINK_END: 6
 	};
-	static offsetX=0;
-	static offsetY=0;
+	static #offsetX=0;
+	static #offsetY=0;
+	/**
+	Virtual canvas X offset.
+	 */
+	static get offsetX()
+	{
+		return this.#offsetX;
+	}
+	/**
+	Virtual canvas X offset, forced to integers.
+	 */
+	static set offsetX(value)
+	{
+		this.#offsetX=Math.round(value);
+	}
+	/**
+	Virtual canvas Y offset.
+	 */
+	static get offsetY()
+	{
+		return this.#offsetY;
+	}
+	/**
+	Virtual canvas Y offset, forced to integers.
+	 */
+	static set offsetY(value)
+	{
+		this.#offsetY=Math.round(value);
+	}
 	static draggingView = false;
 	static dragX=0;
 	static dragY=0;
