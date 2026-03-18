@@ -234,6 +234,14 @@ body,html
 {
     list-style-type:"╚🗄\00FE0F";
 }
+#object_tree li[data-itemtype="cable"]
+{
+    list-style-type:"╠🧬\00FE0F";
+}
+#object_tree li[data-itemtype="cable"]:last-child
+{
+    list-style-type:"╚🧬\00FE0F";
+}
 #object_tree li[data-itemtype="frame"], #object_tree li[data-itemtype="frame_tpl"]
 {
     list-style-type:"╠🚌\00FE0F";
