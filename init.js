@@ -103,14 +103,21 @@ function InitEditor()
     });
     document.getElementById('selection_display').addEventListener("mouseup", (e)=>{
         canvasMUp(e);
-        console.log("up, up, up");
     });
     let zs=document.getElementById('zoom_slider');
     document.getElementById('selection_display').addEventListener("wheel", (e)=>{
+        // ignore sideways wheel clicks
+        if(e.deltaY==0)
+            return;
+        // check if zooming in or out
         let isup=e.deltaY<1;
+        // hardcoded stops like on the slider
         let values = [25,50,75,100,200,300,400,500];
-        
+        // signal the zoom function to use mouse position
+        window.__scrollZoomX= e.offsetX;
+        window.__scrollZoomY=e.offsetY;
         let nextval=50;
+        // pick the next higher/lower stop
         if(isup)
         {
             if(VisualEditor.zoom>=5)
@@ -125,6 +132,7 @@ function InitEditor()
             
         }
         //console.warn(nextval);
+        // set slider value and trigger
         zs.value=nextval;
         zs.dispatchEvent(new Event("input"));
     });
@@ -132,9 +140,25 @@ function InitEditor()
     let zl=document.getElementById("zoom_lvl");
     zs.value=100;
     zs.addEventListener("input",(e)=>{
-        // zoom relative to middle of screen
+        // by default zoom relative to middle of screen
         let w= document.getElementById("graphdisplay").width/2;
         let h= document.getElementById("graphdisplay").height/2;
+        // if this came from the wheel event, the mouse position
+        // has been set
+        if(window.__scrollZoomX!=undefined)
+        {
+            w=window.__scrollZoomX;
+            h=window.__scrollZoomY;
+            // clear after use
+            window.__scrollZoomX=undefined;
+            window.__scrollZoomY=undefined;
+        }
+        // the next few lines effectively get the almost right
+        // value and then correct it
+        // probably should do this more straightforward
+        // but I got tired debugging the subtle issues
+        // given the various translations between the virtual canvas
+        // and the viewport
         let [zoomX,zoomY]=VisualEditor.screenToCanvas(w,h);
         //console.warn(zoomX,zoomY);
         let offsetX = VisualEditor.offsetX-(w/VisualEditor.zoom);
@@ -150,7 +174,6 @@ function InitEditor()
         let [zoomX2,zoomY2]=VisualEditor.screenToCanvas(w,h);
         VisualEditor.offsetX-=(zoomX-zoomX2)*VisualEditor.zoom;
         VisualEditor.offsetY-=(zoomY-zoomY2)*VisualEditor.zoom;
-        //VisualEditor.offsetY=newY;
 
         
         //console.warn(zoomX2,zoomY2);
