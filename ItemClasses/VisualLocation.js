@@ -241,4 +241,38 @@ class VisualLocation extends VisualItem {
 		}
 		super.draw(ctx);
 	};
+
+	getPropSheet()
+	{
+		let items = [];
+		let itemref=this.getFullName("/");
+		// add a toggleagle checkbox to set the location's compact state
+		let toggle = document.createElement("input");
+		toggle.type = "checkbox";
+		// make sure the checkbox state reflects current state
+		toggle.checked = this.collapseState;
+		// event handler for the toggle
+		toggle.addEventListener("change",(e)=>{
+			if(e.target.checked)
+			{
+				this.collapse();
+			}
+			else
+			{
+				this.uncollapse();
+			}
+			VisualEditor.refreshView();
+		});
+		toggle.dataset.itemref = itemref;
+		toggle.id = itemref;
+		items.push(toggle);
+		// label for the checbox
+		let lbl = document.createElement("label");
+		lbl.append("Compact view");
+		lbl.dataset.itemref = itemref;
+		lbl.htmlFor = itemref;
+		items.push(lbl);
+
+		return items;
+	}
 }

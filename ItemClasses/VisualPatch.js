@@ -219,4 +219,52 @@ class VisualPatch extends VisualItem {
 		// highlight both endpoints along with the link
 		return [this.from,this,this.to];
 	}
+	getPropSheet()
+	{
+		let sheet = [];
+		let itemref=this.getFullName("/");
+		// add a colour-coded line badge that selects the parent line when clicked
+		let badge = VisualEditor.createLineBadge(this.parent);
+		badge.dataset.lineName = this.parent.name;
+		badge.addEventListener("click",(e)=>{
+			VisualEditor.selectLine(e.target.dataset.lineName);
+		});
+		sheet.push(badge);
+		let cables = VisualEditor.fixedMap.cablesBetween(this.from.parent,this.to.parent);
+		if(cables.length>0)
+		{
+			let cableselect = document.createElement("select");
+			let opt_none = document.createElement("option");
+			opt_none.value="";
+			opt_none.append("(none)");
+			cableselect.appendChild(opt_none);
+			cables.forEach((c)=>{
+				let opt_cable = document.createElement("option");
+				opt_cable.append(c.getLabel());
+				opt_cable.value=c.name;
+				if(this.cable == c)
+					opt_cable.selected="selected";
+				cableselect.appendChild(opt_cable);
+			});
+			cableselect.addEventListener("change",(e)=>{
+				if(cableselect.value=="")
+				{
+					this.cable?.removeItem(this);
+					this.cable=null;
+					this.cableName="";
+				}
+				else
+				{
+					this.cable?.removeItem(this);
+					this.cable=VisualEditor.fixedMap.find(cableselect.value);
+					this.cableName=cableselect.value;
+					this.cable.addItem(this);
+				}
+				VisualEditor.fixedMap.updatePosition();
+				VisualEditor.refreshView();
+			});
+			sheet.push(cableselect);
+		}
+		return sheet;
+	}
 }

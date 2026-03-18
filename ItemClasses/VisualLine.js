@@ -225,4 +225,62 @@ class VisualLine extends VisualItem {
         this.updateHitboxMapping();
         
      }
+	 getPropSheet()
+	 {
+		let itemref=this.getFullName("/");
+		let sheet=[];
+		let start_lbl = document.createElement("div");
+		let end_lbl = document.createElement("div");
+		if(this.doContinuity)
+		{
+			start_lbl.append(VisualEditor.createHotLabel(this.start));
+			start_lbl.append(" @ [");
+			start_lbl.append(VisualEditor.createHotLabel(this.start.parent));
+			start_lbl.append("]");
+			end_lbl.append(VisualEditor.createHotLabel(this.end));
+			end_lbl.append(" @ [");
+			end_lbl.append(VisualEditor.createHotLabel(this.end.parent));
+			end_lbl.append("]");
+			sheet.push(start_lbl);
+			let flipper = document.createElement("button");
+			flipper.append("▲swap▼");
+			flipper.addEventListener("click",(e)=>{
+				console.log(this);
+				this.reverse();
+				VisualEditor.reportUpdate(this);
+			});
+			sheet.push(flipper);
+
+		}
+		else if(this.name=="looselinks")
+		{
+			end_lbl.append("This contains any links not assigned to a line.")
+		}
+		sheet.push(end_lbl);
+		// two colour pickers for the line's 2 colours
+		// <input type="color"> does NOT support named colours
+		let c1 = document.createElement("input");
+		c1.type="color";
+		c1.value = this.colour1;
+		c1.addEventListener("change",(e)=>{
+			this.colour1 = c1.value;
+			VisualEditor.reportUpdate(this);
+			VisualEditor.refreshView();
+		});
+
+		let c2 = document.createElement("input");
+		c2.type="color";
+		c2.value = this.colour2;
+		c2.addEventListener("change",(e)=>{
+			this.colour2 = c2.value;
+			VisualEditor.reportUpdate(this);
+			VisualEditor.refreshView();
+		});
+		
+		c1.dataset.itemref=itemref;
+		c2.dataset.itemref=itemref;
+		sheet.push(c1);
+		sheet.push(c2);
+		return sheet;
+	}
 }

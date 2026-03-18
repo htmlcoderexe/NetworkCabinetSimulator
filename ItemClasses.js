@@ -379,6 +379,11 @@ class VisualItem {
 		return output;
 	}
 
+	getPropSheet()
+	{
+		return [];
+	}
+
 	//**** updating the object */
 
 	/**

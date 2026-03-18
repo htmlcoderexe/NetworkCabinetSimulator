@@ -214,4 +214,71 @@ class VisualFrame extends VisualItem
 			});
 		return result;
 	}
+	getPropSheet()
+	{
+		let sheet=[];
+		let itemref=this.getFullName("/");
+		// list any sockets with connections on them
+		this.subItems.forEach((socket)=>{
+			if(socket.connections.length>0)
+			{
+				// keep a list of already seen lines on this socket
+				let knownLines = [];
+				let socketLine = document.createElement("div");
+				socketLine.dataset.itemref = itemref;
+				let sname = document.createElement("span");
+				sname.dataset.itemref = itemref;
+				// display the name of the socket 
+				sname.append("🔌" + socket.getLabel());
+				socketLine.appendChild(sname);
+				// followed by one or more line badges found in the connections
+				socket.connections.forEach((conn)=>{
+					// only go for badges not seen yet
+					if(!knownLines.find((sl)=>sl==conn.parent))
+					{
+						knownLines.push(conn.parent);
+						let badge = VisualEditor.createLineBadge(conn.parent);
+						badge.dataset.itemref = itemref;
+						socketLine.appendChild(badge);
+						if(conn.parent.doContinuity)
+						{
+							if(socket!=conn.parent.start)
+							{
+								if(socket==conn.parent.end)
+								{
+									socketLine.append(" <-- ");
+								}
+								let s=conn.parent.start;
+								socketLine.append(s.getLabel() + " @ [" + s.parent.getLabel()+"]");		
+							}
+							else
+							{
+								socketLine.append(" --> ");
+							}
+							if(socket!=conn.parent.end)
+							{
+								if(socket!=conn.parent.start)
+								{
+									socketLine.append(" --> ");
+								}
+								let s=conn.parent.end;
+								socketLine.append(s.getLabel() + " @ [" + s.parent.getLabel()+"]");
+							}
+						}
+						else
+						{
+							let isfrom=conn.from==socket;
+							let otherend = isfrom?conn.to:conn.from;
+							if(otherend)
+							{
+								socketLine.append(" "+(isfrom?"-->":"<--")+" "+otherend.getLabel() + " @ [" + otherend.parent.getLabel()+"]");
+							}
+						}
+					}
+				});
+				sheet.push(socketLine);
+			}
+		});
+		return sheet;
+	}
 }

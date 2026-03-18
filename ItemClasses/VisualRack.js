@@ -124,4 +124,36 @@ class VisualRack extends VisualItem {
 		ctx.fillText(this.label, rect.x+this.width/2, rect.y+DIM_RACK_SPACING - 3);
 		super.draw(ctx);
 	}
+	getPropSheet()
+	{
+		let sheet=[];
+		let itemref=this.getFullName("/");
+		let previousSlot = -1;
+		this.subItems.forEach((f)=>{
+			if(f.slot-previousSlot>1)
+			{
+				let start =previousSlot+1;
+				let end = f.slot-1
+				let addbutton = document.createElement("button");
+				addbutton.append("Insert frame");
+				addbutton.addEventListener("click",(e)=>{
+					VisualEditor.showAddFrameDlg(start+1, end+1,itemref);
+				});
+				sheet.push(addbutton);
+			}
+			let idx = VisualEditor.frameTypeRegistry[f.frametype]['index'];
+			let frame = VisualEditor.generateFramePreviewSprite(idx);
+			frame.dataset.itemref=itemref;
+			sheet.push(frame);
+			previousSlot=f.slot;
+		});
+		let start =previousSlot+1;
+				let addbutton = document.createElement("button");
+				addbutton.append("Insert frame");
+				addbutton.addEventListener("click",(e)=>{
+					VisualEditor.showAddFrameDlg(start+1, 100,itemref);
+				});
+				sheet.push(addbutton);
+		return sheet;
+	}
 }
