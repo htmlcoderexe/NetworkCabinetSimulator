@@ -87,6 +87,7 @@ function InitEditor()
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
     VisualEditor.mouseArea =  document.getElementById('selection_display');
     VisualEditor.newLineDialogue =  document.getElementById('new_line_dialog');
+    VisualEditor.newItemDialogue =  document.getElementById('new_item_dialog');
     VisualEditor.toolBar =  document.getElementById('toolbar_tools');
     VisualEditor.addFrameDialogue = document.getElementById("add_frame_dialog");
     //drawMap(document.getElementById('graphdisplay'));
@@ -172,15 +173,16 @@ function InitEditor()
     });
     VisualEditor.selectionChange = ()=>{
         console.log(VisualEditor.currentSelection);
+        VisualEditor.propSheetContainer.innerText ="";
         if(VisualEditor.currentSelection.selection.length > 0)
         {
-            VisualEditor.propSheetContainer.innerText ="";
             VisualEditor.currentSelection.selection.forEach((item)=>{
                VisualEditor.buildPropSheet(item);
             });
         }
         VisualEditor.checkIfCanCreateGroup();
         VisualEditor.checkIfCanAddToGroup();
+        VisualEditor.checkForCableCreateButton();
     };
     document.getElementById("mode_pointer").click();
     document.getElementById('bbb2').addEventListener("click",(e)=>{

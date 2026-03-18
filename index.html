@@ -47,6 +47,12 @@
 			<button onclick="VisualEditor.newLineDialogue.close(document.getElementById('linename').value);">Create line</button>
 		</form>
 	</dialog>
+	<dialog id="new_item_dialog"">
+		<form id="new_item_frm" method="dialog">
+			<label id="prompt" for="itemname">Item name:</label><input name="itemname" id="itemname" type="text" placeholder="Item name here" />
+			<button id="button" onclick="VisualEditor.newItemDialogue.close(document.getElementById('itemname').value);">Create item</button>
+		</form>
+	</dialog>
 	<dialog id="add_frame_dialog" onclose="VisualEditor.addFrameResult()">
 		<form method="dialog">
 		<label for="slot">Add to slot: </label><input id="slot" type="number" /> <input id="override" type="checkbox" /><label for="override">Force slot number and rearrange as needed</label>

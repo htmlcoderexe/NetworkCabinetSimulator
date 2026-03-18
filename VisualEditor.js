@@ -212,6 +212,10 @@ class VisualEditor
 	 */
 	static newLineDialogue = null;
 	/**
+	 * A reference to an HTML <dialog> for prompting a name.
+	 */
+	static newItemDialogue = null;
+	/**
 	 * A reference to an HTML <dialog> for adding frames to a rack.
 	 */
 	static addFrameDialogue = null;
@@ -568,6 +572,47 @@ class VisualEditor
         {
             VisualEditor.propSheetContainer.appendChild(tpl.firstElementChild);
         }
+	}
+	static checkForCableCreateButton()
+	{
+		const sel = VisualEditor.currentSelection.selection;
+		//console.warn(sel);
+		// require exactly 2 items
+		if(sel.length!=2)
+			return;
+		//console.log("2 items");
+		// require both to be frames
+		if(sel[0].type!="frame" || sel[1].type!="frame")
+			return;
+		//console.log("2 frames");
+		if(VisualEditor.fixedMap.cablesBetween(sel[0],sel[1]).length>0)
+		{
+			//console.warn("connected frames");
+			// #TODO some stuff for existing cable
+			return;
+		}
+		// require no prior cables attached
+		if(sel[0].getCables().length>0 || sel[1].getCables().length>0)
+			return;
+		//console.warn("frames have no cables");
+		let sheet =  VisualEditor.propSheetContainer;
+		let addbutton = document.createElement("button");
+		addbutton.addEventListener("click",(e)=>{
+			VisualEditor.promptName((e)=>{
+				let cname = VisualEditor.newItemDialogue.returnValue;
+				if(!cname)
+					return;
+				let c = new VisualCable(VisualEditor.fixedMap,cname);
+				c.from=sel[0];
+				c.to=sel[1];
+				c.commit();
+				VisualEditor.fixedMap.addItem(c);
+				VisualEditor.fixedMap.updatePosition();
+				VisualEditor.refreshView();
+			},"Cable name","OK");
+		});
+		addbutton.append("Create cable");
+		sheet.appendChild(addbutton);
 	}
 	static checkIfCanCreateGroup()
 	{
@@ -994,7 +1039,19 @@ class VisualEditor
 			VisualEditor.refreshView();
 		}
 	}
-
+	static promptName(callback,prompt ="",button ="")
+	{
+		if(prompt)
+		{
+			VisualEditor.newItemDialogue.querySelector("#prompt").innerText = prompt+":";
+			VisualEditor.newItemDialogue.querySelector("#itemname").placeholder = prompt+" here";
+		}
+		if(button)
+			VisualEditor.newItemDialogue.querySelector("#button").innerText = button;
+		
+		VisualEditor.newItemDialogue.addEventListener("close",callback,{once:true});
+		VisualEditor.newItemDialogue.showModal();
+	}
 	static createLine()
 	{
 		console.log("creating line");

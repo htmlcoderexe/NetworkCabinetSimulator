@@ -281,4 +281,20 @@ class VisualFrame extends VisualItem
 		});
 		return sheet;
 	}
+
+	getCables()
+	{
+		let cables =[];
+		this.root.allOfType("cable").forEach((c)=>{
+			if(c.from==this)
+			{
+				cables.push({cable:c,otherEnd:c.to,start:true});
+			}
+			if(c.to==this)
+			{
+				cables.push({cable:c,otherEnd:c.from,start:false});
+			}
+		});
+		return cables;
+	}
 }
