@@ -573,6 +573,13 @@ class VisualEditor
             VisualEditor.propSheetContainer.appendChild(tpl.firstElementChild);
         }
 	}
+	static addContextButtons()
+	{
+		
+        VisualEditor.checkIfCanCreateGroup();
+        VisualEditor.checkIfCanAddToGroup();
+        VisualEditor.checkForCableCreateButton();
+	}
 	static checkForCableCreateButton()
 	{
 		const sel = VisualEditor.currentSelection.selection;

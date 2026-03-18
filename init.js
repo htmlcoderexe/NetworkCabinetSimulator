@@ -180,9 +180,7 @@ function InitEditor()
                VisualEditor.buildPropSheet(item);
             });
         }
-        VisualEditor.checkIfCanCreateGroup();
-        VisualEditor.checkIfCanAddToGroup();
-        VisualEditor.checkForCableCreateButton();
+        VisualEditor.addContextButtons();
     };
     document.getElementById("mode_pointer").click();
     document.getElementById('bbb2').addEventListener("click",(e)=>{
