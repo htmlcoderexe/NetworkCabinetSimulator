@@ -244,6 +244,10 @@ class VisualEditor
 	 */
 	static newItemDialogue = null;
 	/**
+	 * A reference to an HTML <dialog> for prompting a name with validation.
+	 */
+	static cancellableDialogue = null;
+	/**
 	 * A reference to an HTML <dialog> for adding frames to a rack.
 	 */
 	static addFrameDialogue = null;
@@ -583,6 +587,18 @@ class VisualEditor
         // get the reference to the container for any item type specific controls
 		let sheet = tpl.querySelector(".item_properties");
 		sheet.dataset.itemref = itemref;
+		let btn_rename = tpl.querySelector("#id_button");
+		tpl.querySelector("#item_id").innerText=target_object.name;
+		btn_rename.addEventListener("click",(e)=>{
+			VisualEditor.cancellablePrompt((value)=>{
+				return !target_object.parent?.checkName(value) || value===target_object.name;
+			},(value)=>{
+				VisualEditor.reportRename(target_object,value);
+				VisualEditor.refreshView();
+			},(value)=>{
+				return "Bad value <"+value+">";
+			},"Enter new ID value");
+		});
 		// fetch the item's property sheet and display
 		target_object.getPropSheet().forEach((el)=>sheet.appendChild(el));
 
@@ -741,6 +757,23 @@ class VisualEditor
         let node = VisualEditor.treeViewContainer.querySelector("li[data-itemref=\""+safelbl+"\"]");
         if(node)
         {
+            // if found, hollow out the <li> and build that item's tree inside of it
+            VisualEditor.buildTree(node,target_object,true);
+        }
+		VisualEditor.buildPropSheet(target_object, true);
+    }
+    /**
+     * Called when an item has been changed.
+     * @param {VisualItem} target_object - the item that has been changed.
+     */
+    static reportRename(target_object,new_name)
+    {
+        let safelbl = target_object.getFullName(VisualEditor.ITEM_REF_SEPARATOR);
+        // get the first <li> matching the itemref - shouldn't be more than one anyway
+        let node = VisualEditor.treeViewContainer.querySelector("li[data-itemref=\""+safelbl+"\"]");
+        if(node)
+        {
+			target_object.name=new_name;
             // if found, hollow out the <li> and build that item's tree inside of it
             VisualEditor.buildTree(node,target_object,true);
         }
@@ -980,6 +1013,7 @@ class VisualEditor
         }
 	}
 
+
 	static showAddFrameDlg(min, max, rackID)
 	{
 		console.log("loading dlg");
@@ -1074,12 +1108,47 @@ class VisualEditor
 			VisualEditor.refreshView();
 		}
 	}
-	static promptName(callback,prompt ="",button ="")
+	static cancellablePrompt(verifier, success, fail, prompt="",button="",placeholder="")
 	{
+		VisualEditor.cancellableDialogue.querySelector("#err_text").innerText="";
+		VisualEditor.cancellableDialogue.querySelector("#err_msg").style.display="none";
+		VisualEditor.cancellableDialogue.querySelector("#cancellable_input").value="";
+		if(prompt)
+		{
+			VisualEditor.cancellableDialogue.querySelector("#prompt").innerText = prompt+":";
+			VisualEditor.cancellableDialogue.querySelector("#cancellable_input").placeholder = placeholder ?? prompt+" here";
+		}
+		if(button)
+			VisualEditor.cancellableDialogue.querySelector("#button").innerText = button;
+		let result=VisualEditor.cancellableDialogue.querySelector("#cancellable_input");
+		let exitproc=(e)=>{
+			e.preventDefault();
+			console.log(result.value);
+			if(verifier(result.value))
+			{
+				console.log("success");
+				success(result.value);
+				VisualEditor.cancellableDialogue.querySelector("#button").removeEventListener("click",exitproc);
+				VisualEditor.cancellableDialogue.close("");
+			}
+			else
+			{
+				console.log("failure");
+				VisualEditor.cancellableDialogue.querySelector("#err_text").innerText=fail(result.value);
+				VisualEditor.cancellableDialogue.querySelector("#err_msg").style.display="inline";
+			}
+		};
+		VisualEditor.cancellableDialogue.addEventListener("close",(e)=>{VisualEditor.cancellableDialogue.querySelector("#button").removeEventListener("click",exitproc);},{once:true});
+		VisualEditor.cancellableDialogue.querySelector("#button").addEventListener("click",exitproc);
+		VisualEditor.cancellableDialogue.showModal();
+	}
+	static promptName(callback,prompt ="",button ="",placeholder)
+	{
+		VisualEditor.newItemDialogue.querySelector("#itemname").value="";
 		if(prompt)
 		{
 			VisualEditor.newItemDialogue.querySelector("#prompt").innerText = prompt+":";
-			VisualEditor.newItemDialogue.querySelector("#itemname").placeholder = prompt+" here";
+			VisualEditor.newItemDialogue.querySelector("#itemname").placeholder = placeholder ?? prompt+" here";
 		}
 		if(button)
 			VisualEditor.newItemDialogue.querySelector("#button").innerText = button;

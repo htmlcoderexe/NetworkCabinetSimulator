@@ -37,7 +37,8 @@
 	<template id="item_propsheet">
 		<div class="infoblock">
 			<span class="item_badge" ></span>
-			<input class="item_title" readonly/>
+			<input class="item_title" readonly/><br />
+			<span>ID: <code id="item_id"></code></span><button id="id_button">Change...</button>
 			<div class="item_properties"></div>
 		</div>
 	</template>
@@ -45,6 +46,12 @@
 		<form id="new_line_frm" method="dialog">
 			<label for="linename">Line name:</label><input name="linename" id="linename" type="text" placeholder="Line name here" />
 			<button onclick="VisualEditor.newLineDialogue.close(document.getElementById('linename').value);">Create line</button>
+		</form>
+	</dialog>
+	<dialog id="cancellable_dialog">
+		<form id="cancellable_frm" method="dialog">
+			<label id="prompt" for="cancellable_input">Input value:</label><input name="cancellable_input" id="cancellable_input" type="text" placeholder="" /><br /><span id="err_msg"><span id="err_text"></span><br /></span>
+			<button id="button" >OK</button><button onclick="VisualEditor.cancellableDialogue.close('');">Cancel</button>
 		</form>
 	</dialog>
 	<dialog id="new_item_dialog"">

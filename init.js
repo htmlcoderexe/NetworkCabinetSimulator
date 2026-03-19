@@ -88,6 +88,7 @@ function InitEditor()
     VisualEditor.mouseArea =  document.getElementById('selection_display');
     VisualEditor.newLineDialogue =  document.getElementById('new_line_dialog');
     VisualEditor.newItemDialogue =  document.getElementById('new_item_dialog');
+    VisualEditor.cancellableDialogue =  document.getElementById('cancellable_dialog');
     VisualEditor.toolBar =  document.getElementById('toolbar_tools');
     VisualEditor.addFrameDialogue = document.getElementById("add_frame_dialog");
     //drawMap(document.getElementById('graphdisplay'));
