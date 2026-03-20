@@ -227,7 +227,7 @@ class VisualLine extends VisualItem {
      }
 	 getPropSheet()
 	 {
-		let itemref=this.getFullName("/");
+		let itemref=this.getFullName();
 		let sheet=[];
 		let start_lbl = document.createElement("div");
 		let end_lbl = document.createElement("div");

@@ -43,6 +43,28 @@ invparser = {
 		return true;
 		
 	},
+	"COUNTER": function(current)
+	{
+		if(current.type == "frame_tpl")
+        {
+			let newval = this.getInt();
+			let opts = new VisualPortOptions(current,"c_"+current.getNextPrefixedSlot("c_"));
+			opts.counter = newval;
+			current.addItem(opts);
+		}
+		return true;
+	},
+	"PORTLABEL": function(current)
+	{
+		if(current.type == "frame_tpl")
+        {
+			let newval = this.getRest();
+			let opts = new VisualPortOptions(current,"c_"+current.getNextPrefixedSlot("c_"));
+			opts.tpl = newval;
+			current.addItem(opts);
+		}
+		return true;
+	},
 	"CONNECTOR": function(current)
 	{
 		// under a frame template this keyword adds connectors

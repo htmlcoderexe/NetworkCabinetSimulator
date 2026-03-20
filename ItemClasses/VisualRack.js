@@ -127,7 +127,7 @@ class VisualRack extends VisualItem {
 	getPropSheet()
 	{
 		let sheet=[];
-		let itemref=this.getFullName("/");
+		let itemref=this.getFullName();
 		let previousSlot = -1;
 		this.subItems.forEach((f)=>{
 			if(f.slot-previousSlot>1)

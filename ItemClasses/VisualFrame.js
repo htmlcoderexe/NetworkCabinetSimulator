@@ -61,6 +61,8 @@ class VisualFrame extends VisualItem
 		this.subtype=ftpl.subtype;
 		//console.log(ftpl);
 		// add sockets from the template
+		ftpl.populateFrame(this,parser.inventory);
+		/*
 		ftpl.subItems.forEach((el)=>{
 			switch(el.type)
 			{
@@ -137,6 +139,7 @@ class VisualFrame extends VisualItem
 				}
 			}
 		});
+		//*/
 		// apply any custom labels
 		this.subItems.forEach((socket)=>{
 			if(this.socketlabels[socket.name])
@@ -217,7 +220,7 @@ class VisualFrame extends VisualItem
 	getPropSheet()
 	{
 		let sheet=[];
-		let itemref=this.getFullName("/");
+		let itemref=this.getFullName();
 		// list any sockets with connections on them
 		this.subItems.forEach((socket)=>{
 			if(socket.connections.length>0)

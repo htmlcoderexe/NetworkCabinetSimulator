@@ -222,7 +222,7 @@ class VisualPatch extends VisualItem {
 	getPropSheet()
 	{
 		let sheet = [];
-		let itemref=this.getFullName("/");
+		let itemref=this.getFullName();
 		// add a colour-coded line badge that selects the parent line when clicked
 		let badge = VisualEditor.createLineBadge(this.parent);
 		badge.dataset.lineName = this.parent.name;

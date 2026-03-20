@@ -241,7 +241,7 @@ class VisualLocation extends VisualItem {
 	getPropSheet()
 	{
 		let items = [];
-		let itemref=this.getFullName("/");
+		let itemref=this.getFullName();
 		// add a toggleagle checkbox to set the location's compact state
 		let toggle = document.createElement("input");
 		toggle.type = "checkbox";

@@ -222,13 +222,13 @@ hwparser = {
 		let from = this.rootObject.find(L1,R1,F1);
 		let to = this.rootObject.find(L2,R2,F2);
 		this.statevars['cable_name'] = cablename;
-		this.statevars['frame_ref'] = L1+"/"+R1+"/"+F1;
+		this.statevars['frame_ref'] = L1+"$"+R1+"$"+F1;
 		if(!from)
 		{
 			this.warn(WARN_INVALID_CABLE);
 			return true;
 		}
-		this.statevars['frame_ref'] = L2+"/"+R2+"/"+F2;
+		this.statevars['frame_ref'] = L2+"$"+R2+"$"+F2;
 		if(!to)
 		{
 			this.warn(WARN_INVALID_CABLE);

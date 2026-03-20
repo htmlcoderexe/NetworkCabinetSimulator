@@ -25,3 +25,13 @@ class VisualConnectorPlacement extends VisualItem {
 		super("connector",name,parent);
 	}
 }
+
+class VisualPortOptions extends VisualItem {
+	counter =undefined;
+	tpl=undefined;
+	constructor(parent,name)
+	{
+		super("port_options",name,parent);
+	}
+
+}

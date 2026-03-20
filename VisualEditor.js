@@ -121,7 +121,7 @@ class VisualEditor
 	/**
      * Default separator for full item references.
      */
-	static ITEM_REF_SEPARATOR = "/";
+	static ITEM_REF_SEPARATOR = "$";
     /**
      * Current edit mode.
      */
@@ -539,7 +539,7 @@ class VisualEditor
         // load the template
 		let tpl = VisualEditor.itemPropSheetTemplate.content.cloneNode(true);
         // this reference will be stuck into every single HTML element downstream, for convenience
-		let itemref = target_object.getFullName("/");
+		let itemref = target_object.getFullName();
 		tpl.firstElementChild.dataset.itemref=itemref;
         // the item badge styles itself as needed with CSS
 		let item_badge = tpl.querySelector(".item_badge");
@@ -978,7 +978,7 @@ class VisualEditor
                         break;
                     }
             }
-            console.log(item);
+            // console.log(item);
             if(item)
             {
                 VisualEditor.currentHightlight = [item];

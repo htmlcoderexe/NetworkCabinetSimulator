@@ -30,6 +30,10 @@ class ItemRenderer
         {
             return item.slot;
         }
+        if(id=="PORTLABEL")
+        {
+            return item.slotLabel;
+        }
         return this.registers[id]? this.registers[id] : 0;
     }
     doOp(item, command, args)
@@ -52,7 +56,7 @@ class ItemRenderer
             }
             case "INC":
             {
-                this.registers[args[0]] = this.registers[args[0]]+1;
+                this.registers[args[0]] = (this.registers[args[0]]-1)+2;
                 break;
             }
                 

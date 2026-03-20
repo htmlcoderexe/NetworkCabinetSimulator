@@ -3,6 +3,7 @@ const WARN_ORPHAN_LINK = 202;
 const WARN_LOOP = 203;
 const WARN_DISJOINT_LINK = 204;
 const WARN_UNKNOWN_CABLE = 205;
+const WARN_INVALID_PORT = 206;
 
 route_warns = {
 	100: "No object to attach LABEL to",
@@ -11,7 +12,8 @@ route_warns = {
 	202: "Link not associated with a line",
 	203: "Loop detected.",
 	204: "Link not contiguous with the rest of the line.",
-	205: "Cable %cable_name% does not exist."
+	205: "Cable %cable_name% does not exist.",
+	206: "Port reference <%linkref%> invalid."
 };
 routeparser = {
 	"COLOUR1": function(current)
@@ -136,6 +138,11 @@ routeparser = {
 		{
 			current.from = point;
 		}
+		else
+		{
+			this.statevars['linkref']=[A,B,C,D].join("$");
+			this.warn(WARN_INVALID_PORT);
+		}
 		return true;
 	},
 	"TO": function(current)
@@ -155,6 +162,11 @@ routeparser = {
 		if(point && point.type=="socket")
 		{
 			current.to = point;
+		}
+		else
+		{
+			this.statevars['linkref']=[A,B,C,D].join("$");
+			this.warn(WARN_INVALID_PORT);
 		}
 		return true;
 	},

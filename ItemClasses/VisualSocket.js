@@ -16,6 +16,7 @@ class VisualSocket extends VisualItem
 	 * stores the connector's type name (such as RJ45 or SC)
 	 */
 	typename = "generic";
+	slotLabel ="-";
 	constructor(frame, name)
 	{
 		super("socket", name, frame);
