@@ -258,7 +258,7 @@ class VisualItem {
 	 * @param {string} separator - the string to separate the label's components with. 
 	 * @returns - the full label.
 	 */
-	getFullLabel(separator = "/")
+	getFullLabel(separator = "$")
 	{
 		if(!this.parent)
 		{
@@ -272,7 +272,7 @@ class VisualItem {
 	 * @param {string} separator - the string to separate individual names.
 	 * @returns - the fully qualified name.
 	 */
-	getFullName(separator = "/")
+	getFullName(separator = "$")
 	{
 		if(!this.parent)
 		{
