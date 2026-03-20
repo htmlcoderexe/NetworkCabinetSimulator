@@ -4,16 +4,16 @@
         RACK R1
             SLOT 1
             LABEL Main office uplink
-            FRAME interchange
+            FRAME 1
                 TYPE SM_LC_PAIR_24
                 LABEL Optical to interchange
-            FRAME floors
+            FRAME 2
                 TYPE SM_LC_PAIR_24
                 LABEL Optical to floors
-            FRAME office_isp_backup
+            FRAME 3
                 TYPE SM_LC_PAIR_24
                 LABEL Backup uplink
-            FRAME office_dist_sw1
+            FRAME 4
                 TYPE SWITCH_48_BANK_TEST
                 LABEL Main distribution switch
     LOCATION office_2
@@ -21,14 +21,14 @@
         LABEL Office F2
         RACK R1
             SLOT 1
-            LABEL 
-            FRAME to_main
+            LABEL F2
+            FRAME 1
                 TYPE SM_LC_PAIR_24
                 LABEL To F1
-            FRAME to_infra
+            FRAME 2
                 TYPE SM_LC_PAIR_24
                 LABEL To floor 2 infra
-            FRAME to_users
+            FRAME 3
                 TYPE SM_LC_PAIR_24
                 LABEL to_users
-    CABLE Off_F1_F2 office_1 R1 floors office_2 R1 to_main
+    CABLE Off_F1_F2 office_1 R1 2 office_2 R1 1

@@ -2,29 +2,29 @@ LINE L0101
     COLOUR1 #0000FF
     COLOUR2 #00FF00
     LINK
-        FROM office_1 R1 interchange 1
-        TO office_1 R1 floors 1
+        FROM office_1 R1 1 1
+        TO office_1 R1 2 1
         CABLE PATCH
     LINK
-        FROM office_1 R1 floors 1
-        TO office_2 R1 to_main 1
+        FROM office_1 R1 2 1
+        TO office_2 R1 1 1
         CABLE Off_F1_F2
     LINK
-        FROM office_2 R1 to_main 1
-        TO office_2 R1 to_infra 1
+        FROM office_2 R1 1 1
+        TO office_2 R1 2 1
         CABLE PATCH
 LINE L0102
     COLOUR1 #0000FF
     COLOUR2 #FF7F00
     LINK
-        FROM office_1 R1 interchange 3
-        TO office_1 R1 floors 3
+        FROM office_1 R1 1 3
+        TO office_1 R1 2 3
         CABLE PATCH
     LINK
-        FROM office_1 R1 floors 3
-        TO office_2 R1 to_main 3
+        FROM office_1 R1 2 3
+        TO office_2 R1 1 3
         CABLE Off_F1_F2
     LINK
-        FROM office_2 R1 to_main 3
-        TO office_2 R1 to_infra 3
+        FROM office_2 R1 1 3
+        TO office_2 R1 2 3
         CABLE PATCH
