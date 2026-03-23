@@ -6,16 +6,24 @@ class VisualFrameTemplate extends VisualItem {
 	elements = [];
 	nameTemplate="$";
 	counter=0;
+	renderer=null;
 	constructor(parent, name)
 	{
 		super("frame_tpl", name, parent);
+	}
+	commit(parser)
+	{
+		let renderer = this.find("renderer");
+		this.renderer = renderer;
+		this.removeItem(renderer);
+		return true;
 	}
 	populateFrame(frame, hw)
 	{
 		// reset values
 		this.counter=0;
 		this.nameTemplate="$";
-
+		frame.renderer = this.renderer;
 		this.subItems.forEach((el)=>{
 			switch(el.type)
 			{

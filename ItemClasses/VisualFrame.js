@@ -5,6 +5,7 @@
 class VisualFrame extends VisualItem
 {
 	isdynamic = false;
+	renderer = null;
 	constructor(rack, name)
 	{
 		super("frame", name, rack);
@@ -117,6 +118,12 @@ class VisualFrame extends VisualItem
 		ctx.fillText(this.label, rect.x+this.width/2, rect.y+this.height-DIM_FRAME_SPACING/2 -7);
 		// name on the left - should be a short numeric ID
 		ctx.fillText(this.name, rect.x + DIM_FRAME_SIDES/2, rect.y + DIM_FRAME_HEIGHT-10);
+		if(this.renderer)
+		{
+			let renderer = new ItemRenderer(ctx,this.renderer.instructions);
+			renderer.offX=DIM_FRAME_SIDES+3;
+			renderer.render(this);
+		}
 		super.draw(ctx);
 	}
 	drawTop(ctx)
@@ -128,6 +135,12 @@ class VisualFrame extends VisualItem
 		// fill a white background to override items underneath
 		ctx.fillRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH, DIM_FRAME_HEIGHT);
 		ctx.strokeRect(rect.x + 0.5 + DIM_FRAME_SIDES, rect.y + 0.5 + 2, DIM_FRAME_WIDTH-1, DIM_FRAME_HEIGHT-1);
+		if(this.renderer)
+		{
+			let renderer = new ItemRenderer(ctx,this.renderer.instructions);
+			renderer.offX=DIM_FRAME_SIDES+3;
+			renderer.render(this);
+		}
 		super.drawTop(ctx);
 	}
 	getDrawingGroup()

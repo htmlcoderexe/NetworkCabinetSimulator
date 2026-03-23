@@ -185,14 +185,20 @@ invparser = {
 	},
 	"RENDER": function(current)
 	{
-		//console.log(this.objectStack);
-		if(!this.checkParent("socket_tpl"))
+		let parent;
+		if(this.checkParent("socket_tpl"))
+		{
+			parent = this.commit("socket_tpl");
+		}
+		else if(this.checkParent("frame_tpl"))
+		{
+			parent = this.commit("frame_tpl");
+		}
+		else
 		{
 			this.warn(WARN_LOOSE_RACK);
 			return true;
 		}
-		let parent = this.commit("socket_tpl");
-		//let name = this.getRest();
 		if(parent)
 		{
 			let newracc = new VisualRenderer(parent, "renderer");
@@ -307,6 +313,30 @@ invparser = {
 		let C = this.getInt();
 		let D = this.getInt();
         current.instructions.push(["RECT", A, B, C, D]);
+		return true;
+	},
+	"PATH": function(current)
+	{
+		if(current.type != "renderer")
+		{
+			this.warn(this.WARN_UNEXPECTED_TOKEN);
+			return true;
+		}
+		let A = this.getRest();
+        current.instructions.push(["PATH", A]);
+		return true;
+	},
+	"TEXT": function(current)
+	{
+		if(current.type != "renderer")
+		{
+			this.warn(this.WARN_UNEXPECTED_TOKEN);
+			return true;
+		}
+		let A = this.getInt();
+		let B = this.getInt();
+		let C = this.getRest();
+        current.instructions.push(["TEXT", A, B, C]);
 		return true;
 	},
 	"DVAR": function(current)

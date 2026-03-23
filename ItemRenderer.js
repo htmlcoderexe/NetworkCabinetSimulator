@@ -5,7 +5,8 @@ class ItemRenderer
     ctx = null;
     commands = [];
     registers = [];
-
+    offX=0;
+    offY=0;
     constructor(ctx, commands)
     {
         this.ctx = ctx;
@@ -39,6 +40,9 @@ class ItemRenderer
     doOp(item, command, args)
     {
         //console.log(command, args);
+        const offset = item.getRect(true);
+        const offX=offset.x+this.offX;
+        const offY=offset.y+this.offY;
         switch(command)
         {
             // variable ops
@@ -91,15 +95,39 @@ class ItemRenderer
             // drawing
             case "RECT":
             {
-                const offset = item.getRect(true);
-                this.ctx.strokeRect(args[0]+offset.x, args[1]+offset.y, args[2], args[3]);
+                
+                this.ctx.fillRect(args[0]+offX, args[1]+offY, args[2], args[3]);
+                this.ctx.strokeRect(args[0]+offX, args[1]+offY, args[2], args[3]);
+                break;
+            }
+            case "PATH":
+            {
+                this.ctx.translate(offX,offY);
+                try{
+                    const path = new Path2D(args[0]);
+                    this.ctx.fill(path);
+                    this.ctx.stroke(path);
+                }
+                catch(e)
+                {
+                    console.error("Bad path: <"+args[0]+">");
+                }
+                this.ctx.translate(-offX,-offY);
                 break;
             }
             case "DVAR":
             {
-                const offset = item.getRect(true);
                 const txt = this.getVar(item, args[0]) + " ";
-                this.ctx.fillText(txt, args[1]+offset.x, args[2]+offset.y);
+                this.ctx.textAlign ="center";
+                this.ctx.fillText(txt, args[1]+offX, args[2]+offY);
+                //console.log(this.registers);
+                break;
+            }
+            case "TEXT":
+            {
+                const txt =args[2];
+                this.ctx.textAlign ="left";
+                this.ctx.fillText(txt, args[0]+offX, args[1]+offY);
                 //console.log(this.registers);
                 break;
             }
