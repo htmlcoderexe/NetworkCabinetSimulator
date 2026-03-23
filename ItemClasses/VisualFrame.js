@@ -156,6 +156,10 @@ class VisualFrame extends VisualItem
 	{
 		let sheet=[];
 		let itemref=this.getFullName();
+		let ftype_label = document.createElement("code");
+		ftype_label.append(this.frametype);
+		sheet.push(ftype_label);
+		sheet.push(document.createElement("br"));
 		// list any sockets with connections on them
 		this.subItems.forEach((socket)=>{
 			if(socket.connections.length>0)
