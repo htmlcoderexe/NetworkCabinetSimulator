@@ -18,6 +18,49 @@ class VisualFrameTemplate extends VisualItem {
 		this.removeItem(renderer);
 		return true;
 	}
+	draw(ctx)
+	{
+		if(!this.parent)
+			return;
+		
+		if(this.renderer)
+		{
+			let renderer = new ItemRenderer(ctx,this.renderer.instructions);
+			renderer.offX=5;
+			renderer.render(this);
+		}
+		let counter = 0;
+		let slot = 0;
+		this.subItems.forEach((e)=>{
+			if(e.type=="port_options" && e.counter!=undefined)
+			{
+				counter = e.counter;
+				return;
+			}
+			let conn = this.parent.find(e.ref);
+			if(!conn)
+				return;
+			ctx.translate(e.x+this.x,e.y+this.y);
+			
+			conn.slotLabel=counter.toString();
+			conn.slot=slot;
+			if(counter==-1)
+			{
+				conn.slotLabel="M";
+			}
+			if(counter==-2)
+			{
+				conn.slotLabel="C";
+			}
+			conn.counter=counter;
+			conn.draw(ctx);
+			ctx.translate(-e.x-this.x,-e.y-this.y);
+			counter=conn.counter;
+			conn.counter=0;
+			slot++;
+		});
+
+	}
 	populateFrame(frame, hw)
 	{
 		// reset values

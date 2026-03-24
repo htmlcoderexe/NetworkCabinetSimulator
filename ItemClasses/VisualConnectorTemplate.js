@@ -4,6 +4,7 @@
  */
 class VisualConnectorTemplate extends VisualItem {
 	renderer=null;
+	counter=0;
 	commit(parser)
 	{
 		let renderer = this.find("renderer");
@@ -14,6 +15,16 @@ class VisualConnectorTemplate extends VisualItem {
 	constructor(parent, name)
 	{
 		super("socket_tpl",name, parent);
+	}
+	draw(ctx)
+	{
+		// fill out the socket's dimensions with white background
+		ctx.fillStyle="#FFFFFF";
+		ctx.fillRect(this.cX+0.0,this.cY+1,this.width,this.height-2);
+		// run the renderer to draw the actual socket
+		const rr = new ItemRenderer(ctx, this.renderer.instructions);
+		rr.render(this);
+		this.counter++;
 	}
 }
 

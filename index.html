@@ -83,6 +83,7 @@
 				<button title="Add a new rack unit" disabled id="add_frame" onclick="VisualEditor.showAddFrameDlg();">F</button>
 				<button title="Create a new location" disabled id="add_location" onclick="">🏢</button>
 				<button title="Display and modify source code" class="mode_button" data-mode="code" id="mode_code" onclick="VisualEditor.setEditorModeHandler(event)">🧑‍💻</button>
+				<button title="Edit hardware components" class="mode_button" data-mode="inventory" id="mode_inventory" onclick="VisualEditor.setEditorModeHandler(event)">🧰</button>
 				<datalist id="zoom_markers">
   <option value="25"></option>
   <option value="50"></option>
@@ -102,6 +103,15 @@
 				<textarea id="aaa"></textarea>
 				<textarea id="ccc"></textarea>
 				<textarea id="ddd"></textarea>
+				</div>
+				<div id="hwstudio">
+					<h2>Frames</h2><h2>Banks</h2><h2>Connectors</h2>
+					<ul id="hw_framelist"></ul>
+					<ul id="hw_banklist"></ul>
+					<ul id="hw_connlist"></ul>
+					<div id="hwstudio_box">
+					<canvas id="hw_display" width="640" height="72"></canvas>
+					</div>
 				</div>
 			</div>
 		</div>

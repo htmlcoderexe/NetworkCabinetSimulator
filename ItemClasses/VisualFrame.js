@@ -121,7 +121,7 @@ class VisualFrame extends VisualItem
 		if(this.renderer)
 		{
 			let renderer = new ItemRenderer(ctx,this.renderer.instructions);
-			renderer.offX=DIM_FRAME_SIDES+3;
+			renderer.offX=DIM_FRAME_SIDES+5;
 			renderer.render(this);
 		}
 		super.draw(ctx);
@@ -138,7 +138,7 @@ class VisualFrame extends VisualItem
 		if(this.renderer)
 		{
 			let renderer = new ItemRenderer(ctx,this.renderer.instructions);
-			renderer.offX=DIM_FRAME_SIDES+3;
+			renderer.offX=DIM_FRAME_SIDES+5;
 			renderer.render(this);
 		}
 		super.drawTop(ctx);

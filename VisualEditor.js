@@ -76,7 +76,7 @@ class VisualEditor
     /**
      * Main edit modes.
      */
-	static EDIT_MODES = {POINTER: 0, WIRE: 1, LINK: 2, CODE: 3};
+	static EDIT_MODES = {POINTER: 0, WIRE: 1, LINK: 2, CODE: 3, INVENTORY: 4};
     /**
      * Submodes applicable to main edit modes.
      */
@@ -299,7 +299,7 @@ class VisualEditor
 	static loadInventory(inventory)
 	{
 		VisualEditor.inventory = inventory;
-		//console.log(VisualEditor.inventory.subItems);
+		console.log(VisualEditor.inventory.subItems);
 		let frames = VisualEditor.inventory.subItems.filter(vi=>vi.type=="frame_tpl");
 		//console.log(frames);
 		// render all frame types into an image for dialog boxes
@@ -324,6 +324,56 @@ class VisualEditor
 			VisualEditor.frameTypeRegistry[frames[i].name] = {"index": i, "desc": frames[i].label};
 		}
 		VisualEditor.framePreRenderSrc = framerenders.toDataURL("png");
+		
+		let fl=VisualEditor.toolBar.parentElement.querySelector("#hw_framelist");
+		let bl=VisualEditor.toolBar.parentElement.querySelector("#hw_banklist");
+		let cl=VisualEditor.toolBar.parentElement.querySelector("#hw_connlist");
+		let ctx_f=VisualEditor.toolBar.parentElement.querySelector("#hw_display").getContext("2d");
+		VisualEditor.inventory.subItems.forEach((component)=>{
+			let list;
+			switch(component.type)
+			{
+				case "frame_tpl":
+				{
+					list=fl;
+					break;
+				}
+				case "socket_tpl":
+				{
+					list = cl;
+					break;
+				}
+				case "socket_bank":
+				{
+					list = bl;
+					break;
+				}
+			}
+			if(list)
+			{
+				let li=document.createElement("li");
+				li.append(component.name);
+				li.dataset.itemref=component.getFullName();
+				li.addEventListener("click",(e)=>{
+					ctx_f.resetTransform();
+					ctx_f.scale(2,2);
+					ctx_f.clearRect(0,0,640,72);
+					ctx_f.translate(5,0);
+					component.counter=0;
+					component.draw(ctx_f);
+					ctx_f.translate(-5,0);
+					ctx_f.lineWidth=1;
+					ctx_f.strokeStyle="#000000";
+					ctx_f.strokeRect(1,1,318,34);
+					console.log(component);
+				})
+				list.appendChild(li);
+			}
+			else
+			{
+				console.log(component);
+			}
+		});
 		//VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(framerenders);
 	}
 
@@ -859,6 +909,7 @@ class VisualEditor
 		}
 		return item;
 	}
+	
 
     /**
      * Builds a tree view with the object as the root item. The tree is built recursively.
@@ -1245,36 +1296,51 @@ class VisualEditor
 		let mode = e.currentTarget.dataset.mode ?? "";
 		if(mode=="code")
 		{
-			VisualEditor.toolBar.parentElement.querySelector("#controls").style.display="block";
-			VisualEditor.highlightLayer.canvas.style.display="none";
-			VisualEditor.mapLayer.canvas.style.display="none";
 		}
 		else
 		{
-			VisualEditor.toolBar.parentElement.querySelector("#controls").style.display="none";
-			VisualEditor.highlightLayer.canvas.style.display="block";
-			VisualEditor.mapLayer.canvas.style.display="block";
 		}
 		let editMode = this.EDIT_MODES.POINTER;
-		document.getElementById("add_location").disabled=false;
+		document.getElementById("add_location").disabled=true;
+				VisualEditor.toolBar.parentElement.querySelector("#hwstudio").style.display="none";
+				VisualEditor.toolBar.parentElement.querySelector("#controls").style.display="none";
+				VisualEditor.highlightLayer.canvas.style.display="none";
+				VisualEditor.mapLayer.canvas.style.display="none";
 		switch(mode)
 		{
 			case "wire":
 			{
 				editMode = this.EDIT_MODES.WIRE;
-				document.getElementById("add_location").disabled=true;
+				VisualEditor.highlightLayer.canvas.style.display="block";
+				VisualEditor.mapLayer.canvas.style.display="block";
+				break;
+			}
+			case "pointer":
+			{
+				editMode = this.EDIT_MODES.POINTER;
+				document.getElementById("add_location").disabled=false;
+				VisualEditor.highlightLayer.canvas.style.display="block";
+				VisualEditor.mapLayer.canvas.style.display="block";
 				break;
 			}
 			case "link":
 			{
-				document.getElementById("add_location").disabled=true;
+				VisualEditor.highlightLayer.canvas.style.display="block";
+				VisualEditor.mapLayer.canvas.style.display="block";
 				editMode = this.EDIT_MODES.LINK;
 				break;
 			}
 			case "code":
 			{
-				document.getElementById("add_location").disabled=true;
 				editMode = this.EDIT_MODES.CODE;
+				VisualEditor.toolBar.parentElement.querySelector("#controls").style.display="block";
+				break;
+			}
+			case "inventory":
+			{
+				document.getElementById("add_location").disabled=true;
+				VisualEditor.toolBar.parentElement.querySelector("#hwstudio").style.display="block";
+				editMode = this.EDIT_MODES.INVENTORY;
 				break;
 			}
 		}
