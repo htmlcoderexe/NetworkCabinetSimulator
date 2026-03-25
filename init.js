@@ -91,6 +91,11 @@ function InitEditor()
     VisualEditor.cancellableDialogue =  document.getElementById('cancellable_dialog');
     VisualEditor.toolBar =  document.getElementById('toolbar_tools');
     VisualEditor.addFrameDialogue = document.getElementById("add_frame_dialog");
+	VisualEditor.hwFrameList = document.querySelector("#hw_framelist");
+	VisualEditor.hwBankList = document.querySelector("#hw_banklist");
+	VisualEditor.hwConnectorList = document.querySelector("#hw_connlist");
+	VisualEditor.hwDisplay = document.querySelector("#hw_display").getContext("2d");
+    VisualEditor.hwElements = document.querySelector("#hwstudio_elements");
     //drawMap(document.getElementById('graphdisplay'));
     document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
         canvasHover(e);
@@ -296,6 +301,7 @@ function InitEditor()
     VisualEditor.buildTree(document.getElementById("object_tree"), VisualEditor.inventory);
     VisualEditor.fixedMap.updatePosition();
     VisualEditor.refreshView();
+    VisualEditor.inventory.updateSize();
     rs.observe(document.getElementById("graphdisplay"));
         
     });

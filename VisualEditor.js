@@ -170,6 +170,19 @@ class VisualEditor
 			this.highlightLayer.canvas.title=value.length>1?"Multiple items":value[0].getLabel();
 		}
 	}
+
+	/*
+		HW editor stuff
+	*/
+	static hwDisplay = null;
+	static hwBox = null;
+	static hwFrameList = null;
+	static hwBankList = null;
+	static hwConnectorList = null;
+	static hwCurrentItem = null;
+	static hwCurrentHighLight = null;
+	static hwElements = null;
+
     /**
      * If exactly one item is selected, contains the item.
      */
@@ -325,27 +338,23 @@ class VisualEditor
 		}
 		VisualEditor.framePreRenderSrc = framerenders.toDataURL("png");
 		
-		let fl=VisualEditor.toolBar.parentElement.querySelector("#hw_framelist");
-		let bl=VisualEditor.toolBar.parentElement.querySelector("#hw_banklist");
-		let cl=VisualEditor.toolBar.parentElement.querySelector("#hw_connlist");
-		let ctx_f=VisualEditor.toolBar.parentElement.querySelector("#hw_display").getContext("2d");
 		VisualEditor.inventory.subItems.forEach((component)=>{
 			let list;
 			switch(component.type)
 			{
 				case "frame_tpl":
 				{
-					list=fl;
+					list=VisualEditor.hwFrameList;
 					break;
 				}
 				case "socket_tpl":
 				{
-					list = cl;
+					list = VisualEditor.hwConnectorList;
 					break;
 				}
 				case "socket_bank":
 				{
-					list = bl;
+					list = VisualEditor.hwBankList;
 					break;
 				}
 			}
@@ -355,17 +364,8 @@ class VisualEditor
 				li.append(component.name);
 				li.dataset.itemref=component.getFullName();
 				li.addEventListener("click",(e)=>{
-					ctx_f.resetTransform();
-					ctx_f.scale(2,2);
-					ctx_f.clearRect(0,0,640,72);
-					ctx_f.translate(5,0);
-					component.counter=0;
-					component.draw(ctx_f);
-					ctx_f.translate(-5,0);
-					ctx_f.lineWidth=1;
-					ctx_f.strokeStyle="#000000";
-					ctx_f.strokeRect(1,1,318,34);
-					console.log(component);
+					VisualEditor.hwCurrentHighLight=null;
+					VisualEditor.updateHwCurrent(component);
 				})
 				list.appendChild(li);
 			}
@@ -375,6 +375,63 @@ class VisualEditor
 			}
 		});
 		//VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(framerenders);
+	}
+
+	static redrawHwDisplay()
+	{
+		let component = VisualEditor.hwCurrentItem;
+		VisualEditor.hwDisplay.resetTransform();
+		VisualEditor.hwDisplay.scale(2,2);
+		VisualEditor.hwDisplay.clearRect(0,0,640,72);
+		VisualEditor.hwDisplay.translate(5,0);
+		component.counter=0;
+		component.draw(VisualEditor.hwDisplay);
+		if(VisualEditor.hwCurrentHighLight)
+		{
+			VisualEditor.hwDisplay.strokeStyle="#FF0000";
+			// VisualEditor.hwD
+			let x=VisualEditor.hwCurrentHighLight.x;
+			let y=VisualEditor.hwCurrentHighLight.y;
+			let w=VisualEditor.hwCurrentHighLight.width;
+			let h=VisualEditor.hwCurrentHighLight.height;
+			
+			VisualEditor.hwDisplay.strokeRect(x,y,w,h);
+		}
+		VisualEditor.hwDisplay.translate(-5,0);
+		VisualEditor.hwDisplay.lineWidth=1;
+		VisualEditor.hwDisplay.strokeStyle="#000000";
+		VisualEditor.hwDisplay.strokeRect(1,1,318,34);
+	}
+	static updateHwCurrent(component)
+	{
+		VisualEditor.hwCurrentItem = component;
+		this.redrawHwDisplay();
+		// console.log(component);
+		VisualEditor.hwElements.innerText="";
+		component.subItems.forEach((e)=>{
+			VisualEditor.hwElements.appendChild(VisualEditor.hwElementLine(e));
+		});
+	}
+
+	static hwElementLine(item)
+	{
+		let li = document.createElement("li");
+		if(item.type!="port_options")
+		{
+			li.append(item.ref+": "+item.x+","+item.y);
+			li.addEventListener("click",(e)=>{
+				VisualEditor.hwCurrentHighLight=item;
+				// console.log(item);
+				VisualEditor.redrawHwDisplay();
+			});
+		}
+		else
+		{
+			let prop = item.tpl? "Port template" : "Counter";
+			let val = item.tpl?item.tpl:item.counter;
+			li.append(prop+": "+val);
+		}
+		return li;
 	}
 
 	static generateFramePreviewSprite(index, tagname="div")

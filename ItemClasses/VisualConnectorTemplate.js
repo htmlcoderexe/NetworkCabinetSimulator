@@ -35,6 +35,16 @@ class VisualConnectorPlacement extends VisualItem {
 	{
 		super("connector",name,parent);
 	}
+	updateSize()
+	{
+			let connref = this.root.find(this.ref);
+			if(!connref)
+				return;
+			
+			this.height=connref.height;
+			this.width=connref.width;
+			// console.log(this);
+	}
 }
 
 class VisualPortOptions extends VisualItem {
