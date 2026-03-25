@@ -112,6 +112,18 @@ function InitEditor()
     document.getElementById('selection_display').addEventListener("mouseup", (e)=>{
         canvasMUp(e);
     });
+    document.getElementById('hw_display').addEventListener("click",(event)=>{
+        if(VisualEditor.hwCurrentItem)
+        {
+            VisualEditor.hwCurrentItem.subItems.forEach((e)=>{
+                let rekt =new GetRect(e.x,e.y,e.width,e.height);
+                if(rekt.contains(event.offsetX/2,event.offsetY/2))
+                {
+                    VisualEditor.hwHighlightItem(e);
+                }
+            });
+        }
+    });
     let zs=document.getElementById('zoom_slider');
     document.getElementById('selection_display').addEventListener("wheel", (e)=>{
         // ignore sideways wheel clicks

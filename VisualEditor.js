@@ -408,17 +408,10 @@ class VisualEditor
 		});
 	}
 
-	static hwElementLine(item)
+	static hwHighlightItem(item)
 	{
-		let li = document.createElement("li");
-		VisualEditor.hwElementProps.innerText="";
-		if(item.type!="port_options")
-		{
-			li.append(item.ref+": "+item.x+","+item.y);
-			li.addEventListener("click",(e)=>{
 				VisualEditor.hwCurrentHighLight=item;
-				// console.log(item);
-				let tpl = VisualEditor.templates['hwElProps'].content.cloneNode(true);
+let tpl = VisualEditor.templates['hwElProps'].content.cloneNode(true);
 				let optlist = tpl.querySelector("#hwelement_id");
 				let others = VisualEditor.inventory.allOfType(item.type=="bank"?"socket_bank":"socket_tpl");
 				others.forEach((e)=>{
@@ -452,6 +445,19 @@ class VisualEditor
 				VisualEditor.hwElementProps.innerText="";
 				VisualEditor.hwElementProps.appendChild(tpl.firstElementChild);
 				VisualEditor.redrawHwDisplay();
+	}
+
+	static hwElementLine(item)
+	{
+		let li = document.createElement("li");
+		VisualEditor.hwElementProps.innerText="";
+		if(item.type!="port_options")
+		{
+			li.append(item.ref+": "+item.x+","+item.y);
+			li.addEventListener("click",(e)=>{
+				VisualEditor.hwHighlightItem(item);
+				// console.log(item);
+				
 			});
 			
 		}
