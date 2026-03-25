@@ -172,6 +172,19 @@ body,html
     overflow-y:scroll;
     margin: 0;
 }
+#hwstudio_element_props
+{
+    box-sizing: border-box;
+    width: 65%;
+    display: inline-block;
+    height:100%;
+    overflow-y:scroll;
+    margin: 0;
+    background-color: #ceffce;
+    padding: 0.5rem;
+    border: 1px solid black;
+    border-radius: 2px;
+}
 #hw_display_container
 {
     box-sizing: border-box;

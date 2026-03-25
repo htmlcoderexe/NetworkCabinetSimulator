@@ -7,6 +7,15 @@ class VisualConnectorBank extends VisualItem {
 	elements = [];
 	render_list = [];
 	counter=0;
+	createClonedView(parent)
+	{
+		let clone = new VisualConnectorBank(parent,this.name);
+		this.subItems.forEach((e)=>{
+			clone.addItem(e.createClonedView(clone));
+		});
+		clone.updateSize();
+		return clone;
+	}
 	constructor(parent, name)
 	{
 		super("socket_bank",name, parent);
@@ -57,6 +66,15 @@ class VisualConnectorBank extends VisualItem {
 
 class VisualBankPlacement extends VisualItem {
 	ref="";
+	createClonedView(parent)
+	{
+		let clone = new VisualBankPlacement(parent,this.name);
+		clone.ref=this.ref;
+		clone.x=this.x;
+		clone.y=this.y;
+		clone.updateSize();
+		return clone;
+	}
 	constructor(parent,name)
 	{
 		super("bank",name,parent);

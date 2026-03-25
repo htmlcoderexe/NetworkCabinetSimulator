@@ -11,6 +11,19 @@ class VisualFrameTemplate extends VisualItem {
 	{
 		super("frame_tpl", name, parent);
 	}
+	createClonedView(parent)
+	{
+		let clone = new VisualFrameTemplate(parent, this.name+"_cloned");
+		if(this.renderer)
+		{
+			clone.renderer=this.renderer.createClonedView(clone);
+		}
+		this.subItems.forEach((e)=>{
+			clone.addItem(e.createClonedView(clone));
+		});
+		clone.updateSize();
+		return clone;
+	}
 	commit(parser)
 	{
 		let renderer = this.find("renderer");

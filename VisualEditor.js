@@ -182,6 +182,7 @@ class VisualEditor
 	static hwCurrentItem = null;
 	static hwCurrentHighLight = null;
 	static hwElements = null;
+	static hwElementProps = null;
 
     /**
      * If exactly one item is selected, contains the item.
@@ -240,14 +241,7 @@ class VisualEditor
      * A HTML element containing the toolbar buttons.
      */
     static toolBar = null;
-    /**
-     * A reference to an HTML template for a single tree view item.
-     */
-	static treeItemTemplate = null;
-    /**
-     * A reference to an HTML template for an item property sheet.
-     */
-	static itemPropSheetTemplate = null;
+	static templates={};
 	/**
 	 * A reference to an HTML <dialog> for creating a new line.
 	 */
@@ -365,7 +359,8 @@ class VisualEditor
 				li.dataset.itemref=component.getFullName();
 				li.addEventListener("click",(e)=>{
 					VisualEditor.hwCurrentHighLight=null;
-					VisualEditor.updateHwCurrent(component);
+					VisualEditor.updateHwCurrent(component.createClonedView(component.parent));
+					console.log(VisualEditor.hwCurrentItem);
 				})
 				list.appendChild(li);
 			}
@@ -416,14 +411,49 @@ class VisualEditor
 	static hwElementLine(item)
 	{
 		let li = document.createElement("li");
+		VisualEditor.hwElementProps.innerText="";
 		if(item.type!="port_options")
 		{
 			li.append(item.ref+": "+item.x+","+item.y);
 			li.addEventListener("click",(e)=>{
 				VisualEditor.hwCurrentHighLight=item;
 				// console.log(item);
+				let tpl = VisualEditor.templates['hwElProps'].content.cloneNode(true);
+				let optlist = tpl.querySelector("#hwelement_id");
+				let others = VisualEditor.inventory.allOfType(item.type=="bank"?"socket_bank":"socket_tpl");
+				others.forEach((e)=>{
+					let opt = document.createElement("option");
+					opt.append(e.name);
+					if(e.name==item.ref)
+					{
+						opt.selected=true;
+					}
+					optlist.appendChild(opt);
+				});
+				let inX=tpl.querySelector("#hw_x");
+				let inY=tpl.querySelector("#hw_y");
+				inX.value=item.x;
+				inY.value=item.y;
+				inX.addEventListener("input",(event)=>{
+					item.x=Number(inX.value);
+					item.y=Number(inY.value);
+					VisualEditor.redrawHwDisplay();
+				});
+				inY.addEventListener("input",(event)=>{
+					item.x=Number(inX.value);
+					item.y=Number(inY.value);
+					VisualEditor.redrawHwDisplay();
+				});
+				optlist.addEventListener("change",(event)=>{
+					item.ref=optlist.value;
+					item.updateSize();
+					VisualEditor.redrawHwDisplay();
+				});
+				VisualEditor.hwElementProps.innerText="";
+				VisualEditor.hwElementProps.appendChild(tpl.firstElementChild);
 				VisualEditor.redrawHwDisplay();
 			});
+			
 		}
 		else
 		{
@@ -644,7 +674,7 @@ class VisualEditor
 	static buildPropSheet(target_object, rebuild = false)
 	{
         // load the template
-		let tpl = VisualEditor.itemPropSheetTemplate.content.cloneNode(true);
+		let tpl = VisualEditor.templates['propSheet'].content.cloneNode(true);
         // this reference will be stuck into every single HTML element downstream, for convenience
 		let itemref = target_object.getFullName();
 		tpl.firstElementChild.dataset.itemref=itemref;
@@ -981,7 +1011,7 @@ class VisualEditor
         // this will be added to every HTML element involved for good measure
 		let safelbl = target_object.getFullName(VisualEditor.ITEM_REF_SEPARATOR);
         // get the template out
-		let tpl = VisualEditor.treeItemTemplate.content.cloneNode(true);
+		let tpl = VisualEditor.templates['treeItem'].content.cloneNode(true);
         // this is the item's display name
 		let item_label = tpl.querySelector(".tree_item_name");
         // this will contain tool buttons that can pop up on hovering the item in the list

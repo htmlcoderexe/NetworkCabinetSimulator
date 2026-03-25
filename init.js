@@ -79,9 +79,10 @@ function InitEditor()
         e.addEventListener("pointerdown",beginHResize);
     });
 
-    VisualEditor.treeItemTemplate = document.getElementById("tree_item_tpl");
-    VisualEditor.treeViewContainer = document.getElementById("object_tree");
-    VisualEditor.itemPropSheetTemplate = document.getElementById("item_propsheet");
+    VisualEditor.templates['treeItem'] = document.getElementById("tree_item_tpl");
+    VisualEditor.templates['objTree'] = document.getElementById("object_tree");
+    VisualEditor.templates['propSheet'] = document.getElementById("item_propsheet");
+    VisualEditor.templates['hwElProps'] = document.getElementById("hwelement_props");
     VisualEditor.propSheetContainer = document.getElementById("object_info");
     VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
@@ -96,6 +97,7 @@ function InitEditor()
 	VisualEditor.hwConnectorList = document.querySelector("#hw_connlist");
 	VisualEditor.hwDisplay = document.querySelector("#hw_display").getContext("2d");
     VisualEditor.hwElements = document.querySelector("#hwstudio_elements");
+    VisualEditor.hwElementProps = document.querySelector("#hwstudio_element_props");
     //drawMap(document.getElementById('graphdisplay'));
     document.getElementById('selection_display').addEventListener("mousemove", (e)=>{
         canvasHover(e);

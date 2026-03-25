@@ -9,5 +9,12 @@ class VisualRenderer extends VisualItem {
 	{
 		super("renderer",name, parent);
 	}
-
+	createClonedView(parent)
+	{
+		let clone = new VisualRenderer(parent,this.name);
+		this.instructions.forEach((e)=>{
+			clone.instructions.push([...e]);
+		});
+		return clone;
+	}
 }

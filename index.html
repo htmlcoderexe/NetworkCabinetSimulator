@@ -42,6 +42,11 @@
 			<div class="item_properties"></div>
 		</div>
 	</template>
+	<template id="hwelement_props">
+		<div><select id="hwelement_id"></select>
+		<label for="hw_x">X </label><input id="hw_x" type="number" />
+		<label for="hw_y">Y </label><input id="hw_y" type="number" /></div>
+	</template>
 	<dialog id="new_line_dialog" onclose="VisualEditor.createLineResult();">
 		<form id="new_line_frm" method="dialog">
 			<label for="linename">Line name:</label><input name="linename" id="linename" type="text" placeholder="Line name here" />
@@ -112,6 +117,7 @@
 					<div id="hw_display_container"><canvas id="hw_display" width="640" height="72"></canvas></div>
 					<div id="hwstudio_box">
 						<ul id="hwstudio_elements"></ul>
+						<div id="hwstudio_element_props"></div>
 					</div>
 				</div>
 			</div>

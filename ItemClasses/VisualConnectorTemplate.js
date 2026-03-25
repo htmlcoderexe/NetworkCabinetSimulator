@@ -5,6 +5,19 @@
 class VisualConnectorTemplate extends VisualItem {
 	renderer=null;
 	counter=0;
+	createClonedView(parent)
+	{
+		let clone = new VisualConnectorTemplate(parent,this.name);
+		if(this.renderer)
+		{
+			clone.renderer=this.renderer.createClonedView(clone);
+		}
+		clone.width=this.width;
+		clone.height=this.height;
+		clone.updateSize();
+		return clone;
+
+	}
 	commit(parser)
 	{
 		let renderer = this.find("renderer");
@@ -31,6 +44,16 @@ class VisualConnectorTemplate extends VisualItem {
 class VisualConnectorPlacement extends VisualItem {
 	ref="";
 	factoryLabel="";
+	createClonedView(parent)
+	{
+		let clone = new VisualConnectorPlacement(parent,this.name);
+		clone.x=this.x;
+		clone.y=this.y;
+		clone.ref=this.ref;
+		clone.factoryLabel=this.factoryLabel;
+		clone.updateSize();
+		return clone;
+	}
 	constructor(parent,name)
 	{
 		super("connector",name,parent);
@@ -50,6 +73,13 @@ class VisualConnectorPlacement extends VisualItem {
 class VisualPortOptions extends VisualItem {
 	counter =undefined;
 	tpl=undefined;
+	createClonedView(parent)
+	{
+		let clone = new VisualPortOptions(parent,this.name);
+		clone.counter=this.counter;
+		clone.tpl=this.tpl;
+		return clone;
+	}
 	constructor(parent,name)
 	{
 		super("port_options",name,parent);
