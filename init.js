@@ -117,7 +117,7 @@ function InitEditor()
         {
             VisualEditor.hwCurrentItem.subItems.forEach((e)=>{
                 let rekt =new GetRect(e.x,e.y,e.width,e.height);
-                if(rekt.contains(event.offsetX/2,event.offsetY/2))
+                if(rekt.contains(event.offsetX/2-5,event.offsetY/2))
                 {
                     VisualEditor.hwHighlightItem(e);
                 }
