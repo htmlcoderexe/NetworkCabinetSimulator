@@ -478,13 +478,22 @@ static buildHwPortOptionsEditor(item)
 	static hwHighlightItem(item)
 	{
 		VisualEditor.hwCurrentHighLight=item;
+		VisualEditor.hwElements.childNodes.forEach((c)=>{
+			if(c.dataset.element==item.name)
+			{
+				c.dataset.selected="yes";
+			}
+			else
+			{
+				c.dataset.selected="no";
+			}
+		});
 		VisualEditor.redrawHwDisplay();
 	}
 
 	static hwElementLine(item)
 	{
 		let li;
-		VisualEditor.hwElementProps.innerText="";
 		if(item.type!="port_options")
 		{
 			li=VisualEditor.buildHwElementEditor(item);
@@ -500,6 +509,7 @@ static buildHwPortOptionsEditor(item)
 			
 			li=VisualEditor.buildHwPortOptionsEditor(item);
 		}
+		li.dataset.element=item.name;
 		return li;
 	}
 

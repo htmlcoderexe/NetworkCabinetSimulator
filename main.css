@@ -166,11 +166,31 @@ body,html
 {
     
     box-sizing: border-box;
-    width: 100%;
+    width: 50%;
     display: inline-block;
     height:100%;
     overflow-y:scroll;
     margin: 0;
+    background-color: #FFFFFF;
+    border-collapse: collapse;
+}
+#hwstudio_elements tr
+{
+    background-color: #ceffce;
+    border: 1px solid black;
+}
+#hwstudio_elements tr[data-selected="yes"]
+{
+    border: 3px solid red;
+}
+#hwstudio_elements td
+{
+    border: 1px solid black;
+    padding: 3px;
+}
+#hwstudio_elements tr:nth-child(even)
+{
+    background-color: #9df89d;
 }
 #hwstudio_element_props
 {
