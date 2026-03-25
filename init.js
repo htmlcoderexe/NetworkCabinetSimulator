@@ -80,7 +80,7 @@ function InitEditor()
     });
 
     VisualEditor.templates['treeItem'] = document.getElementById("tree_item_tpl");
-    VisualEditor.templates['objTree'] = document.getElementById("object_tree");
+    VisualEditor.treeViewContainer= document.getElementById("object_tree");
     VisualEditor.templates['propSheet'] = document.getElementById("item_propsheet");
     VisualEditor.templates['hwElProps'] = document.getElementById("hwelement_props");
     VisualEditor.templates['hwElCtr'] = document.getElementById("hwelement_ctr");
