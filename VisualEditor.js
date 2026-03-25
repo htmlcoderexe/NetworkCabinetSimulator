@@ -360,7 +360,7 @@ class VisualEditor
 				li.addEventListener("click",(e)=>{
 					VisualEditor.hwCurrentHighLight=null;
 					VisualEditor.updateHwCurrent(component.createClonedView(component.parent));
-					console.log(VisualEditor.hwCurrentItem);
+					// console.log(VisualEditor.hwCurrentItem);
 				})
 				list.appendChild(li);
 			}
@@ -408,52 +408,86 @@ class VisualEditor
 		});
 	}
 
+static buildHwPortOptionsEditor(item)
+{
+	let tpl;
+	let value;
+	if(item.tpl!=undefined)
+	{
+		tpl =VisualEditor.templates['hwElTpl'].content.cloneNode(true);
+		value = item.tpl;
+	}
+	else
+	{
+		value = item.counter;
+		tpl =VisualEditor.templates['hwElCtr'].content.cloneNode(true);
+	}
+	let input=tpl.querySelector("#hw_value");
+	input.value=value;
+	input.addEventListener("input",(event)=>{
+		if(item.tpl!=undefined)
+		{
+			item.tpl=input.value;
+		}
+		else
+		{
+			item.counter=input.value;
+		}
+		VisualEditor.redrawHwDisplay();
+	});
+	return tpl.firstElementChild;
+}
+
+	static buildHwElementEditor(item)
+	{
+		
+		let tpl = VisualEditor.templates['hwElProps'].content.cloneNode(true);
+		let optlist = tpl.querySelector("#hwelement_id");
+		let others = VisualEditor.inventory.allOfType(item.type=="bank"?"socket_bank":"socket_tpl");
+		others.forEach((e)=>{
+			let opt = document.createElement("option");
+			opt.append(e.name);
+			if(e.name==item.ref)
+			{
+				opt.selected=true;
+			}
+			optlist.appendChild(opt);
+		});
+		let inX=tpl.querySelector("#hw_x");
+		let inY=tpl.querySelector("#hw_y");
+		inX.value=item.x;
+		inY.value=item.y;
+		inX.addEventListener("input",(event)=>{
+			item.x=Number(inX.value);
+			item.y=Number(inY.value);
+			VisualEditor.redrawHwDisplay();
+		});
+		inY.addEventListener("input",(event)=>{
+			item.x=Number(inX.value);
+			item.y=Number(inY.value);
+			VisualEditor.redrawHwDisplay();
+		});
+		optlist.addEventListener("change",(event)=>{
+			item.ref=optlist.value;
+			item.updateSize();
+			VisualEditor.redrawHwDisplay();
+		});
+		return tpl.firstElementChild;
+	}
+
 	static hwHighlightItem(item)
 	{
-				VisualEditor.hwCurrentHighLight=item;
-let tpl = VisualEditor.templates['hwElProps'].content.cloneNode(true);
-				let optlist = tpl.querySelector("#hwelement_id");
-				let others = VisualEditor.inventory.allOfType(item.type=="bank"?"socket_bank":"socket_tpl");
-				others.forEach((e)=>{
-					let opt = document.createElement("option");
-					opt.append(e.name);
-					if(e.name==item.ref)
-					{
-						opt.selected=true;
-					}
-					optlist.appendChild(opt);
-				});
-				let inX=tpl.querySelector("#hw_x");
-				let inY=tpl.querySelector("#hw_y");
-				inX.value=item.x;
-				inY.value=item.y;
-				inX.addEventListener("input",(event)=>{
-					item.x=Number(inX.value);
-					item.y=Number(inY.value);
-					VisualEditor.redrawHwDisplay();
-				});
-				inY.addEventListener("input",(event)=>{
-					item.x=Number(inX.value);
-					item.y=Number(inY.value);
-					VisualEditor.redrawHwDisplay();
-				});
-				optlist.addEventListener("change",(event)=>{
-					item.ref=optlist.value;
-					item.updateSize();
-					VisualEditor.redrawHwDisplay();
-				});
-				VisualEditor.hwElementProps.innerText="";
-				VisualEditor.hwElementProps.appendChild(tpl.firstElementChild);
-				VisualEditor.redrawHwDisplay();
+		VisualEditor.hwCurrentHighLight=item;
+		VisualEditor.redrawHwDisplay();
 	}
 
 	static hwElementLine(item)
 	{
-		let li = document.createElement("li");
+		let li;
 		VisualEditor.hwElementProps.innerText="";
 		if(item.type!="port_options")
 		{
-			li.append(item.ref+": "+item.x+","+item.y);
+			li=VisualEditor.buildHwElementEditor(item);
 			li.addEventListener("click",(e)=>{
 				VisualEditor.hwHighlightItem(item);
 				// console.log(item);
@@ -463,9 +497,8 @@ let tpl = VisualEditor.templates['hwElProps'].content.cloneNode(true);
 		}
 		else
 		{
-			let prop = item.tpl? "Port template" : "Counter";
-			let val = item.tpl?item.tpl:item.counter;
-			li.append(prop+": "+val);
+			
+			li=VisualEditor.buildHwPortOptionsEditor(item);
 		}
 		return li;
 	}

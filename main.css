@@ -166,7 +166,7 @@ body,html
 {
     
     box-sizing: border-box;
-    width: 30%;
+    width: 100%;
     display: inline-block;
     height:100%;
     overflow-y:scroll;
@@ -175,7 +175,7 @@ body,html
 #hwstudio_element_props
 {
     box-sizing: border-box;
-    width: 65%;
+    width: 0%;
     display: inline-block;
     height:100%;
     overflow-y:scroll;

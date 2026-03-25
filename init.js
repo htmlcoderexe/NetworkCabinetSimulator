@@ -83,6 +83,8 @@ function InitEditor()
     VisualEditor.templates['objTree'] = document.getElementById("object_tree");
     VisualEditor.templates['propSheet'] = document.getElementById("item_propsheet");
     VisualEditor.templates['hwElProps'] = document.getElementById("hwelement_props");
+    VisualEditor.templates['hwElCtr'] = document.getElementById("hwelement_ctr");
+    VisualEditor.templates['hwElTpl'] = document.getElementById("hwelement_tpl");
     VisualEditor.propSheetContainer = document.getElementById("object_info");
     VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");

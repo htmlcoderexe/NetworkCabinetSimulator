@@ -43,9 +43,22 @@
 		</div>
 	</template>
 	<template id="hwelement_props">
-		<div><select id="hwelement_id"></select>
-		<label for="hw_x">X </label><input id="hw_x" type="number" />
-		<label for="hw_y">Y </label><input id="hw_y" type="number" /></div>
+		<tr>
+			<td><select id="hwelement_id"></select></td>
+			<td><label for="hw_x">X </label><input size="3" id="hw_x" type="number" /><label for="hw_y">Y </label><input size="3" id="hw_y" type="number" /></td>
+		</tr>
+	</template>
+	<template id="hwelement_ctr">
+		<tr>
+			<td>Counter</td>
+			<td><input size="3" id="hw_value" min="-2" type="number" /></td>
+		</tr>
+	</template>
+	<template id="hwelement_tpl">
+		<tr>
+			<td>Port template</td>
+			<td><input id="hw_value" /></td>
+		</tr>
 	</template>
 	<dialog id="new_line_dialog" onclose="VisualEditor.createLineResult();">
 		<form id="new_line_frm" method="dialog">
@@ -116,7 +129,7 @@
 					<ul id="hw_connlist" class="hw_comp_list"></ul>
 					<div id="hw_display_container"><canvas id="hw_display" width="640" height="72"></canvas></div>
 					<div id="hwstudio_box">
-						<ul id="hwstudio_elements"></ul>
+						<table id="hwstudio_elements"></table>
 						<div id="hwstudio_element_props"></div>
 					</div>
 				</div>
