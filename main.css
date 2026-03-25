@@ -153,7 +153,7 @@ body,html
     height: 10%;
     margin: 0;
 }
-#hwstudio ul
+#hwstudio ul.hw_comp_list
 {
     box-sizing: border-box;
     width: 30%;
@@ -162,12 +162,31 @@ body,html
     overflow-y:scroll;
     margin: 0;
 }
+#hwstudio_elements
+{
+    
+    box-sizing: border-box;
+    width: 30%;
+    display: inline-block;
+    height:100%;
+    overflow-y:scroll;
+    margin: 0;
+}
+#hw_display_container
+{
+    box-sizing: border-box;
+    width: 100%;
+    display: inline-block;
+    height:7%;
+    margin: 0;
+}
+
 #hwstudio_box
 {
     box-sizing: border-box;
     width: 100%;
     display: inline-block;
-    height:55%;
+    height:51%;
     margin: 0;
 }
 
