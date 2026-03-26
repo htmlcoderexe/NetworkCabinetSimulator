@@ -230,6 +230,21 @@ class VisualPatch extends VisualItem {
 			VisualEditor.selectLine(e.target.dataset.lineName);
 		});
 		sheet.push(badge);
+		let start_lbl = document.createElement("div");
+		let end_lbl = document.createElement("div");
+		
+		start_lbl.append(VisualEditor.createHotLabel(this.from));
+		start_lbl.append(" @ [");
+		start_lbl.append(VisualEditor.createHotLabel(this.from.parent));
+		start_lbl.append("]");
+		end_lbl.append(VisualEditor.createHotLabel(this.to));
+		end_lbl.append(" @ [");
+		end_lbl.append(VisualEditor.createHotLabel(this.to.parent));
+		end_lbl.append("]");
+		sheet.push(start_lbl);
+		sheet.push(end_lbl);
+
+		
 		let cables = VisualEditor.fixedMap.cablesBetween(this.from.parent,this.to.parent);
 		if(cables.length>0)
 		{
