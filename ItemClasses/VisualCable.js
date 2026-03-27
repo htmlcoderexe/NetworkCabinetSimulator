@@ -110,15 +110,6 @@ class VisualCable extends VisualItem
 		super.drawOutlineFunc(ctx);
 		
 	}
-	indexOf(link)
-	{
-		let index = -1;
-		this.subItems.forEach((l,i)=>{
-			if(l===link)
-				index = i;
-		});
-		return index;
-	}
 	getLinkEndPoints(index)
 	{
 		let start = this.cableWidth/-2;

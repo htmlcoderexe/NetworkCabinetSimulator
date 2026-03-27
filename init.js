@@ -89,11 +89,12 @@ function InitEditor()
     VisualEditor.mapLayer = document.getElementById("graphdisplay").getContext("2d");
     VisualEditor.highlightLayer = document.getElementById("selection_display").getContext("2d");
     VisualEditor.mouseArea =  document.getElementById('selection_display');
-    VisualEditor.newLineDialogue =  document.getElementById('new_line_dialog');
-    VisualEditor.newItemDialogue =  document.getElementById('new_item_dialog');
-    VisualEditor.cancellableDialogue =  document.getElementById('cancellable_dialog');
+    VisualEditor.dialogs.newLine =  document.getElementById('new_line_dialog');
+    VisualEditor.dialogs.newItem =  document.getElementById('new_item_dialog');
+    VisualEditor.dialogs.cancellable =  document.getElementById('cancellable_dialog');
+    VisualEditor.dialogs.addHwElement =  document.getElementById('add_hw_element_dialog');
     VisualEditor.toolBar =  document.getElementById('toolbar_tools');
-    VisualEditor.addFrameDialogue = document.getElementById("add_frame_dialog");
+    VisualEditor.dialogs.addFrame = document.getElementById("add_frame_dialog");
 	VisualEditor.hwFrameList = document.querySelector("#hw_framelist");
 	VisualEditor.hwBankList = document.querySelector("#hw_banklist");
 	VisualEditor.hwConnectorList = document.querySelector("#hw_connlist");
@@ -230,7 +231,7 @@ function InitEditor()
     };
     document.getElementById("add_location").addEventListener("click",(e)=>{
         VisualEditor.promptName((e)=>{
-				let cname = VisualEditor.newItemDialogue.returnValue;
+				let cname = VisualEditor.dialogs.newItem.returnValue;
 				if(!cname)
 					return;
 				let c = new VisualLocation(VisualEditor.fixedMap,cname);

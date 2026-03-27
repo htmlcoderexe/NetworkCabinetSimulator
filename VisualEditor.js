@@ -242,22 +242,7 @@ class VisualEditor
      */
     static toolBar = null;
 	static templates={};
-	/**
-	 * A reference to an HTML <dialog> for creating a new line.
-	 */
-	static newLineDialogue = null;
-	/**
-	 * A reference to an HTML <dialog> for prompting a name.
-	 */
-	static newItemDialogue = null;
-	/**
-	 * A reference to an HTML <dialog> for prompting a name with validation.
-	 */
-	static cancellableDialogue = null;
-	/**
-	 * A reference to an HTML <dialog> for adding frames to a rack.
-	 */
-	static addFrameDialogue = null;
+	static dialogs={};
 	/**
 	 * Contains the data: URL for the frame pre-render.
 	 */
@@ -369,7 +354,7 @@ class VisualEditor
 				console.log(component);
 			}
 		});
-		//VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(framerenders);
+		//VisualEditor.dialogs.addFrame.querySelector("#framelist").replaceWith(framerenders);
 	}
 
 	static redrawHwDisplay()
@@ -406,6 +391,13 @@ class VisualEditor
 		component.subItems.forEach((e)=>{
 			VisualEditor.hwElements.appendChild(VisualEditor.hwElementLine(e));
 		});
+		if(component.subItems.length==0)
+		{
+			let b = document.createElement("button");
+			b.append("Add component");
+			b.addEventListener("click",VisualEditor.hwMakeInsert(component,0));
+			VisualEditor.hwElements.appendChild(b);
+		}
 	}
 
 static buildHwPortOptionsEditor(item)
@@ -509,8 +501,122 @@ static buildHwPortOptionsEditor(item)
 			
 			li=VisualEditor.buildHwPortOptionsEditor(item);
 		}
+		VisualEditor.hwDoLineButtons(li,item);
 		li.dataset.element=item.name;
 		return li;
+	}
+
+	static hwMakeInsert(target_item, index)
+	{
+		return (ev)=>{
+			let dlg = VisualEditor.dialogs.addHwElement;
+			dlg.querySelector("#hw_element_counter_value").value=1;
+			dlg.querySelector("#hw_element_template_value").value="";
+			let optlist = dlg.querySelector("#hw_element_listbox");
+			optlist.innerText="";
+			let types=['socket_tpl'];
+			if(target_item.type=="frame_tpl")
+			{
+				types.push("socket_bank");
+			}
+			let others = VisualEditor.inventory.allOfTypes(types);
+			others.forEach((e)=>{
+				let opt = document.createElement("option");
+				opt.append(e.name);
+				optlist.appendChild(opt);
+			});
+			dlg.addEventListener("close",(event)=>{
+				if(dlg.returnValue!="")
+				{
+					let selectedItem=VisualEditor.inventory.find(dlg.returnValue);
+					let newItem;
+					let type=dlg.querySelector("input[name=hw_new_element_type]:checked").value;
+					switch(type)
+					{
+						case "component":
+						{
+							if(selectedItem.type=="socket_tpl")
+							{
+								newItem = new VisualConnectorPlacement(target_item,"c_"+target_item.getNextPrefixedSlot("c_"));
+							}
+							if(selectedItem.type=="socket_bank")
+							{
+								
+								newItem = new VisualBankPlacement(target_item,"c_"+target_item.getNextPrefixedSlot("c_"));
+							}
+							newItem.ref=dlg.returnValue;
+							break;
+						}
+						case "counter":
+						{
+							let ctr=dlg.querySelector("#hw_element_counter_value").value;
+							newItem= new VisualPortOptions(target_item,"c_"+target_item.getNextPrefixedSlot("c_"));
+							newItem.counter=Number(ctr);
+							break;
+						}
+						case "template":
+						{
+							let tpl=dlg.querySelector("#hw_element_template_value").value;
+							tpl=tpl.trim();
+							if(tpl=="")
+								return;
+							newItem= new VisualPortOptions(target_item,"c_"+target_item.getNextPrefixedSlot("c_"));
+							newItem.tpl=tpl;
+							break;
+						}
+					}
+					target_item.insertAt(index,newItem);
+					target_item.updateSize();
+					VisualEditor.updateHwCurrent(target_item);
+					console.log(target_item);
+				}
+			},{once:true});
+			dlg.showModal();
+		};
+	}
+	static hwDoLineButtons(row,item)
+	{
+		let up=row.querySelector("#hw_moveup");
+		let dn=row.querySelector("#hw_movedn");
+		let iup=row.querySelector("#hw_insup");
+		let idn=row.querySelector("#hw_insdn");
+		let rm=row.querySelector("#hw_remove");
+		let index = item.parent.indexOf(item);
+		let pp=item.parent;
+		if(index==0)
+		{
+			up.parentElement.removeChild(up);
+		}
+		else
+		{
+			up.addEventListener("click",(e)=>{
+				pp.removeItem(item);
+				pp.insertAt(index-1, item);
+				VisualEditor.updateHwCurrent(pp);
+			});
+		}
+		if(index==pp.subItems.length-1)
+		{
+			dn.parentElement.removeChild(dn);
+		}
+		else
+		{
+			dn.addEventListener("click",(e)=>{
+				pp.removeItem(item);
+				pp.insertAt(index+1, item);
+				VisualEditor.updateHwCurrent(pp);
+			});
+		}
+		iup.addEventListener("click",VisualEditor.hwMakeInsert(pp,index+1));
+		idn.addEventListener("click",VisualEditor.hwMakeInsert(pp,index));
+		rm.addEventListener("click",(ev)=>{
+			pp.removeItem(item);
+			VisualEditor.hwCurrentHighLight=null;
+			VisualEditor.updateHwCurrent(pp);
+			// this is needed to prevent the click event on the row with the item firing
+			// and highlighting the nonexistent item
+			ev.stopPropagation();
+		});
 	}
 
 	static generateFramePreviewSprite(index, tagname="div")
@@ -836,7 +942,7 @@ static buildHwPortOptionsEditor(item)
 		let addbutton = document.createElement("button");
 		addbutton.addEventListener("click",(e)=>{
 			VisualEditor.promptName((e)=>{
-				let cname = VisualEditor.newItemDialogue.returnValue;
+				let cname = VisualEditor.dialogs.newItem.returnValue;
 				if(!cname)
 					return;
 				let c = new VisualCable(VisualEditor.fixedMap,cname);
@@ -1209,25 +1315,25 @@ static buildHwPortOptionsEditor(item)
 		{
 			return;
 		}
-		VisualEditor.addFrameDialogue.querySelector('#override').checked=false;
-		VisualEditor.addFrameDialogue.querySelector('#override').addEventListener("change",function (e){
+		VisualEditor.dialogs.addFrame.querySelector('#override').checked=false;
+		VisualEditor.dialogs.addFrame.querySelector('#override').addEventListener("change",function (e){
 			if(this.checked)
 			{
-				VisualEditor.addFrameDialogue.querySelector("#slot").min =1;
-				VisualEditor.addFrameDialogue.querySelector("#slot").max =999;
+				VisualEditor.dialogs.addFrame.querySelector("#slot").min =1;
+				VisualEditor.dialogs.addFrame.querySelector("#slot").max =999;
 			}
 			else
 			{
 				
-				VisualEditor.addFrameDialogue.querySelector("#slot").min =min;
-				VisualEditor.addFrameDialogue.querySelector("#slot").max =max;
+				VisualEditor.dialogs.addFrame.querySelector("#slot").min =min;
+				VisualEditor.dialogs.addFrame.querySelector("#slot").max =max;
 			}
 		});
-		VisualEditor.addFrameDialogue.querySelector('#rackref').value = rackID;
+		VisualEditor.dialogs.addFrame.querySelector('#rackref').value = rackID;
 		//console.log(rackID);
-		VisualEditor.addFrameDialogue.querySelector("#slot").value =min;
-		VisualEditor.addFrameDialogue.querySelector("#slot").min =min;
-		VisualEditor.addFrameDialogue.querySelector("#slot").max =max;
+		VisualEditor.dialogs.addFrame.querySelector("#slot").value =min;
+		VisualEditor.dialogs.addFrame.querySelector("#slot").min =min;
+		VisualEditor.dialogs.addFrame.querySelector("#slot").max =max;
 		let frames = document.createElement("div");
 		let names = Object.keys(VisualEditor.frameTypeRegistry);
 		let checked = true;
@@ -1256,21 +1362,21 @@ static buildHwPortOptionsEditor(item)
 			row.appendChild(lbl);
 			list.appendChild(row);
 		});
-		VisualEditor.addFrameDialogue.querySelector("#framelist").replaceWith(list);
-		VisualEditor.addFrameDialogue.returnValue ="";
-		VisualEditor.addFrameDialogue.showModal();
+		VisualEditor.dialogs.addFrame.querySelector("#framelist").replaceWith(list);
+		VisualEditor.dialogs.addFrame.returnValue ="";
+		VisualEditor.dialogs.addFrame.showModal();
 
 	}
 	static addFrameResult()
 	{
-		if(VisualEditor.addFrameDialogue.returnValue!="ok")
+		if(VisualEditor.dialogs.addFrame.returnValue!="ok")
 		{
 			return;
 		}
-		let frame = VisualEditor.addFrameDialogue.querySelector('input[name=frameselector]:checked').value;
-		let override = VisualEditor.addFrameDialogue.querySelector('#override').checked;
-		let slot = VisualEditor.addFrameDialogue.querySelector('#slot').value;
-		let rackID = VisualEditor.addFrameDialogue.querySelector('#rackref').value.split(VisualEditor.ITEM_REF_SEPARATOR);
+		let frame = VisualEditor.dialogs.addFrame.querySelector('input[name=frameselector]:checked').value;
+		let override = VisualEditor.dialogs.addFrame.querySelector('#override').checked;
+		let slot = VisualEditor.dialogs.addFrame.querySelector('#slot').value;
+		let rackID = VisualEditor.dialogs.addFrame.querySelector('#rackref').value.split(VisualEditor.ITEM_REF_SEPARATOR);
 		//console.log(rackID);
 		let rack = VisualEditor.find(rackID);
 		if(rack)
@@ -1297,17 +1403,17 @@ static buildHwPortOptionsEditor(item)
 	}
 	static cancellablePrompt(verifier, success, fail, prompt="",button="",placeholder="")
 	{
-		VisualEditor.cancellableDialogue.querySelector("#err_text").innerText="";
-		VisualEditor.cancellableDialogue.querySelector("#err_msg").style.display="none";
-		VisualEditor.cancellableDialogue.querySelector("#cancellable_input").value="";
+		VisualEditor.dialogs.cancellable.querySelector("#err_text").innerText="";
+		VisualEditor.dialogs.cancellable.querySelector("#err_msg").style.display="none";
+		VisualEditor.dialogs.cancellable.querySelector("#cancellable_input").value="";
 		if(prompt)
 		{
-			VisualEditor.cancellableDialogue.querySelector("#prompt").innerText = prompt+":";
-			VisualEditor.cancellableDialogue.querySelector("#cancellable_input").placeholder = placeholder ?? prompt+" here";
+			VisualEditor.dialogs.cancellable.querySelector("#prompt").innerText = prompt+":";
+			VisualEditor.dialogs.cancellable.querySelector("#cancellable_input").placeholder = placeholder ?? prompt+" here";
 		}
 		if(button)
-			VisualEditor.cancellableDialogue.querySelector("#button").innerText = button;
-		let result=VisualEditor.cancellableDialogue.querySelector("#cancellable_input");
+			VisualEditor.dialogs.cancellable.querySelector("#button").innerText = button;
+		let result=VisualEditor.dialogs.cancellable.querySelector("#cancellable_input");
 		let exitproc=(e)=>{
 			e.preventDefault();
 			console.log(result.value);
@@ -1315,33 +1421,33 @@ static buildHwPortOptionsEditor(item)
 			{
 				console.log("success");
 				success(result.value);
-				VisualEditor.cancellableDialogue.querySelector("#button").removeEventListener("click",exitproc);
-				VisualEditor.cancellableDialogue.close("");
+				VisualEditor.dialogs.cancellable.querySelector("#button").removeEventListener("click",exitproc);
+				VisualEditor.dialogs.cancellable.close("");
 			}
 			else
 			{
 				console.log("failure");
-				VisualEditor.cancellableDialogue.querySelector("#err_text").innerText=fail(result.value);
-				VisualEditor.cancellableDialogue.querySelector("#err_msg").style.display="inline";
+				VisualEditor.dialogs.cancellable.querySelector("#err_text").innerText=fail(result.value);
+				VisualEditor.dialogs.cancellable.querySelector("#err_msg").style.display="inline";
 			}
 		};
-		VisualEditor.cancellableDialogue.addEventListener("close",(e)=>{VisualEditor.cancellableDialogue.querySelector("#button").removeEventListener("click",exitproc);},{once:true});
-		VisualEditor.cancellableDialogue.querySelector("#button").addEventListener("click",exitproc);
-		VisualEditor.cancellableDialogue.showModal();
+		VisualEditor.dialogs.cancellable.addEventListener("close",(e)=>{VisualEditor.dialogs.cancellable.querySelector("#button").removeEventListener("click",exitproc);},{once:true});
+		VisualEditor.dialogs.cancellable.querySelector("#button").addEventListener("click",exitproc);
+		VisualEditor.dialogs.cancellable.showModal();
 	}
 	static promptName(callback,prompt ="",button ="",placeholder)
 	{
-		VisualEditor.newItemDialogue.querySelector("#itemname").value="";
+		VisualEditor.dialogs.newItem.querySelector("#itemname").value="";
 		if(prompt)
 		{
-			VisualEditor.newItemDialogue.querySelector("#prompt").innerText = prompt+":";
-			VisualEditor.newItemDialogue.querySelector("#itemname").placeholder = placeholder ?? prompt+" here";
+			VisualEditor.dialogs.newItem.querySelector("#prompt").innerText = prompt+":";
+			VisualEditor.dialogs.newItem.querySelector("#itemname").placeholder = placeholder ?? prompt+" here";
 		}
 		if(button)
-			VisualEditor.newItemDialogue.querySelector("#button").innerText = button;
+			VisualEditor.dialogs.newItem.querySelector("#button").innerText = button;
 		
-		VisualEditor.newItemDialogue.addEventListener("close",callback,{once:true});
-		VisualEditor.newItemDialogue.showModal();
+		VisualEditor.dialogs.newItem.addEventListener("close",callback,{once:true});
+		VisualEditor.dialogs.newItem.showModal();
 	}
 	static createLine()
 	{
@@ -1353,15 +1459,13 @@ static buildHwPortOptionsEditor(item)
 		}
 		console.log("actually creating line");
 		
-		VisualEditor.newLineDialogue.showModal();
+		VisualEditor.dialogs.newLine.showModal();
 
 	}
 
 	static createLineResult(e)
 	{
-		console.log("after dlg");
-		//console.log(VisualEditor.newLineDialogue.returnValue);
-		if(VisualEditor.newLineDialogue.returnValue)
+		if(VisualEditor.dialogs.newLine.returnValue)
 		{
             // make a fake socket to attach the wire to
 			let mSocket = new VisualSocket(VisualEditor.fixedMap, "mousemove");
@@ -1369,11 +1473,11 @@ static buildHwPortOptionsEditor(item)
 			VisualEditor.currentMovingX=-1*(DIM_FRAME_SIDES + 5);
 			VisualEditor.currentMovingY=-2;
 			let fromSocket=VisualEditor.currentSingleItem;
-			if(VisualEditor.lineMap.checkName(VisualEditor.newLineDialogue.returnValue))
+			if(VisualEditor.lineMap.checkName(VisualEditor.dialogs.newLine.returnValue))
 			{
 				return;
 			}
-			let line = new VisualLine(VisualEditor.lineMap, VisualEditor.newLineDialogue.returnValue);
+			let line = new VisualLine(VisualEditor.lineMap, VisualEditor.dialogs.newLine.returnValue);
 			let newpatch = new VisualPatch(line, line.getNextSlot());
 			newpatch.from = VisualEditor.currentSingleItem;
 			fromSocket.connect(newpatch);

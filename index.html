@@ -46,36 +46,39 @@
 		<tr>
 			<td><select id="hwelement_id"></select></td>
 			<td><label for="hw_x">X </label><input size="3" id="hw_x" type="number" /><label for="hw_y">Y </label><input size="3" id="hw_y" type="number" /></td>
+			<td><button title="Move up" id="hw_moveup">▲</button><button title="Move down" id="hw_movedn">▼</button><button title="Insert below" id="hw_insup">⩠</button><button title="Insert above" id="hw_insdn">⩢</button><button title="Remove" id="hw_remove">🗑️</button></td>
 		</tr>
 	</template>
 	<template id="hwelement_ctr">
 		<tr>
 			<td>Counter</td>
 			<td><input size="3" id="hw_value" min="-2" type="number" /></td>
+			<td><button title="Move up" id="hw_moveup">▲</button><button title="Move down" id="hw_movedn">▼</button><button title="Insert below" id="hw_insup">⩠</button><button title="Insert above" id="hw_insdn">⩢</button><button title="Remove" id="hw_remove">🗑️</button></td>
 		</tr>
 	</template>
 	<template id="hwelement_tpl">
 		<tr>
 			<td>Port template</td>
 			<td><input id="hw_value" /></td>
+			<td><button title="Move up" id="hw_moveup">▲</button><button title="Move down" id="hw_movedn">▼</button><button title="Insert below" id="hw_insup">⩠</button><button title="Insert above" id="hw_insdn">⩢</button><button title="Remove" id="hw_remove">🗑️</button></td>
 		</tr>
 	</template>
 	<dialog id="new_line_dialog" onclose="VisualEditor.createLineResult();">
 		<form id="new_line_frm" method="dialog">
 			<label for="linename">Line name:</label><input name="linename" id="linename" type="text" placeholder="Line name here" />
-			<button onclick="VisualEditor.newLineDialogue.close(document.getElementById('linename').value);">Create line</button>
+			<button onclick="VisualEditor.dialogs.newLine.close(document.getElementById('linename').value);">Create line</button>
 		</form>
 	</dialog>
 	<dialog id="cancellable_dialog">
 		<form id="cancellable_frm" method="dialog">
 			<label id="prompt" for="cancellable_input">Input value:</label><input name="cancellable_input" id="cancellable_input" type="text" placeholder="" /><br /><span id="err_msg"><span id="err_text"></span><br /></span>
-			<button id="button" >OK</button><button onclick="VisualEditor.cancellableDialogue.close('');">Cancel</button>
+			<button id="button" >OK</button><button onclick="VisualEditor.dialogs.cancellable.close('');">Cancel</button>
 		</form>
 	</dialog>
 	<dialog id="new_item_dialog"">
 		<form id="new_item_frm" method="dialog">
 			<label id="prompt" for="itemname">Item name:</label><input name="itemname" id="itemname" type="text" placeholder="Item name here" />
-			<button id="button" onclick="VisualEditor.newItemDialogue.close(document.getElementById('itemname').value);">Create item</button>
+			<button id="button" onclick="VisualEditor.dialogs.newItem.close(document.getElementById('itemname').value);">Create item</button>
 		</form>
 	</dialog>
 	<dialog id="add_frame_dialog" onclose="VisualEditor.addFrameResult()">
@@ -85,8 +88,18 @@
 		<div class="framelistcontainer">
 		<ul id="framelist"></ul></div>
 		<input type="hidden" id="rackref" />
-		<button onclick="VisualEditor.addFrameDialogue.close('ok');">OK</button>
-		<button onclick="VisualEditor.addFrameDialogue.close('cancel');">Cancel</button>
+		<button onclick="VisualEditor.dialogs.addFrame.close('ok');">OK</button>
+		<button onclick="VisualEditor.dialogs.addFrame.close('cancel');">Cancel</button>
+		</form>
+	</dialog>
+	<dialog id="add_hw_element_dialog">
+		<form method="dialog">
+			<label for="hw_element_option_component">Element: </label><input checked value="component" type="radio" id="hw_element_option_component" name="hw_new_element_type" /> 
+			<select id="hw_element_listbox"></select><br />
+			<label for="hw_element_option_counter">Counter: </label><input value="counter" type="radio" id="hw_element_option_counter" name="hw_new_element_type" /><input id="hw_element_counter_value" min="-2" type="number" /><br />
+			<label for="hw_element_option_tpl">Port ID template: </label><input value="template" type="radio" id="hw_element_option_template" name="hw_new_element_type" /><input id="hw_element_template_value" />
+			<button onclick="VisualEditor.dialogs.addHwElement.close(document.getElementById('hw_element_listbox').value);">OK</button>
+			<button onclick="VisualEditor.dialogs.addHwElement.close('');">Cancel</button>
 		</form>
 	</dialog>
 	<div id="main">
@@ -103,14 +116,15 @@
 				<button title="Display and modify source code" class="mode_button" data-mode="code" id="mode_code" onclick="VisualEditor.setEditorModeHandler(event)">🧑‍💻</button>
 				<button title="Edit hardware components" class="mode_button" data-mode="inventory" id="mode_inventory" onclick="VisualEditor.setEditorModeHandler(event)">🧰</button>
 				<datalist id="zoom_markers">
-  <option value="25"></option>
-  <option value="50"></option>
-  <option value="100"></option>
-  <option value="200"></option>
-  <option value="300"></option>
-  <option value="400"></option>
-  <option value="500"></option>
-</datalist><input type="range" list="zoom_markers" value="100" max="500" min="25" id="zoom_slider"/><span id="zoom_lvl">100%</span>
+					<option value="25"></option>
+					<option value="50"></option>
+					<option value="100"></option>
+					<option value="200"></option>
+					<option value="300"></option>
+					<option value="400"></option>
+					<option value="500"></option>
+				</datalist>
+				<input type="range" list="zoom_markers" value="100" max="500" min="25" id="zoom_slider"/><span id="zoom_lvl">100%</span>
 			</div>
 			<div class="displayer">
 				<canvas id="graphdisplay" width = "2024" height="2024" style="width:100%;height:100%;border: 1px solid black;position: absolute; left: 0; top: 0; z-index: 1;"></canvas>

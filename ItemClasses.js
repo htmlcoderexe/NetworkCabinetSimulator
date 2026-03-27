@@ -151,6 +151,37 @@ class VisualItem {
 		// if still here, drop a null
 		return null;
 	}
+	indexOf(item)
+	{
+		let index = -1;
+		this.subItems.forEach((l,i)=>{
+			if(l===item)
+				index = i;
+		});
+		return index;
+	}
+	insertAt(index,item)
+	{
+		this.subItems.splice(index,0,item);
+		return;
+		let L=this.subItems.length-1;
+		for(let i = L;i>=index;i--)
+		{
+			this.subItems[i+1]=this.subItems[i];
+		}
+		this.subItems[index]=item;
+	}
+	removeAt(index)
+	{
+		return this.subItems.splice(index,1);
+		let item = this.subItems[index];
+		for(let i=index;i<this.subItems.length-1;i++)
+		{
+			this.subItems[i]=this.subItems[i+1];
+		}
+		this.subItems.pop();
+		return item;
+	}
 	/**
 	 * Attempts to add an item to this object.
 	 * @param {VisualItem} item - The item to be added. 
@@ -238,6 +269,15 @@ class VisualItem {
 	allOfType(type)
 	{
 		return this.subItems.filter((e)=>e.type==type);
+	}
+	/**
+	 * Gets an array of subitems matching given types
+	 * @param {string[]} type s
+	 * @returns {VisualItem[]} matching items, if any
+	 */
+	allOfTypes(types)
+	{
+		return this.subItems.filter((e)=>types.find((f)=>f==e.type));
 	}
 
 	/**
