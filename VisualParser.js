@@ -47,7 +47,8 @@ function VisualParser(code, fx, root)
 		{
 			msg2 = msg2.replaceAll("%"+statevar+"%",this.statevars[statevar]);
 		}
-		console.warn("Parser warning on line "+ this.index+": #" + code + ": " + msg2);
+		console.warn("Parser warning on line "+ Number(this.index+1)+": #" + code + ": " + msg2);
+		console.log(this.objectStack);
 		this.warnings.push({code: code, message: msg2, line: this.index, character: this.oldOffset});
 	};
 	this.error = function(code = 0)

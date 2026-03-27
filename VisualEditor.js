@@ -291,7 +291,7 @@ class VisualEditor
 	static loadInventory(inventory)
 	{
 		VisualEditor.inventory = inventory;
-		console.log(VisualEditor.inventory.subItems);
+		// console.log(VisualEditor.inventory.subItems);
 		let frames = VisualEditor.inventory.subItems.filter(vi=>vi.type=="frame_tpl");
 		//console.log(frames);
 		// render all frame types into an image for dialog boxes
@@ -317,22 +317,31 @@ class VisualEditor
 		}
 		VisualEditor.framePreRenderSrc = framerenders.toDataURL("png");
 		
+		//VisualEditor.dialogs.addFrame.querySelector("#framelist").replaceWith(framerenders);
+	}
+
+	static initInventoryEditor()
+	{
 		VisualEditor.inventory.subItems.forEach((component)=>{
 			let list;
+			let number=0;
 			switch(component.type)
 			{
 				case "frame_tpl":
 				{
 					list=VisualEditor.hwFrameList;
+					number = VisualEditor.inventory.frameUsages[component.name] ?? 0;
 					break;
 				}
 				case "socket_tpl":
 				{
+					number = VisualEditor.inventory.conUsagesInventory[component.name] ?? 0;
 					list = VisualEditor.hwConnectorList;
 					break;
 				}
 				case "socket_bank":
 				{
+					number = VisualEditor.inventory.bankUsagesInventory[component.name] ?? 0;
 					list = VisualEditor.hwBankList;
 					break;
 				}
@@ -340,6 +349,12 @@ class VisualEditor
 			if(list)
 			{
 				let li=document.createElement("li");
+				let bbbb = document.createElement("strong");
+				bbbb.style.display="inline-block";
+				bbbb.style.width="2rem";
+				bbbb.style.paddingRight="1rem";
+				bbbb.append(number);
+				li.appendChild(bbbb);
 				li.append(component.name);
 				li.dataset.itemref=component.getFullName();
 				li.addEventListener("click",(e)=>{
@@ -354,9 +369,7 @@ class VisualEditor
 				console.log(component);
 			}
 		});
-		//VisualEditor.dialogs.addFrame.querySelector("#framelist").replaceWith(framerenders);
 	}
-
 	static redrawHwDisplay()
 	{
 		let component = VisualEditor.hwCurrentItem;
@@ -391,12 +404,40 @@ class VisualEditor
 		component.subItems.forEach((e)=>{
 			VisualEditor.hwElements.appendChild(VisualEditor.hwElementLine(e));
 		});
-		if(component.subItems.length==0)
+		if(component.subItems.length==0 && component.type!="socket_tpl")
 		{
 			let b = document.createElement("button");
 			b.append("Add component");
 			b.addEventListener("click",VisualEditor.hwMakeInsert(component,0));
 			VisualEditor.hwElements.appendChild(b);
+		}
+			let props=VisualEditor.hwElementProps;
+			props.innerText="";
+		if(component.renderer)
+		{
+			let txtbox=document.createElement("textarea");
+			txtbox.style.width="100%";
+			txtbox.style.height="90%";
+			txtbox.value=component.renderer.toCode(0);
+			props.appendChild(txtbox);
+			let c_butt=document.createElement("button");
+			c_butt.style.width="100%";
+			c_butt.style.height="5%";
+			c_butt.append("Compile");
+			c_butt.addEventListener("click",(ev)=>{
+				// hijack the inventory parser
+				// preload it with a dummy root object
+				let pp = new VisualParser(txtbox.value,invparser,new VisualTEMPLATE(null,"null"));
+		        pp.init();
+				// put a nice fresh renderer as the root object
+				pp.objectStack=[new VisualRenderer(pp.rootObject,"renderer")];
+				pp.go();
+				// should be in here
+				// #TODO: deal with any parsing issues at some point
+				component.renderer=pp.rootObject.subItems[0];
+				VisualEditor.updateHwCurrent(component);
+			});
+			props.appendChild(c_butt);
 		}
 	}
 

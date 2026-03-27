@@ -29,11 +29,11 @@ class ItemRenderer
     {
         if(id=="SLOT")
         {
-            return item.slot;
+            return item.slot??0;
         }
         if(id=="PORTLABEL")
         {
-            return item.slotLabel;
+            return item.slotLabel??0;
         }
         return this.registers[id]? this.registers[id] : 0;
     }

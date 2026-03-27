@@ -269,7 +269,7 @@ function InitEditor()
         p.warncodes = warns;
         p.init();
         p.go();
-        console.log(p.rootObject);
+        //console.log(p.rootObject);
         VisualEditor.loadInventory(p.rootObject);
 
         let txt = document.getElementById('aaa').value;
@@ -319,6 +319,8 @@ function InitEditor()
     VisualEditor.fixedMap.updatePosition();
     VisualEditor.refreshView();
     VisualEditor.inventory.updateSize();
+    VisualEditor.inventory.calculateUsages(VisualEditor.fixedMap);
+    VisualEditor.initInventoryEditor();
     rs.observe(document.getElementById("graphdisplay"));
         
     });

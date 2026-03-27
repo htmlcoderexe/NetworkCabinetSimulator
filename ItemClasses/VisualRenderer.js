@@ -17,4 +17,15 @@ class VisualRenderer extends VisualItem {
 		});
 		return clone;
 	}
+	toCode(indent_level)
+	{
+		let result ="";
+		this.instructions.forEach((e)=>{
+			let ee=[];
+			ee.push(...e);
+			let cmd = ee.shift();
+			result+=this._f(cmd,indent_level,...ee);
+		});
+		return result;
+	}
 }
